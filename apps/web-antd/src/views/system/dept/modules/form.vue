@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { SystemDeptApi } from '#/api/v1/sys-dept';
+import type { SysDeptInfo } from '#/api/v1/sys-dept';
 
 import { computed, ref } from 'vue';
 
@@ -37,7 +37,11 @@ const [Modal, modalApi] = useVbenModal({
     // 提交表单
     const data = (await formApi.getValues()) as SysDeptInfo;
     try {
-      await (formData.value?.id ? updateSysDept(data) : createSysDept(data));
+      if (formData.value?.id) {
+        await updateSysDept({ body: data });
+      } else {
+        await createSysDept({ body: data });
+      }
       // 关闭并提示
       await modalApi.close();
       emit('success');
@@ -62,7 +66,7 @@ const [Modal, modalApi] = useVbenModal({
     if (data.id) {
       modalApi.lock();
       try {
-        const res = await getSysDeptInfo(data.id);
+        const res = await getSysDeptInfo({ params: { id: data.id } });
         data = res.info;
       } finally {
         modalApi.lock(false);

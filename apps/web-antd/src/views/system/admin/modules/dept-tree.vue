@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { SystemDeptApi } from '#/api/v1/sys-dept';
+import type { SysDeptInfo } from '#/api/v1/sys-dept';
 
 import { onMounted, ref } from 'vue';
 
@@ -23,7 +23,7 @@ function handleSearch(e: any) {
   searchValue.value = value;
   const filteredList = value
     ? deptList.value.filter((item) =>
-        item.name.toLowerCase().includes(value.toLowerCase()),
+        item.name?.toLowerCase().includes(value.toLowerCase()),
       )
     : deptList.value;
   deptTree.value = handleTree(filteredList);
@@ -44,9 +44,9 @@ const handleSelect = (selectedKeys: any[], info: any) => {
 onMounted(async () => {
   try {
     loading.value = true;
-    const data = await getSysDeptList();
-    deptList.value = data.list;
-    deptTree.value = handleTree(data.list);
+    const data = await getSysDeptList({ options: {} });
+    deptList.value = data.list || [];
+    deptTree.value = handleTree(data.list || []);
   } catch (error) {
     console.error('获取部门数据失败', error);
   } finally {

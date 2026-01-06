@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import type { SystemMenuApi } from '#/api/v1/sys-menu';
-import type { SystemTenantApi } from '#/api/v1/sys-tenant';
+import type { SysMenuInfo } from '#/api/v1/sys-menu';
+import type { SysTenantInfo } from '#/api/v1/sys-tenant';
 
 import { computed, ref } from 'vue';
 
@@ -43,7 +43,7 @@ const isExpired = computed(() => {
 async function loadMenuTree() {
   menuLoading.value = true;
   try {
-    const res = await getSysMenuList();
+    const res = await getSysMenuList({ options: {} });
     menuTree.value = handleTree(res.list || []) as SysMenuInfo[];
   } catch (error) {
     console.error('加载菜单树失败:', error);

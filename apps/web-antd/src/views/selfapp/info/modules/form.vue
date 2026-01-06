@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { SelfAppApi } from '#/api/selfapp/info';
+import type { SelfAppInfo, CreateSelfAppReq, UpdateSelfAppReq } from '#/api/v1/self-app';
 
 import { computed, ref } from 'vue';
 
@@ -12,7 +12,7 @@ import {
   createSelfApp,
   getSelfAppInfo,
   updateSelfApp,
-} from '#/api/selfapp/info';
+} from '#/api/v1/self-app';
 import { $t } from '#/locales';
 
 import { useFormSchema } from '../data';

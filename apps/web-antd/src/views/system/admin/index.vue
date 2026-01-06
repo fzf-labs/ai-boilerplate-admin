@@ -3,8 +3,8 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { SystemAdminApi } from '#/api/v1/sys-admin';
-import type { SystemDeptApi } from '#/api/v1/sys-dept';
+import type { SysAdminInfo } from '#/api/v1/sys-admin';
+import type { SysDeptInfo } from '#/api/v1/sys-dept';
 
 import { ref } from 'vue';
 
@@ -72,7 +72,7 @@ async function onDelete(row: SysAdminInfo) {
     key: 'action_process_msg',
   });
   try {
-    await deleteSysAdmin(row.id as string);
+    await deleteSysAdmin({ body: { id: row.id as string } });
     message.success({
       content: $t('ui.actionMessage.deleteSuccess', [row.username]),
       key: 'action_process_msg',
@@ -113,7 +113,7 @@ async function onStatusChange(
       },
       onOk() {
         // 更新用户状态
-        updateSysAdminStatus(row.id as string, newStatus)
+        updateSysAdminStatus({ body: { id: row.id as string, status: newStatus } })
           .then(() => {
             // 提示并返回成功
             message.success({
@@ -167,10 +167,12 @@ const [Grid, gridApi] = useVbenVxeGrid({
       ajax: {
         query: async ({ page }, formValues) => {
           return await getSysAdminList({
-            page: page.currentPage,
-            pageSize: page.pageSize,
-            ...formValues,
-            deptId: searchDeptId.value,
+            params: {
+              page: page.currentPage,
+              pageSize: page.pageSize,
+              ...formValues,
+              deptId: searchDeptId.value,
+            },
           });
         },
       },

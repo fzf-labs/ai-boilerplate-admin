@@ -3,8 +3,8 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { SystemAdminApi } from '#/api/v1/sys-admin';
-import type { SystemDeptApi } from '#/api/v1/sys-dept';
+import type { SysAdminInfo } from '#/api/v1/sys-admin';
+import type { SysDeptInfo } from '#/api/v1/sys-dept';
 
 import { onMounted, ref } from 'vue';
 
@@ -63,7 +63,7 @@ async function onDelete(row: SysDeptInfo) {
     key: 'action_process_msg',
   });
   try {
-    await deleteSysDept(row.id as string);
+    await deleteSysDept({ body: { id: row.id as string } });
     message.success({
       content: $t('ui.actionMessage.deleteSuccess', [row.name]),
       key: 'action_process_msg',
@@ -103,7 +103,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
     proxyConfig: {
       ajax: {
         query: async (_params) => {
-          return await getSysDeptList();
+          return await getSysDeptList({ options: {} });
         },
       },
     },
@@ -125,8 +125,8 @@ const [Grid, gridApi] = useVbenVxeGrid({
 
 /** 初始化 */
 onMounted(async () => {
-  const res = await getSysAdminSelector();
-  adminList.value = res.list;
+  const res = await getSysAdminSelector({ options: {} });
+  adminList.value = res.list || [];
 });
 </script>
 

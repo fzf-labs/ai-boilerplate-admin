@@ -1,6 +1,6 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { SystemAdminApi } from '#/api/v1/sys-admin';
+import type { SysAdminInfo } from '#/api/v1/sys-admin';
 
 import { useAccess } from '@vben/access';
 import { handleTree } from '@vben/utils';
@@ -76,8 +76,8 @@ export function useFormSchema(): VbenFormSchema[] {
       component: 'ApiTreeSelect',
       componentProps: {
         api: async () => {
-          const data = await getSysDeptList();
-          return handleTree(data.list);
+          const data = await getSysDeptList({ options: {} });
+          return handleTree(data.list || []);
         },
         class: 'w-full',
         labelField: 'name',

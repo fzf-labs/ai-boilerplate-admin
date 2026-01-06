@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { SystemAdminApi } from '#/api/v1/sys-admin';
+import type { CreateSysAdminReq, SysAdminInfo, UpdateSysAdminReq } from '#/api/v1/sys-admin';
 
 import { computed, ref } from 'vue';
 
@@ -37,7 +37,11 @@ const [Modal, modalApi] = useVbenModal({
     // 提交表单
     const data = (await formApi.getValues()) as SysAdminInfo;
     try {
-      await (formData.value?.id ? updateSysAdmin(data) : createSysAdmin(data));
+      if (formData.value?.id) {
+        await updateSysAdmin({ body: data as UpdateSysAdminReq });
+      } else {
+        await createSysAdmin({ body: data as CreateSysAdminReq });
+      }
       // 关闭并提示
       await modalApi.close();
       emit('success');
@@ -61,10 +65,12 @@ const [Modal, modalApi] = useVbenModal({
     }
     modalApi.lock();
     try {
-      const res = await getSysAdminInfo(data.id);
+      const res = await getSysAdminInfo({ params: { id: data.id } });
       formData.value = res.info;
       // 设置到 values
-      await formApi.setValues(formData.value);
+      if (formData.value) {
+        await formApi.setValues(formData.value);
+      }
     } finally {
       modalApi.lock(false);
     }

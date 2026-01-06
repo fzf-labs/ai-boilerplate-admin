@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import type { SystemMenuApi } from '#/api/v1/sys-menu';
-import type { SystemTenantApi } from '#/api/v1/sys-tenant';
+import type { SysMenuInfo } from '#/api/v1/sys-menu';
+import type { SysTenantInfo } from '#/api/v1/sys-tenant';
 
 import { computed, ref } from 'vue';
 
@@ -15,6 +15,12 @@ import { createSysTenant, getSysTenantInfo, updateSysTenant } from '#/api/v1/sys
 import { $t } from '#/locales';
 
 import { useFormSchema } from '../data';
+
+// 扩展 SysTenantInfo 类型以包含 username 和 password 字段(仅用于创建租户)
+interface SysTenantFormData extends SysTenantInfo {
+  username?: string;
+  password?: string;
+}
 
 const emit = defineEmits(['success']);
 const formData = ref<SysTenantInfo>();
@@ -41,9 +47,34 @@ const [Modal, modalApi] = useVbenModal({
     }
     modalApi.lock();
     // 提交表单
-    const data = (await formApi.getValues()) as SysTenantInfo;
+    const data = (await formApi.getValues()) as SysTenantFormData;
     try {
-      await (formData.value ? updateSysTenant(data) : createSysTenant(data));
+      if (formData.value) {
+        // 更新租户
+        await updateSysTenant({
+          body: {
+            id: data.id!,
+            name: data.name!,
+            remark: data.remark,
+            expireTime: data.expireTime,
+            menuIds: data.menuIds,
+            status: data.status,
+          },
+        });
+      } else {
+        // 创建租户
+        await createSysTenant({
+          body: {
+            name: data.name!,
+            remark: data.remark,
+            expireTime: data.expireTime,
+            menuIds: data.menuIds,
+            status: data.status,
+            username: data.username!,
+            password: data.password!,
+          },
+        });
+      }
       // 关闭并提示
       await modalApi.close();
       emit('success');
@@ -69,10 +100,12 @@ const [Modal, modalApi] = useVbenModal({
     }
     modalApi.lock();
     try {
-      const res = await getSysTenantInfo(data.id);
+      const res = await getSysTenantInfo({ params: { id: data.id } });
       formData.value = res.info;
       // 设置到 values
-      await formApi.setValues(formData.value);
+      if (formData.value) {
+        await formApi.setValues(formData.value);
+      }
     } finally {
       modalApi.lock(false);
     }
@@ -83,8 +116,8 @@ const [Modal, modalApi] = useVbenModal({
 async function loadMenuTree() {
   menuLoading.value = true;
   try {
-    const res = await getSysMenuList();
-    menuTree.value = handleTree(res.list) as SysMenuInfo[];
+    const res = await getSysMenuList({ options: {} });
+    menuTree.value = handleTree(res.list || []) as SysMenuInfo[];
   } finally {
     menuLoading.value = false;
   }

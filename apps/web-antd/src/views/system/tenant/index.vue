@@ -3,7 +3,7 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { SystemTenantApi } from '#/api/v1/sys-tenant';
+import type { SysTenantInfo } from '#/api/v1/sys-tenant';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
@@ -56,7 +56,7 @@ async function onDelete(row: SysTenantInfo) {
     key: 'action_process_msg',
   });
   try {
-    await deleteSysTenant(row.id);
+    await deleteSysTenant({ body: { id: row.id! as string } });
     message.success({
       content: $t('ui.actionMessage.deleteSuccess', [row.name]),
       key: 'action_process_msg',

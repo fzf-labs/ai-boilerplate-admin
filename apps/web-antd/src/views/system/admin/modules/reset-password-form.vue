@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { SystemAdminApi } from '#/api/v1/sys-admin';
+import type { SysAdminInfo } from '#/api/v1/sys-admin';
 
 import { useVbenModal } from '@vben/common-ui';
 
@@ -28,7 +28,12 @@ const [Modal, modalApi] = useVbenModal({
     // 提交表单
     const data = await formApi.getValues();
     try {
-      await updateSysAdminPassword(data.id, data.newPassword);
+      await updateSysAdminPassword({
+        body: {
+          id: data.id as string,
+          password: data.newPassword as string,
+        },
+      });
       // 关闭并提示
       await modalApi.close();
       emit('success');

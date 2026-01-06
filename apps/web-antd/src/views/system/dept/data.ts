@@ -2,7 +2,7 @@ import type { VxeTableGridOptions } from '@vben/plugins/vxe-table';
 
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn } from '#/adapter/vxe-table';
-import type { SystemDeptApi } from '#/api/v1/sys-dept';
+import type { SysDeptInfo } from '#/api/v1/sys-dept';
 
 import { useAccess } from '@vben/access';
 import { handleTree } from '@vben/utils';
@@ -31,12 +31,13 @@ export function useFormSchema(): VbenFormSchema[] {
       componentProps: {
         allowClear: true,
         api: async () => {
-          const data = await getSysDeptList();
-          data.list.unshift({
+          const data = await getSysDeptList({ options: {} });
+          const list = data.list || [];
+          list.unshift({
             id: '',
             name: '顶级部门',
           } as SysDeptInfo);
-          return handleTree(data.list);
+          return handleTree(list);
         },
         class: 'w-full',
         labelField: 'name',

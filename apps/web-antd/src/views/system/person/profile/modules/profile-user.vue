@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { SystemAdminApi } from '#/api/v1/sys-admin';
+import type { SysAdminInfo } from '#/api/v1/sys-admin';
 
 import { computed } from 'vue';
 

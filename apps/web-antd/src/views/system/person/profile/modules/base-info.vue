@@ -2,7 +2,7 @@
 import type { Recordable } from '@vben/types';
 
 import type { AuthApi } from '#/api/core/auth';
-import type { SystemAdminApi } from '#/api/v1/sys-admin';
+import type { SysAdminInfo } from '#/api/v1/sys-admin';
 
 import { watch } from 'vue';
 

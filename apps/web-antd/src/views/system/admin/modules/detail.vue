@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { SystemAdminApi } from '#/api/v1/sys-admin';
+import type { SysAdminInfo } from '#/api/v1/sys-admin';
 
 import { computed, ref } from 'vue';
 
@@ -55,7 +55,7 @@ const [Modal, modalApi] = useVbenModal({
     }
     modalApi.lock();
     try {
-      const res = await getSysAdminInfo(data.id);
+      const res = await getSysAdminInfo({ params: { id: data.id } });
       adminData.value = res.info;
     } catch (error) {
       console.error('加载用户详情失败:', error);
