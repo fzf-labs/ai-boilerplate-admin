@@ -1,8 +1,8 @@
-# Kratos Admin Frontend
+# AI Boilerplate Frontend
 
 ## 项目介绍
 
-Kratos Admin Frontend 是一个基于 Vue 3 和 Ant Design Vue 的现代化管理系统前端框架，专为企业级中后台应用设计。项目基于 Monorepo 架构，采用 pnpm workspace 管理多包结构，具有高度的可扩展性、可维护性和性能优势。
+AI Boilerplate Frontend 是一个基于 Vue 3 和 Ant Design Vue 的现代化管理系统前端框架，专为企业级中后台应用设计。项目基于 Monorepo 架构，采用 pnpm workspace 管理多包结构，具有高度的可扩展性、可维护性和性能优势。
 
 本项目支持多语言国际化、动态路由、权限管理、组件封装等企业级应用所需的核心功能，并且提供了良好的开发体验和代码组织结构。
 
@@ -43,7 +43,7 @@ Kratos Admin Frontend 是一个基于 Vue 3 和 Ant Design Vue 的现代化管�
 ## 项目结构
 
 ```
-kratos-admin-frontend/
+ai-boilerplate-frontend/
 ├── apps/                # 应用目录
 │   └── web-antd/        # 基于Ant Design Vue的Web应用
 │

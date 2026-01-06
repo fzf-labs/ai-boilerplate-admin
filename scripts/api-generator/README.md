@@ -37,7 +37,7 @@ pnpm api:generate
 
 ```bash
 tsx ../../scripts/api-generator/src/index.ts \
-  --input ../../../kratos-admin-backend/doc/swagger \
+  --input ../../../ai-boilerplate-backend/doc/swagger \
   --output ./src/api/generated
 ```
 
