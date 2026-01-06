@@ -3,7 +3,7 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { SystemPostApi } from '#/api/system/post';
+import type { SystemPostApi } from '#/api/v1/sys-post';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
@@ -11,7 +11,7 @@ import { Plus } from '@vben/icons';
 import { Button, message } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { deletePost, getPostList } from '#/api/system/post';
+import { deleteSysPost, getSysPostList } from '#/api/v1/sys-post';
 import { $t } from '#/locales';
 
 import { useGridColumns, useGridFormSchema } from './data';
@@ -33,19 +33,19 @@ function onCreate() {
 }
 
 /** 编辑岗位 */
-function onEdit(row: SystemPostApi.Post) {
+function onEdit(row: SysPostInfo) {
   formModalApi.setData(row).open();
 }
 
 /** 删除岗位 */
-async function onDelete(row: SystemPostApi.Post) {
+async function onDelete(row: SysPostInfo) {
   const hideLoading = message.loading({
     content: $t('ui.actionMessage.deleting', [row.name]),
     duration: 0,
     key: 'action_process_msg',
   });
   try {
-    await deletePost(row.id);
+    await deleteSysPost(row.id);
     message.success({
       content: $t('ui.actionMessage.deleteSuccess', [row.name]),
       key: 'action_process_msg',
@@ -57,7 +57,7 @@ async function onDelete(row: SystemPostApi.Post) {
 }
 
 /** 表格操作按钮的回调函数 */
-function onActionClick({ code, row }: OnActionClickParams<SystemPostApi.Post>) {
+function onActionClick({ code, row }: OnActionClickParams<SysPostInfo>) {
   switch (code) {
     case 'delete': {
       onDelete(row);
@@ -81,7 +81,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
     proxyConfig: {
       ajax: {
         query: async ({ page }, formValues) => {
-          return await getPostList({
+          return await getSysPostList({
             page: page.currentPage,
             pageSize: page.pageSize,
             ...formValues,
@@ -96,7 +96,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
       refresh: { code: 'query' },
       search: true,
     },
-  } as VxeTableGridOptions<SystemPostApi.Post>,
+  } as VxeTableGridOptions<SysPostInfo>,
 });
 </script>
 

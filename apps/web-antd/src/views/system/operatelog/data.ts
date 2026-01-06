@@ -1,10 +1,10 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { SystemOperateLogApi } from '#/api/system/operate-log';
+import type { SystemOperateLogApi } from '#/api/v1/sys-operate-log';
 
 import { useAccess } from '@vben/access';
 
-import { getAdminSelector } from '#/api/system/admin';
+import { getSysAdminSelector } from '#/api/v1/sys-admin';
 import { getRangePickerDefaultProps } from '#/utils';
 
 const { hasAccessByCodes } = useAccess();
@@ -26,7 +26,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
       label: '操作人',
       component: 'ApiSelect',
       componentProps: {
-        api: async () => await getAdminSelector(),
+        api: async () => await getSysAdminSelector(),
         resultField: 'list',
         labelField: 'nickname',
         valueField: 'id',
@@ -47,7 +47,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
 }
 
 /** 列表的字段 */
-export function useGridColumns<T = SystemOperateLogApi.OperateLog>(
+export function useGridColumns<T = SysOperateLogInfo>(
   onActionClick: OnActionClickFn<T>,
 ): VxeTableGridOptions['columns'] {
   return [

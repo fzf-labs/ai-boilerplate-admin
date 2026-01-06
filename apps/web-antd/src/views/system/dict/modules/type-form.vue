@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { SystemDictTypeApi } from '#/api/system/dict/type';
+import type { SystemDictTypeApi } from '#/api/v1/dict-type';
 
 import { computed, ref } from 'vue';
 
@@ -12,13 +12,13 @@ import {
   createDictType,
   getDictTypeInfo,
   updateDictType,
-} from '#/api/system/dict/type';
+} from '#/api/v1/dict-type';
 import { $t } from '#/locales';
 
 import { useTypeFormSchema } from '../data';
 
 const emit = defineEmits(['success']);
-const formData = ref<SystemDictTypeApi.DictType>();
+const formData = ref<DictTypeInfo>();
 const getTitle = computed(() => {
   return formData.value?.id
     ? $t('ui.actionTitle.edit', ['字典类型'])
@@ -39,7 +39,7 @@ const [Modal, modalApi] = useVbenModal({
     }
     modalApi.lock();
     // 提交表单
-    const data = (await formApi.getValues()) as SystemDictTypeApi.DictType;
+    const data = (await formApi.getValues()) as DictTypeInfo;
     try {
       await (formData.value?.id ? updateDictType(data) : createDictType(data));
       // 关闭并提示
@@ -59,7 +59,7 @@ const [Modal, modalApi] = useVbenModal({
       return;
     }
     // 加载数据
-    const data = modalApi.getData<SystemDictTypeApi.DictType>();
+    const data = modalApi.getData<DictTypeInfo>();
     if (!data || !data.id) {
       return;
     }

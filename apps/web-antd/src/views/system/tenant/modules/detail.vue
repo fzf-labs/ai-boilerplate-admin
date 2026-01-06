@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import type { SystemMenuApi } from '#/api/system/menu';
-import type { SystemTenantApi } from '#/api/system/tenant';
+import type { SystemMenuApi } from '#/api/v1/sys-menu';
+import type { SystemTenantApi } from '#/api/v1/sys-tenant';
 
 import { computed, ref } from 'vue';
 
@@ -9,10 +9,10 @@ import { formatDateTime, handleTree } from '@vben/utils';
 
 import { Card, Tag } from 'ant-design-vue';
 
-import { getMenuList } from '#/api/system/menu';
+import { getSysMenuList } from '#/api/v1/sys-menu';
 
-const tenantData = ref<SystemTenantApi.Tenant & { adminName?: string }>();
-const menuTree = ref<SystemMenuApi.Menu[]>([]); // 菜单树
+const tenantData = ref<SysTenantInfo & { adminName?: string }>();
+const menuTree = ref<SysMenuInfo[]>([]); // 菜单树
 const menuLoading = ref(false); // 加载菜单列表
 
 const getTitle = computed(() => {
@@ -43,8 +43,8 @@ const isExpired = computed(() => {
 async function loadMenuTree() {
   menuLoading.value = true;
   try {
-    const res = await getMenuList();
-    menuTree.value = handleTree(res.list || []) as SystemMenuApi.Menu[];
+    const res = await getSysMenuList();
+    menuTree.value = handleTree(res.list || []) as SysMenuInfo[];
   } catch (error) {
     console.error('加载菜单树失败:', error);
     menuTree.value = [];
@@ -62,7 +62,7 @@ const [Modal, modalApi] = useVbenModal({
     }
     // 加载数据
     const data = modalApi.getData<
-      SystemTenantApi.Tenant & { adminName?: string }
+      SysTenantInfo & { adminName?: string }
     >();
     if (!data || !data.id) {
       return;

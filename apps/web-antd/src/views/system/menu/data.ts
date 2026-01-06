@@ -2,7 +2,7 @@ import type { Recordable } from '@vben/types';
 
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { SystemMenuApi } from '#/api/system/menu';
+import type { SystemMenuApi } from '#/api/v1/sys-menu';
 
 import { h } from 'vue';
 
@@ -11,7 +11,7 @@ import { IconifyIcon } from '@vben/icons';
 import { handleTree, isHttpUrl } from '@vben/utils';
 
 import { z } from '#/adapter/form';
-import { getMenuList } from '#/api/system/menu';
+import { getSysMenuList } from '#/api/v1/sys-menu';
 import { $t } from '#/locales';
 import { componentKeys } from '#/router/routes';
 import { CommonStatusEnum, SystemMenuTypeEnum } from '#/utils/constants';
@@ -36,11 +36,11 @@ export function useFormSchema(): VbenFormSchema[] {
       componentProps: {
         allowClear: true,
         api: async () => {
-          const data = await getMenuList();
+          const data = await getSysMenuList();
           data.list.unshift({
             id: '',
             name: '顶级菜单',
-          } as SystemMenuApi.Menu);
+          } as SysMenuInfo);
           return handleTree(data.list);
         },
         class: 'w-full',
@@ -231,8 +231,8 @@ export function useFormSchema(): VbenFormSchema[] {
 
 /** 列表的字段 */
 export function useGridColumns(
-  onActionClick: OnActionClickFn<SystemMenuApi.Menu>,
-): VxeTableGridOptions<SystemMenuApi.Menu>['columns'] {
+  onActionClick: OnActionClickFn<SysMenuInfo>,
+): VxeTableGridOptions<SysMenuInfo>['columns'] {
   return [
     {
       field: 'name',

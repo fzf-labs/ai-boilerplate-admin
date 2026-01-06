@@ -1,6 +1,6 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { SystemPostApi } from '#/api/system/post';
+import type { SystemPostApi } from '#/api/v1/sys-post';
 
 import { useAccess } from '@vben/access';
 
@@ -92,7 +92,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
 }
 
 /** 列表的字段 */
-export function useGridColumns<T = SystemPostApi.Post>(
+export function useGridColumns<T = SysPostInfo>(
   onActionClick: OnActionClickFn<T>,
 ): VxeTableGridOptions['columns'] {
   return [

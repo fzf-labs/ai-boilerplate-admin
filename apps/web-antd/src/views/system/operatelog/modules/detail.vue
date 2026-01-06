@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { SystemOperateLogApi } from '#/api/system/operate-log';
+import type { SystemOperateLogApi } from '#/api/v1/sys-operate-log';
 
 import { h, ref } from 'vue';
 
@@ -9,7 +9,7 @@ import { formatDateTime } from '@vben/utils';
 import { CopyOutlined } from '@ant-design/icons-vue';
 import { Button, Card, message } from 'ant-design-vue';
 
-const formData = ref<SystemOperateLogApi.OperateLog>();
+const formData = ref<SysOperateLogInfo>();
 
 // 格式化JSON字符串
 const formatJSON = (jsonStr: string | undefined) => {
@@ -46,7 +46,7 @@ const [Modal, modalApi] = useVbenModal({
       return;
     }
     // 加载数据
-    const data = modalApi.getData<SystemOperateLogApi.OperateLog>();
+    const data = modalApi.getData<SysOperateLogInfo>();
     if (!data || !data.id) {
       return;
     }

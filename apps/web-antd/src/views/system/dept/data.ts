@@ -2,14 +2,14 @@ import type { VxeTableGridOptions } from '@vben/plugins/vxe-table';
 
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn } from '#/adapter/vxe-table';
-import type { SystemDeptApi } from '#/api/system/dept';
+import type { SystemDeptApi } from '#/api/v1/sys-dept';
 
 import { useAccess } from '@vben/access';
 import { handleTree } from '@vben/utils';
 
 import { z } from '#/adapter/form';
-import { getAdminSelector } from '#/api/system/admin';
-import { getDeptList } from '#/api/system/dept';
+import { getSysAdminSelector } from '#/api/v1/sys-admin';
+import { getSysDeptList } from '#/api/v1/sys-dept';
 
 const { hasAccessByCodes } = useAccess();
 
@@ -31,11 +31,11 @@ export function useFormSchema(): VbenFormSchema[] {
       componentProps: {
         allowClear: true,
         api: async () => {
-          const data = await getDeptList();
+          const data = await getSysDeptList();
           data.list.unshift({
             id: '',
             name: '顶级部门',
-          } as SystemDeptApi.Dept);
+          } as SysDeptInfo);
           return handleTree(data.list);
         },
         class: 'w-full',
@@ -61,7 +61,7 @@ export function useFormSchema(): VbenFormSchema[] {
       label: '负责人',
       component: 'ApiSelect',
       componentProps: {
-        api: getAdminSelector,
+        api: getSysAdminSelector,
         class: 'w-full',
         resultField: 'list',
         labelField: 'nickname',
@@ -109,8 +109,8 @@ export function useFormSchema(): VbenFormSchema[] {
 
 /** 列表的字段 */
 export function useGridColumns(
-  onActionClick?: OnActionClickFn<SystemDeptApi.Dept>,
-): VxeTableGridOptions<SystemDeptApi.Dept>['columns'] {
+  onActionClick?: OnActionClickFn<SysDeptInfo>,
+): VxeTableGridOptions<SysDeptInfo>['columns'] {
   return [
     {
       field: 'name',
@@ -178,7 +178,7 @@ export function useGridColumns(
           {
             code: 'delete',
             show: hasAccessByCodes(['system:dept:delete']),
-            disabled: (row: SystemDeptApi.Dept) => {
+            disabled: (row: SysDeptInfo) => {
               return !!(row.children && row.children.length > 0);
             },
           },

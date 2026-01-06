@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { SystemAdminApi } from '#/api/system/admin';
+import type { SystemAdminApi } from '#/api/v1/sys-admin';
 
 import { onMounted, ref } from 'vue';
 
@@ -20,12 +20,12 @@ const activeName = ref('basicInfo');
 const loading = ref(false);
 const { hasAccessByCodes } = useAccess();
 /** 加载个人信息 */
-const profile = ref<SystemAdminApi.Admin>();
+const profile = ref<SysAdminInfo>();
 async function loadProfile() {
   try {
     loading.value = true;
     const result = await getAdminInfoApi();
-    profile.value = result.info as unknown as SystemAdminApi.Admin;
+    profile.value = result.info as unknown as SysAdminInfo;
   } catch (error: any) {
     console.error('加载个人信息失败:', error);
     message.error(error?.message || '加载个人信息失败');

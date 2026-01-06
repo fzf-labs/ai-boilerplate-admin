@@ -1,14 +1,14 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { SystemAdminApi } from '#/api/system/admin';
+import type { SystemAdminApi } from '#/api/v1/sys-admin';
 
 import { useAccess } from '@vben/access';
 import { handleTree } from '@vben/utils';
 
 import { z } from '#/adapter/form';
-import { getDeptList } from '#/api/system/dept';
-import { getPostSelector } from '#/api/system/post';
-import { getRoleSelector } from '#/api/system/role';
+import { getSysDeptList } from '#/api/v1/sys-dept';
+import { getSysPostSelector } from '#/api/v1/sys-post';
+import { getSysRoleSelector } from '#/api/v1/sys-role';
 import { getRangePickerDefaultProps } from '#/utils';
 import { CommonStatusEnum } from '#/utils/constants';
 
@@ -61,7 +61,7 @@ export function useFormSchema(): VbenFormSchema[] {
       label: '角色',
       component: 'ApiSelect',
       componentProps: {
-        api: getRoleSelector,
+        api: getSysRoleSelector,
         class: 'w-full',
         resultField: 'list',
         labelField: 'name',
@@ -76,7 +76,7 @@ export function useFormSchema(): VbenFormSchema[] {
       component: 'ApiTreeSelect',
       componentProps: {
         api: async () => {
-          const data = await getDeptList();
+          const data = await getSysDeptList();
           return handleTree(data.list);
         },
         class: 'w-full',
@@ -93,7 +93,7 @@ export function useFormSchema(): VbenFormSchema[] {
       label: '岗位',
       component: 'ApiSelect',
       componentProps: {
-        api: getPostSelector,
+        api: getSysPostSelector,
         class: 'w-full',
         resultField: 'list',
         labelField: 'name',
@@ -231,7 +231,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
 }
 
 /** 列表的字段 */
-export function useGridColumns<T = SystemAdminApi.Admin>(
+export function useGridColumns<T = SysAdminInfo>(
   onActionClick: OnActionClickFn<T>,
   onStatusChange?: (
     newStatus: number,

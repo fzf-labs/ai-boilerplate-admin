@@ -1,7 +1,7 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 
-import { getAdminSelector } from '#/api/system/admin';
+import { getSysAdminSelector } from '#/api/v1/sys-admin';
 import { getRangePickerDefaultProps } from '#/utils';
 
 /** 列表的搜索表单 */
@@ -12,7 +12,7 @@ export function useGridFormSchemaConversation(): VbenFormSchema[] {
       label: '用户编号',
       component: 'ApiSelect',
       componentProps: {
-        api: getAdminSelector,
+        api: getSysAdminSelector,
         labelField: 'nickname',
         valueField: 'id',
       },
@@ -110,7 +110,7 @@ export function useGridFormSchemaMessage(): VbenFormSchema[] {
       label: '用户编号',
       component: 'ApiSelect',
       componentProps: {
-        api: getAdminSelector,
+        api: getSysAdminSelector,
         labelField: 'nickname',
         valueField: 'id',
       },

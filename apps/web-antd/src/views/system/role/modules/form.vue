@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import type { SystemMenuApi } from '#/api/system/menu';
-import type { SystemRoleApi } from '#/api/system/role';
+import type { SystemMenuApi } from '#/api/v1/sys-menu';
+import type { SystemRoleApi } from '#/api/v1/sys-role';
 
 import { computed, ref } from 'vue';
 
@@ -10,21 +10,21 @@ import { handleTree } from '@vben/utils';
 import { message } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
-import { getMenuList } from '#/api/system/menu';
-import { createRole, getRoleInfo, updateRole } from '#/api/system/role';
+import { getSysMenuList } from '#/api/v1/sys-menu';
+import { createSysRole, getSysRoleInfo, updateSysRole } from '#/api/v1/sys-role';
 import { $t } from '#/locales';
 
 import { useFormSchema } from '../data';
 
 const emit = defineEmits(['success']);
-const formData = ref<SystemRoleApi.Role>();
+const formData = ref<SysRoleInfo>();
 const getTitle = computed(() => {
   return formData.value?.id
     ? $t('ui.actionTitle.edit', ['角色'])
     : $t('ui.actionTitle.create', ['角色']);
 });
 
-const menuTree = ref<SystemMenuApi.Menu[]>([]); // 菜单树
+const menuTree = ref<SysMenuInfo[]>([]); // 菜单树
 const menuLoading = ref(false); // 加载菜单列表
 
 const [Form, formApi] = useVbenForm({
@@ -41,9 +41,9 @@ const [Modal, modalApi] = useVbenModal({
     }
     modalApi.lock();
     // 提交表单
-    const data = (await formApi.getValues()) as SystemRoleApi.Role;
+    const data = (await formApi.getValues()) as SysRoleInfo;
     try {
-      await (formData.value?.id ? updateRole(data) : createRole(data));
+      await (formData.value?.id ? updateSysRole(data) : createSysRole(data));
       // 关闭并提示
       await modalApi.close();
       emit('success');
@@ -63,13 +63,13 @@ const [Modal, modalApi] = useVbenModal({
     // 加载菜单列表
     await loadMenuTree();
     // 加载数据
-    const data = modalApi.getData<SystemRoleApi.Role>();
+    const data = modalApi.getData<SysRoleInfo>();
     if (!data || !data.id) {
       return;
     }
     modalApi.lock();
     try {
-      const res = await getRoleInfo(data.id);
+      const res = await getSysRoleInfo(data.id);
       formData.value = res.info;
       // 设置到 values
       await formApi.setValues(formData.value);
@@ -83,8 +83,8 @@ const [Modal, modalApi] = useVbenModal({
 async function loadMenuTree() {
   menuLoading.value = true;
   try {
-    const data = await getMenuList();
-    menuTree.value = handleTree(data.list) as SystemMenuApi.Menu[];
+    const data = await getSysMenuList();
+    menuTree.value = handleTree(data.list) as SysMenuInfo[];
   } finally {
     menuLoading.value = false;
   }

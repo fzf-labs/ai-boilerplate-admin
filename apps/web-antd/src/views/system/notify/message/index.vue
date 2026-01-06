@@ -3,12 +3,12 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { SystemNotifyMessageApi } from '#/api/system/notify/message';
+import type { SystemNotifyMessageApi } from '#/api/v1/sys-notify-message';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getNotifyMessageList } from '#/api/system/notify/message';
+import { getSysNotifyMessageList } from '#/api/v1/sys-notify-message';
 
 import { useGridColumns, useGridFormSchema } from './data';
 import Detail from './modules/detail.vue';
@@ -24,7 +24,7 @@ function onRefresh() {
 }
 
 /** 查看站内信详情 */
-function onDetail(row: SystemNotifyMessageApi.NotifyMessage) {
+function onDetail(row: SysNotifyMessageInfo) {
   detailModalApi.setData(row).open();
 }
 
@@ -32,7 +32,7 @@ function onDetail(row: SystemNotifyMessageApi.NotifyMessage) {
 function onActionClick({
   code,
   row,
-}: OnActionClickParams<SystemNotifyMessageApi.NotifyMessage>) {
+}: OnActionClickParams<SysNotifyMessageInfo>) {
   switch (code) {
     case 'detail': {
       onDetail(row);
@@ -52,7 +52,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
     proxyConfig: {
       ajax: {
         query: async ({ page }, formValues) => {
-          return await getNotifyMessageList({
+          return await getSysNotifyMessageList({
             page: page.currentPage,
             pageSize: page.pageSize,
             ...formValues,
@@ -67,7 +67,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
       refresh: { code: 'query' },
       search: true,
     },
-  } as VxeTableGridOptions<SystemNotifyMessageApi.NotifyMessage>,
+  } as VxeTableGridOptions<SysNotifyMessageInfo>,
 });
 </script>
 

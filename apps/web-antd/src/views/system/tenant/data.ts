@@ -1,6 +1,6 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { SystemTenantApi } from '#/api/system/tenant';
+import type { SystemTenantApi } from '#/api/v1/sys-tenant';
 
 import { useAccess } from '@vben/access';
 
@@ -128,7 +128,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
 }
 
 /** 列表的字段 */
-export function useGridColumns<T = SystemTenantApi.Tenant>(
+export function useGridColumns<T = SysTenantInfo>(
   onActionClick: OnActionClickFn<T>,
 ): VxeTableGridOptions['columns'] {
   return [
@@ -160,7 +160,7 @@ export function useGridColumns<T = SystemTenantApi.Tenant>(
       align: 'center',
       cellRender: {
         name: 'CellTag',
-        props: ({ row }: { row: SystemTenantApi.Tenant }) => ({
+        props: ({ row }: { row: SysTenantInfo }) => ({
           color: row.status === 1 ? 'success' : 'default',
           text: row.status === 1 ? '启用' : '禁用',
         }),

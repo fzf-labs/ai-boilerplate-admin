@@ -3,7 +3,7 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { SystemNotifyMessageApi } from '#/api/system/notify/message';
+import type { SystemNotifyMessageApi } from '#/api/v1/sys-notify-message';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 import { MdiCheckboxMarkedCircleOutline } from '@vben/icons';
@@ -15,7 +15,7 @@ import {
   getMyNotifyMessagePage,
   updateMyAllNotifyMessageRead,
   updateMyNotifyMessageRead,
-} from '#/api/system/notify/message';
+} from '#/api/v1/sys-notify-message';
 
 import { useGridColumns, useGridFormSchema } from './data';
 import Detail from './modules/detail.vue';
@@ -31,12 +31,12 @@ function onRefresh() {
 }
 
 /** 查看站内信详情 */
-function onDetail(row: SystemNotifyMessageApi.NotifyMessage) {
+function onDetail(row: SysNotifyMessageInfo) {
   detailModalApi.setData(row).open();
 }
 
 /** 标记一条站内信已读 */
-async function onRead(row: SystemNotifyMessageApi.NotifyMessage) {
+async function onRead(row: SysNotifyMessageInfo) {
   message.loading({
     content: '正在标记已读...',
     duration: 0,
@@ -66,7 +66,7 @@ async function onMarkRead() {
     return;
   }
 
-  const ids = rows.map((row: SystemNotifyMessageApi.NotifyMessage) => row.id);
+  const ids = rows.map((row: SysNotifyMessageInfo) => row.id);
   message.loading({
     content: '正在标记已读...',
     duration: 0,
@@ -105,7 +105,7 @@ async function onMarkAllRead() {
 function onActionClick({
   code,
   row,
-}: OnActionClickParams<SystemNotifyMessageApi.NotifyMessage>) {
+}: OnActionClickParams<SysNotifyMessageInfo>) {
   switch (code) {
     case 'detail': {
       onDetail(row);
@@ -145,13 +145,13 @@ const [Grid, gridApi] = useVbenVxeGrid({
       search: true,
     },
     checkboxConfig: {
-      checkMethod: (params: { row: SystemNotifyMessageApi.NotifyMessage }) => {
+      checkMethod: (params: { row: SysNotifyMessageInfo }) => {
         // 只允许选择未读的消息
         return !params.row.readTime || params.row.readTime === '';
       },
       highlight: true,
     },
-  } as VxeTableGridOptions<SystemNotifyMessageApi.NotifyMessage>,
+  } as VxeTableGridOptions<SysNotifyMessageInfo>,
 });
 </script>
 <template>

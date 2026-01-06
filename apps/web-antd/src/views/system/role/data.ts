@@ -1,6 +1,6 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { SystemRoleApi } from '#/api/system/role';
+import type { SystemRoleApi } from '#/api/v1/sys-role';
 
 import { useAccess } from '@vben/access';
 
@@ -140,7 +140,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
 }
 
 /** 列表的字段 */
-export function useGridColumns<T = SystemRoleApi.Role>(
+export function useGridColumns<T = SysRoleInfo>(
   onActionClick: OnActionClickFn<T>,
 ): VxeTableGridOptions['columns'] {
   return [

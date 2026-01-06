@@ -3,14 +3,14 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { SystemRoleApi } from '#/api/system/role';
+import type { SystemRoleApi } from '#/api/v1/sys-role';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 
 import { Button, message } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { deleteRole, getRoleList } from '#/api/system/role';
+import { deleteSysRole, getSysRoleList } from '#/api/v1/sys-role';
 import { $t } from '#/locales';
 
 import { useGridColumns, useGridFormSchema } from './data';
@@ -27,7 +27,7 @@ function onRefresh() {
 }
 
 /** 编辑角色 */
-function onEdit(row: SystemRoleApi.Role) {
+function onEdit(row: SysRoleInfo) {
   formModalApi.setData(row).open();
 }
 
@@ -37,14 +37,14 @@ function onCreate() {
 }
 
 /** 删除角色 */
-async function onDelete(row: SystemRoleApi.Role) {
+async function onDelete(row: SysRoleInfo) {
   const hideLoading = message.loading({
     content: $t('ui.actionMessage.deleting', [row.name]),
     duration: 0,
     key: 'action_process_msg',
   });
   try {
-    await deleteRole(row.id);
+    await deleteSysRole(row.id);
     message.success({
       content: $t('ui.actionMessage.deleteSuccess', [row.name]),
       key: 'action_process_msg',
@@ -56,7 +56,7 @@ async function onDelete(row: SystemRoleApi.Role) {
 }
 
 /** 表格操作按钮的回调函数 */
-function onActionClick({ code, row }: OnActionClickParams<SystemRoleApi.Role>) {
+function onActionClick({ code, row }: OnActionClickParams<SysRoleInfo>) {
   switch (code) {
     case 'delete': {
       onDelete(row);
@@ -80,7 +80,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
     proxyConfig: {
       ajax: {
         query: async ({ page }, formValues) => {
-          return await getRoleList({
+          return await getSysRoleList({
             page: page.currentPage,
             pageSize: page.pageSize,
             ...formValues,
@@ -95,7 +95,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
       refresh: { code: 'query' },
       search: true,
     },
-  } as VxeTableGridOptions<SystemRoleApi.Role>,
+  } as VxeTableGridOptions<SysRoleInfo>,
 });
 </script>
 

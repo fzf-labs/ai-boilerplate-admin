@@ -1,6 +1,6 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { SystemNoticeApi } from '#/api/system/notice';
+import type { SysNoticeInfo } from '#/api/v1/sys-notice';
 
 import { useAccess } from '@vben/access';
 
@@ -110,7 +110,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
 }
 
 /** 列表的字段 */
-export function useGridColumns<T = SystemNoticeApi.Notice>(
+export function useGridColumns<T = SysNoticeInfo>(
   onActionClick: OnActionClickFn<T>,
 ): VxeTableGridOptions['columns'] {
   return [

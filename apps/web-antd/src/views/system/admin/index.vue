@@ -3,8 +3,8 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { SystemAdminApi } from '#/api/system/admin';
-import type { SystemDeptApi } from '#/api/system/dept';
+import type { SystemAdminApi } from '#/api/v1/sys-admin';
+import type { SystemDeptApi } from '#/api/v1/sys-dept';
 
 import { ref } from 'vue';
 
@@ -15,10 +15,10 @@ import { Button, message, Modal } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import {
-  deleteAdmin,
-  getAdminList,
-  updateAdminStatus,
-} from '#/api/system/admin';
+  deleteSysAdmin,
+  getSysAdminList,
+  updateSysAdminStatus,
+} from '#/api/v1/sys-admin';
 import { $t } from '#/locales';
 
 import { useGridColumns, useGridFormSchema } from './data';
@@ -49,7 +49,7 @@ function onRefresh() {
 }
 /** 选择部门 */
 const searchDeptId = ref<string | undefined>(undefined);
-async function onDeptSelect(dept: SystemDeptApi.Dept) {
+async function onDeptSelect(dept: SysDeptInfo) {
   searchDeptId.value = dept.id;
   onRefresh();
 }
@@ -60,19 +60,19 @@ function onCreate() {
 }
 
 /** 编辑用户 */
-function onEdit(row: SystemAdminApi.Admin) {
+function onEdit(row: SysAdminInfo) {
   formModalApi.setData(row).open();
 }
 
 /** 删除用户 */
-async function onDelete(row: SystemAdminApi.Admin) {
+async function onDelete(row: SysAdminInfo) {
   const hideLoading = message.loading({
     content: $t('ui.actionMessage.deleting', [row.nickname]),
     duration: 0,
     key: 'action_process_msg',
   });
   try {
-    await deleteAdmin(row.id as string);
+    await deleteSysAdmin(row.id as string);
     message.success({
       content: $t('ui.actionMessage.deleteSuccess', [row.username]),
       key: 'action_process_msg',
@@ -84,12 +84,12 @@ async function onDelete(row: SystemAdminApi.Admin) {
 }
 
 /** 重置密码 */
-function onResetPassword(row: SystemAdminApi.Admin) {
+function onResetPassword(row: SysAdminInfo) {
   resetPasswordModalApi.setData(row).open();
 }
 
 /** 查看详情 */
-function onDetail(row: SystemAdminApi.Admin) {
+function onDetail(row: SysAdminInfo) {
   detailModalApi.setData(row).open();
 }
 
@@ -97,7 +97,7 @@ function onDetail(row: SystemAdminApi.Admin) {
 /** 更新用户状态 */
 async function onStatusChange(
   newStatus: number,
-  row: SystemAdminApi.Admin,
+  row: SysAdminInfo,
 ): Promise<boolean | undefined> {
   return new Promise((resolve, reject) => {
     // 启用 1 禁用 -1
@@ -113,7 +113,7 @@ async function onStatusChange(
       },
       onOk() {
         // 更新用户状态
-        updateAdminStatus(row.id as string, newStatus)
+        updateSysAdminStatus(row.id as string, newStatus)
           .then(() => {
             // 提示并返回成功
             message.success({
@@ -134,7 +134,7 @@ async function onStatusChange(
 function onActionClick({
   code,
   row,
-}: OnActionClickParams<SystemAdminApi.Admin>) {
+}: OnActionClickParams<SysAdminInfo>) {
   switch (code) {
     case 'delete': {
       onDelete(row);
@@ -166,7 +166,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
     proxyConfig: {
       ajax: {
         query: async ({ page }, formValues) => {
-          return await getAdminList({
+          return await getSysAdminList({
             page: page.currentPage,
             pageSize: page.pageSize,
             ...formValues,
@@ -182,7 +182,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
       refresh: { code: 'query' },
       search: true,
     },
-  } as VxeTableGridOptions<SystemAdminApi.Admin>,
+  } as VxeTableGridOptions<SysAdminInfo>,
 });
 </script>
 

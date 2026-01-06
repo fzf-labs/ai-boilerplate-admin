@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { SystemAdminApi } from '#/api/system/admin';
+import type { SystemAdminApi } from '#/api/v1/sys-admin';
 
 import { computed } from 'vue';
 
@@ -14,7 +14,7 @@ import { CropperAvatar } from '#/components/cropper';
 import { useUpload } from '#/components/upload/use-upload';
 
 const props = defineProps<{
-  profile?: SystemAdminApi.Admin;
+  profile?: SysAdminInfo;
 }>();
 
 const emit = defineEmits<{

@@ -3,7 +3,7 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { SystemTenantApi } from '#/api/system/tenant';
+import type { SystemTenantApi } from '#/api/v1/sys-tenant';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
@@ -11,7 +11,7 @@ import { Plus } from '@vben/icons';
 import { Button, message } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { deleteTenant, getTenantList } from '#/api/system/tenant';
+import { deleteSysTenant, getSysTenantList } from '#/api/v1/sys-tenant';
 import { $t } from '#/locales';
 
 import { useGridColumns, useGridFormSchema } from './data';
@@ -39,24 +39,24 @@ function onCreate() {
 }
 
 /** 编辑租户 */
-function onEdit(row: SystemTenantApi.Tenant) {
+function onEdit(row: SysTenantInfo) {
   formModalApi.setData(row).open();
 }
 
 /** 查看租户详情 */
-function onDetail(row: SystemTenantApi.Tenant) {
+function onDetail(row: SysTenantInfo) {
   detailModalApi.setData(row).open();
 }
 
 /** 删除租户 */
-async function onDelete(row: SystemTenantApi.Tenant) {
+async function onDelete(row: SysTenantInfo) {
   const hideLoading = message.loading({
     content: $t('ui.actionMessage.deleting', [row.name]),
     duration: 0,
     key: 'action_process_msg',
   });
   try {
-    await deleteTenant(row.id);
+    await deleteSysTenant(row.id);
     message.success({
       content: $t('ui.actionMessage.deleteSuccess', [row.name]),
       key: 'action_process_msg',
@@ -71,7 +71,7 @@ async function onDelete(row: SystemTenantApi.Tenant) {
 function onActionClick({
   code,
   row,
-}: OnActionClickParams<SystemTenantApi.Tenant>) {
+}: OnActionClickParams<SysTenantInfo>) {
   switch (code) {
     case 'delete': {
       onDelete(row);
@@ -99,7 +99,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
     proxyConfig: {
       ajax: {
         query: async ({ page }, formValues) => {
-          return await getTenantList({
+          return await getSysTenantList({
             page: page.currentPage,
             pageSize: page.pageSize,
             ...formValues,
@@ -114,7 +114,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
       refresh: { code: 'query' },
       search: true,
     },
-  } as VxeTableGridOptions<SystemTenantApi.Tenant>,
+  } as VxeTableGridOptions<SysTenantInfo>,
 });
 </script>
 <template>

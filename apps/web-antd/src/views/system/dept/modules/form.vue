@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { SystemDeptApi } from '#/api/system/dept';
+import type { SystemDeptApi } from '#/api/v1/sys-dept';
 
 import { computed, ref } from 'vue';
 
@@ -8,13 +8,13 @@ import { useVbenModal } from '@vben/common-ui';
 import { message } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
-import { createDept, getDeptInfo, updateDept } from '#/api/system/dept';
+import { createSysDept, getSysDeptInfo, updateSysDept } from '#/api/v1/sys-dept';
 import { $t } from '#/locales';
 
 import { useFormSchema } from '../data';
 
 const emit = defineEmits(['success']);
-const formData = ref<SystemDeptApi.Dept>();
+const formData = ref<SysDeptInfo>();
 const getTitle = computed(() => {
   return formData.value?.id
     ? $t('ui.actionTitle.edit', ['部门'])
@@ -35,9 +35,9 @@ const [Modal, modalApi] = useVbenModal({
     }
     modalApi.lock();
     // 提交表单
-    const data = (await formApi.getValues()) as SystemDeptApi.Dept;
+    const data = (await formApi.getValues()) as SysDeptInfo;
     try {
-      await (formData.value?.id ? updateDept(data) : createDept(data));
+      await (formData.value?.id ? updateSysDept(data) : createSysDept(data));
       // 关闭并提示
       await modalApi.close();
       emit('success');
@@ -55,14 +55,14 @@ const [Modal, modalApi] = useVbenModal({
       return;
     }
     // 加载数据
-    let data = modalApi.getData<SystemDeptApi.Dept>();
+    let data = modalApi.getData<SysDeptInfo>();
     if (!data) {
       return;
     }
     if (data.id) {
       modalApi.lock();
       try {
-        const res = await getDeptInfo(data.id);
+        const res = await getSysDeptInfo(data.id);
         data = res.info;
       } finally {
         modalApi.lock(false);

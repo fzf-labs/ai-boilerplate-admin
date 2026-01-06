@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { SystemAdminApi } from '#/api/system/admin';
+import type { SystemAdminApi } from '#/api/v1/sys-admin';
 
 import { computed, ref } from 'vue';
 
@@ -8,9 +8,9 @@ import { formatDateTime } from '@vben/utils';
 
 import { Avatar, Card, Tag } from 'ant-design-vue';
 
-import { getAdminInfo } from '#/api/system/admin';
+import { getSysAdminInfo } from '#/api/v1/sys-admin';
 
-const adminData = ref<SystemAdminApi.Admin>();
+const adminData = ref<SysAdminInfo>();
 
 const getTitle = computed(() => {
   const data = adminData.value;
@@ -49,13 +49,13 @@ const [Modal, modalApi] = useVbenModal({
       return;
     }
     // 加载数据
-    const data = modalApi.getData<SystemAdminApi.Admin>();
+    const data = modalApi.getData<SysAdminInfo>();
     if (!data || !data.id) {
       return;
     }
     modalApi.lock();
     try {
-      const res = await getAdminInfo(data.id);
+      const res = await getSysAdminInfo(data.id);
       adminData.value = res.info;
     } catch (error) {
       console.error('加载用户详情失败:', error);

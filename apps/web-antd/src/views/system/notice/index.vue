@@ -3,7 +3,7 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { SystemNoticeApi } from '#/api/system/notice';
+import type { SysNoticeInfo } from '#/api/v1/sys-notice';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
@@ -11,7 +11,7 @@ import { Plus } from '@vben/icons';
 import { Button, message } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { deleteNotice, getNoticeList, pushNotice } from '#/api/system/notice';
+import { deleteSysNotice, getSysNoticeList, updateSysNoticeStatus } from '#/api/v1/sys-notice';
 import { $t } from '#/locales';
 
 import { useGridColumns, useGridFormSchema } from './data';
@@ -33,19 +33,19 @@ function onCreate() {
 }
 
 /** 编辑公告 */
-function onEdit(row: SystemNoticeApi.Notice) {
+function onEdit(row: SysNoticeInfo) {
   formModalApi.setData(row).open();
 }
 
 /** 删除公告 */
-async function onDelete(row: SystemNoticeApi.Notice) {
+async function onDelete(row: SysNoticeInfo) {
   const hideLoading = message.loading({
     content: $t('ui.actionMessage.deleting', [row.title]),
     duration: 0,
     key: 'action_process_msg',
   });
   try {
-    await deleteNotice(row.id);
+    await deleteSysNotice({ body: { id: row.id! } });
     message.success({
       content: $t('ui.actionMessage.deleteSuccess', [row.title]),
       key: 'action_process_msg',
@@ -57,14 +57,14 @@ async function onDelete(row: SystemNoticeApi.Notice) {
 }
 
 /** 推送公告 */
-async function onPush(row: SystemNoticeApi.Notice) {
+async function onPush(row: SysNoticeInfo) {
   const hideLoading = message.loading({
     content: $t('ui.actionMessage.processing', ['推送']),
     duration: 0,
     key: 'action_process_msg',
   });
   try {
-    await pushNotice(row.id);
+    await updateSysNoticeStatus({ body: { id: row.id!, status: 1 } });
     message.success({
       content: $t('ui.actionMessage.operationSuccess'),
       key: 'action_process_msg',
@@ -78,7 +78,7 @@ async function onPush(row: SystemNoticeApi.Notice) {
 function onActionClick({
   code,
   row,
-}: OnActionClickParams<SystemNoticeApi.Notice>) {
+}: OnActionClickParams<SysNoticeInfo>) {
   switch (code) {
     case 'delete': {
       onDelete(row);
@@ -106,10 +106,12 @@ const [Grid, gridApi] = useVbenVxeGrid({
     proxyConfig: {
       ajax: {
         query: async ({ page }, formValues) => {
-          return await getNoticeList({
-            page: page.currentPage,
-            pageSize: page.pageSize,
-            ...formValues,
+          return await getSysNoticeList({
+            params: {
+              page: page.currentPage,
+              pageSize: page.pageSize,
+              ...formValues,
+            },
           });
         },
       },
@@ -121,7 +123,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
       refresh: { code: 'query' },
       search: true,
     },
-  } as VxeTableGridOptions<SystemNoticeApi.Notice>,
+  } as VxeTableGridOptions<SysNoticeInfo>,
 });
 </script>
 

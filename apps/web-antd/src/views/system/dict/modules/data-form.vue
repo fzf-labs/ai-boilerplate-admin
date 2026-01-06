@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { SystemDictDataApi } from '#/api/system/dict/data';
+import type { SystemDictDataApi } from '#/api/v1/dict-data';
 
 import { computed, ref } from 'vue';
 
@@ -9,10 +9,10 @@ import { message } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
 import {
-  createDictData,
-  getDictDataInfo,
-  updateDictData,
-} from '#/api/system/dict/data';
+  createDictDatum,
+  getDictDatumInfo,
+  updateDictDatum,
+} from '#/api/v1/dict-data';
 import { $t } from '#/locales';
 
 import { useDataFormSchema } from '../data';
@@ -20,7 +20,7 @@ import { useDataFormSchema } from '../data';
 defineOptions({ name: 'SystemDictDataForm' });
 
 const emit = defineEmits(['success']);
-const formData = ref<SystemDictDataApi.DictData>();
+const formData = ref<DictDataInfo>();
 const getTitle = computed(() => {
   return formData.value?.id
     ? $t('ui.actionTitle.edit', ['字典数据'])
@@ -41,9 +41,9 @@ const [Modal, modalApi] = useVbenModal({
     }
     modalApi.lock();
     // 提交表单
-    const data = (await formApi.getValues()) as SystemDictDataApi.DictData;
+    const data = (await formApi.getValues()) as DictDataInfo;
     try {
-      await (formData.value?.id ? updateDictData(data) : createDictData(data));
+      await (formData.value?.id ? updateDictDatum(data) : createDictDatum(data));
       // 关闭并提示
       await modalApi.close();
       emit('success');
@@ -62,14 +62,14 @@ const [Modal, modalApi] = useVbenModal({
     }
     // 加载数据
     const data = modalApi.getData<
-      SystemDictDataApi.DictData | { dictType?: string }
+      DictDataInfo | { dictType?: string }
     >();
 
     // 如果有ID，表示是编辑
     if (data && 'id' in data && data.id) {
       modalApi.lock();
       try {
-        const res = await getDictDataInfo(data.id);
+        const res = await getDictDatumInfo(data.id);
         formData.value = res.info;
         // 设置到 values
         if (formData.value) {

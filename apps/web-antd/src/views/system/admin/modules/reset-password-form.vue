@@ -1,12 +1,12 @@
 <script lang="ts" setup>
-import type { SystemAdminApi } from '#/api/system/admin';
+import type { SystemAdminApi } from '#/api/v1/sys-admin';
 
 import { useVbenModal } from '@vben/common-ui';
 
 import { message } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
-import { resetAdminPassword } from '#/api/system/admin';
+import { updateSysAdminPassword } from '#/api/v1/sys-admin';
 import { $t } from '#/locales';
 
 import { useResetPasswordFormSchema } from '../data';
@@ -28,7 +28,7 @@ const [Modal, modalApi] = useVbenModal({
     // 提交表单
     const data = await formApi.getValues();
     try {
-      await resetAdminPassword(data.id, data.newPassword);
+      await updateSysAdminPassword(data.id, data.newPassword);
       // 关闭并提示
       await modalApi.close();
       emit('success');
@@ -45,7 +45,7 @@ const [Modal, modalApi] = useVbenModal({
       return;
     }
     // 加载数据
-    const data = modalApi.getData<SystemAdminApi.Admin>();
+    const data = modalApi.getData<SysAdminInfo>();
     if (!data || !data.id) {
       return;
     }

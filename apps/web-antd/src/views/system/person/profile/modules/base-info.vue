@@ -2,7 +2,7 @@
 import type { Recordable } from '@vben/types';
 
 import type { AuthApi } from '#/api/core/auth';
-import type { SystemAdminApi } from '#/api/system/admin';
+import type { SystemAdminApi } from '#/api/v1/sys-admin';
 
 import { watch } from 'vue';
 
@@ -14,7 +14,7 @@ import { useVbenForm, z } from '#/adapter/form';
 import { updateAdminInfo } from '#/api/core/auth';
 
 const props = defineProps<{
-  profile?: SystemAdminApi.Admin;
+  profile?: SysAdminInfo;
 }>();
 const emit = defineEmits<{
   (e: 'success'): void;

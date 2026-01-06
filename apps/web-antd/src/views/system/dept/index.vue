@@ -3,8 +3,8 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { SystemAdminApi } from '#/api/system/admin';
-import type { SystemDeptApi } from '#/api/system/dept';
+import type { SystemAdminApi } from '#/api/v1/sys-admin';
+import type { SystemDeptApi } from '#/api/v1/sys-dept';
 
 import { onMounted, ref } from 'vue';
 
@@ -14,8 +14,8 @@ import { Plus } from '@vben/icons';
 import { Button, message } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getAdminSelector } from '#/api/system/admin';
-import { deleteDept, getDeptList } from '#/api/system/dept';
+import { getSysAdminSelector } from '#/api/v1/sys-admin';
+import { deleteSysDept, getSysDeptList } from '#/api/v1/sys-dept';
 import { $t } from '#/locales';
 
 import { useGridColumns } from './data';
@@ -26,7 +26,7 @@ const [FormModal, formModalApi] = useVbenModal({
   destroyOnClose: true,
 });
 
-const adminList = ref<SystemAdminApi.Admin[]>([]);
+const adminList = ref<SysAdminInfo[]>([]);
 
 /** 刷新表格 */
 function onRefresh() {
@@ -46,24 +46,24 @@ function onCreate() {
 }
 
 /** 添加下级部门 */
-function onAppend(row: SystemDeptApi.Dept) {
+function onAppend(row: SysDeptInfo) {
   formModalApi.setData({ pid: row.id }).open();
 }
 
 /** 编辑部门 */
-function onEdit(row: SystemDeptApi.Dept) {
+function onEdit(row: SysDeptInfo) {
   formModalApi.setData(row).open();
 }
 
 /** 删除部门 */
-async function onDelete(row: SystemDeptApi.Dept) {
+async function onDelete(row: SysDeptInfo) {
   const hideLoading = message.loading({
     content: $t('ui.actionMessage.deleting', [row.name]),
     duration: 0,
     key: 'action_process_msg',
   });
   try {
-    await deleteDept(row.id as string);
+    await deleteSysDept(row.id as string);
     message.success({
       content: $t('ui.actionMessage.deleteSuccess', [row.name]),
       key: 'action_process_msg',
@@ -75,7 +75,7 @@ async function onDelete(row: SystemDeptApi.Dept) {
 }
 
 /** 表格操作按钮的回调函数 */
-function onActionClick({ code, row }: OnActionClickParams<SystemDeptApi.Dept>) {
+function onActionClick({ code, row }: OnActionClickParams<SysDeptInfo>) {
   switch (code) {
     case 'append': {
       onAppend(row);
@@ -103,7 +103,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
     proxyConfig: {
       ajax: {
         query: async (_params) => {
-          return await getDeptList();
+          return await getSysDeptList();
         },
       },
     },
@@ -120,12 +120,12 @@ const [Grid, gridApi] = useVbenVxeGrid({
       expandAll: true,
       reserve: true,
     },
-  } as VxeTableGridOptions<SystemDeptApi.Dept>,
+  } as VxeTableGridOptions<SysDeptInfo>,
 });
 
 /** 初始化 */
 onMounted(async () => {
-  const res = await getAdminSelector();
+  const res = await getSysAdminSelector();
   adminList.value = res.list;
 });
 </script>

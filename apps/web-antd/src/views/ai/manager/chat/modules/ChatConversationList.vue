@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 import type { AiChatConversationApi } from '#/api/ai/manager/chatConversation';
-import type { SystemAdminApi } from '#/api/system/admin';
+import type { SysAdminInfo } from '#/api/v1/sys-admin';
 
 import { onMounted, ref } from 'vue';
 
@@ -18,7 +18,7 @@ import {
   deleteAiChatConversation,
   getAiChatConversationList,
 } from '#/api/ai/manager/chatConversation';
-import { getAdminSelector } from '#/api/system/admin';
+import { getSysAdminSelector } from '#/api/v1/sys-admin';
 import { $t } from '#/locales';
 
 import {
@@ -26,7 +26,7 @@ import {
   useGridFormSchemaConversation,
 } from '../data';
 
-const userList = ref<SystemAdminApi.Admin[]>([]); // 用户列表
+const userList = ref<SysAdminInfo[]>([]); // 用户列表
 
 /** 刷新表格 */
 function onRefresh() {
@@ -83,7 +83,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
 
 onMounted(async () => {
   // 获得用户列表
-  const res = await getAdminSelector();
+  const res = await getSysAdminSelector();
   userList.value = res.list;
 });
 </script>

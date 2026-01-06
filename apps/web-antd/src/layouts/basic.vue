@@ -19,11 +19,11 @@ import { useAccessStore, useUserStore } from '@vben/stores';
 import { formatDateTime } from '@vben/utils';
 
 import {
-  getMyUnreadNotifyMessageCount,
-  getMyUnreadNotifyMessageList,
-  updateMyAllNotifyMessageRead,
-  updateMyNotifyMessageRead,
-} from '#/api/system/notify/message';
+  getMyUnreadSysNotifyMessageCount,
+  getMyUnreadSysNotifyMessageList,
+  updateMyAllSysNotifyMessageRead,
+  updateMySysNotifyMessageRead,
+} from '#/api/v1/sys-notify-message';
 import { router } from '#/router';
 import { useAuthStore } from '#/store';
 import LoginForm from '#/views/_core/authentication/login.vue';

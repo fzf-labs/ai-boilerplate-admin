@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { SystemAdminApi } from '#/api/system/admin';
+import type { SystemAdminApi } from '#/api/v1/sys-admin';
 
 import { computed, ref } from 'vue';
 
@@ -8,13 +8,13 @@ import { useVbenModal } from '@vben/common-ui';
 import { message } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
-import { createAdmin, getAdminInfo, updateAdmin } from '#/api/system/admin';
+import { createSysAdmin, getSysAdminInfo, updateSysAdmin } from '#/api/v1/sys-admin';
 import { $t } from '#/locales';
 
 import { useFormSchema } from '../data';
 
 const emit = defineEmits(['success']);
-const formData = ref<SystemAdminApi.Admin>();
+const formData = ref<SysAdminInfo>();
 const getTitle = computed(() => {
   return formData.value?.id
     ? $t('ui.actionTitle.edit', ['用户'])
@@ -35,9 +35,9 @@ const [Modal, modalApi] = useVbenModal({
     }
     modalApi.lock();
     // 提交表单
-    const data = (await formApi.getValues()) as SystemAdminApi.Admin;
+    const data = (await formApi.getValues()) as SysAdminInfo;
     try {
-      await (formData.value?.id ? updateAdmin(data) : createAdmin(data));
+      await (formData.value?.id ? updateSysAdmin(data) : createSysAdmin(data));
       // 关闭并提示
       await modalApi.close();
       emit('success');
@@ -55,13 +55,13 @@ const [Modal, modalApi] = useVbenModal({
       return;
     }
     // 加载数据
-    const data = modalApi.getData<SystemAdminApi.Admin>();
+    const data = modalApi.getData<SysAdminInfo>();
     if (!data || !data.id) {
       return;
     }
     modalApi.lock();
     try {
-      const res = await getAdminInfo(data.id);
+      const res = await getSysAdminInfo(data.id);
       formData.value = res.info;
       // 设置到 values
       await formApi.setValues(formData.value);

@@ -3,12 +3,12 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { SystemOperateLogApi } from '#/api/system/operate-log';
+import type { SystemOperateLogApi } from '#/api/v1/sys-operate-log';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getOperateLogList } from '#/api/system/operate-log';
+import { getSysOperateLogList } from '#/api/v1/sys-operate-log';
 
 import { useGridColumns, useGridFormSchema } from './data';
 import Detail from './modules/detail.vue';
@@ -24,7 +24,7 @@ function onRefresh() {
 }
 
 /** 查看操作日志详情 */
-function onDetail(row: SystemOperateLogApi.OperateLog) {
+function onDetail(row: SysOperateLogInfo) {
   detailModalApi.setData(row).open();
 }
 
@@ -32,7 +32,7 @@ function onDetail(row: SystemOperateLogApi.OperateLog) {
 function onActionClick({
   code,
   row,
-}: OnActionClickParams<SystemOperateLogApi.OperateLog>) {
+}: OnActionClickParams<SysOperateLogInfo>) {
   switch (code) {
     case 'detail': {
       onDetail(row);
@@ -52,7 +52,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
     proxyConfig: {
       ajax: {
         query: async ({ page }, formValues) => {
-          return await getOperateLogList({
+          return await getSysOperateLogList({
             page: page.currentPage,
             pageSize: page.pageSize,
             ...formValues,
@@ -67,7 +67,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
       refresh: { code: 'query' },
       search: true,
     },
-  } as VxeTableGridOptions<SystemOperateLogApi.OperateLog>,
+  } as VxeTableGridOptions<SysOperateLogInfo>,
 });
 </script>
 

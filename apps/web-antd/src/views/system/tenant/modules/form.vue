@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import type { SystemMenuApi } from '#/api/system/menu';
-import type { SystemTenantApi } from '#/api/system/tenant';
+import type { SystemMenuApi } from '#/api/v1/sys-menu';
+import type { SystemTenantApi } from '#/api/v1/sys-tenant';
 
 import { computed, ref } from 'vue';
 
@@ -10,21 +10,21 @@ import { handleTree } from '@vben/utils';
 import { message } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
-import { getMenuList } from '#/api/system/menu';
-import { createTenant, getTenantInfo, updateTenant } from '#/api/system/tenant';
+import { getSysMenuList } from '#/api/v1/sys-menu';
+import { createSysTenant, getSysTenantInfo, updateSysTenant } from '#/api/v1/sys-tenant';
 import { $t } from '#/locales';
 
 import { useFormSchema } from '../data';
 
 const emit = defineEmits(['success']);
-const formData = ref<SystemTenantApi.Tenant>();
+const formData = ref<SysTenantInfo>();
 const getTitle = computed(() => {
   return formData.value
     ? $t('ui.actionTitle.edit', ['租户'])
     : $t('ui.actionTitle.create', ['租户']);
 });
 
-const menuTree = ref<SystemMenuApi.Menu[]>([]); // 菜单树
+const menuTree = ref<SysMenuInfo[]>([]); // 菜单树
 const menuLoading = ref(false); // 加载菜单列表
 
 const [Form, formApi] = useVbenForm({
@@ -41,9 +41,9 @@ const [Modal, modalApi] = useVbenModal({
     }
     modalApi.lock();
     // 提交表单
-    const data = (await formApi.getValues()) as SystemTenantApi.Tenant;
+    const data = (await formApi.getValues()) as SysTenantInfo;
     try {
-      await (formData.value ? updateTenant(data) : createTenant(data));
+      await (formData.value ? updateSysTenant(data) : createSysTenant(data));
       // 关闭并提示
       await modalApi.close();
       emit('success');
@@ -63,13 +63,13 @@ const [Modal, modalApi] = useVbenModal({
     // 加载菜单列表
     await loadMenuTree();
     // 加载数据
-    const data = modalApi.getData<SystemTenantApi.Tenant>();
+    const data = modalApi.getData<SysTenantInfo>();
     if (!data || !data.id) {
       return;
     }
     modalApi.lock();
     try {
-      const res = await getTenantInfo(data.id);
+      const res = await getSysTenantInfo(data.id);
       formData.value = res.info;
       // 设置到 values
       await formApi.setValues(formData.value);
@@ -83,8 +83,8 @@ const [Modal, modalApi] = useVbenModal({
 async function loadMenuTree() {
   menuLoading.value = true;
   try {
-    const res = await getMenuList();
-    menuTree.value = handleTree(res.list) as SystemMenuApi.Menu[];
+    const res = await getSysMenuList();
+    menuTree.value = handleTree(res.list) as SysMenuInfo[];
   } finally {
     menuLoading.value = false;
   }

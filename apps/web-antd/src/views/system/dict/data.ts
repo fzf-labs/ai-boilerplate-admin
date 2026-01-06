@@ -1,12 +1,12 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { SystemDictDataApi } from '#/api/system/dict/data';
-import type { SystemDictTypeApi } from '#/api/system/dict/type';
+import type { SystemDictDataApi } from '#/api/v1/dict-data';
+import type { SystemDictTypeApi } from '#/api/v1/dict-type';
 
 import { useAccess } from '@vben/access';
 
 import { z } from '#/adapter/form';
-import { getDictTypeSelector } from '#/api/system/dict/type';
+import { getDictTypeSelector } from '#/api/v1/dict-type';
 import { CommonStatusEnum } from '#/utils/constants';
 
 const { hasAccessByCodes } = useAccess();
@@ -121,7 +121,7 @@ export function useTypeGridFormSchema(): VbenFormSchema[] {
 }
 
 /** 类型列表的字段 */
-export function useTypeGridColumns<T = SystemDictTypeApi.DictType>(
+export function useTypeGridColumns<T = DictTypeInfo>(
   onActionClick: OnActionClickFn<T>,
 ): VxeTableGridOptions['columns'] {
   return [
@@ -358,7 +358,7 @@ export function useDataGridFormSchema(): VbenFormSchema[] {
 /**
  * 字典数据表格列
  */
-export function useDataGridColumns<T = SystemDictDataApi.DictData>(
+export function useDataGridColumns<T = DictDataInfo>(
   onActionClick: OnActionClickFn<T>,
 ): VxeTableGridOptions['columns'] {
   return [

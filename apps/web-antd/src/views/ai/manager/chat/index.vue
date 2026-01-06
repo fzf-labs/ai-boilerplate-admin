@@ -2,7 +2,7 @@
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 import type { AiChatConversationApi } from '#/api/ai/manager/chatConversation';
 import type { AiChatMessageApi } from '#/api/ai/manager/chatMessage';
-import type { SystemAdminApi } from '#/api/system/admin';
+import type { SysAdminInfo } from '#/api/v1/sys-admin';
 
 import { onMounted, ref } from 'vue';
 
@@ -23,7 +23,7 @@ import {
   deleteAiChatMessage,
   getAiChatMessageList,
 } from '#/api/ai/manager/chatMessage';
-import { getAdminSelector } from '#/api/system/admin';
+import { getSysAdminSelector } from '#/api/v1/sys-admin';
 import { $t } from '#/locales';
 
 import {
@@ -32,7 +32,7 @@ import {
   useGridFormSchemaMessage,
 } from './data';
 
-const userList = ref<SystemAdminApi.Admin[]>([]); // 用户列表
+const userList = ref<SysAdminInfo[]>([]); // 用户列表
 const messageModalVisible = ref(false); // 消息弹窗显示状态
 const selectedConversation =
   ref<AiChatConversationApi.AiChatConversationInfo | null>(null); // 当前选中的对话
@@ -169,7 +169,7 @@ const [MessageGrid, messageGridApi] = useVbenVxeGrid({
 
 onMounted(async () => {
   // 获得用户列表
-  const res = await getAdminSelector();
+  const res = await getSysAdminSelector();
   userList.value = res.list;
 });
 </script>

@@ -3,7 +3,7 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { SystemMenuApi } from '#/api/system/menu';
+import type { SystemMenuApi } from '#/api/v1/sys-menu';
 
 import { ref } from 'vue';
 
@@ -13,7 +13,7 @@ import { IconifyIcon, Plus } from '@vben/icons';
 import { Button, message } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { deleteMenu, getMenuList } from '#/api/system/menu';
+import { deleteSysMenu, getSysMenuList } from '#/api/v1/sys-menu';
 import { $t } from '#/locales';
 import { SystemMenuTypeEnum } from '#/utils/constants';
 
@@ -36,24 +36,24 @@ function onCreate() {
 }
 
 /** 添加下级菜单 */
-function onAppend(row: SystemMenuApi.Menu) {
+function onAppend(row: SysMenuInfo) {
   formModalApi.setData({ pid: row.id }).open();
 }
 
 /** 编辑菜单 */
-function onEdit(row: SystemMenuApi.Menu) {
+function onEdit(row: SysMenuInfo) {
   formModalApi.setData(row).open();
 }
 
 /** 删除菜单 */
-async function onDelete(row: SystemMenuApi.Menu) {
+async function onDelete(row: SysMenuInfo) {
   const hideLoading = message.loading({
     content: $t('ui.actionMessage.deleting', [row.name]),
     duration: 0,
     key: 'action_process_msg',
   });
   try {
-    await deleteMenu(row.id);
+    await deleteSysMenu(row.id);
     message.success({
       content: $t('ui.actionMessage.deleteSuccess', [row.name]),
       key: 'action_process_msg',
@@ -65,7 +65,7 @@ async function onDelete(row: SystemMenuApi.Menu) {
 }
 
 /** 表格操作按钮的回调函数 */
-function onActionClick({ code, row }: OnActionClickParams<SystemMenuApi.Menu>) {
+function onActionClick({ code, row }: OnActionClickParams<SysMenuInfo>) {
   switch (code) {
     case 'append': {
       onAppend(row);
@@ -100,7 +100,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
     proxyConfig: {
       ajax: {
         query: async (_params) => {
-          return await getMenuList();
+          return await getSysMenuList();
         },
       },
     },

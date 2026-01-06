@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { SystemPostApi } from '#/api/system/post';
+import type { SystemPostApi } from '#/api/v1/sys-post';
 
 import { computed, ref } from 'vue';
 
@@ -8,13 +8,13 @@ import { useVbenModal } from '@vben/common-ui';
 import { message } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
-import { createPost, getPostInfo, updatePost } from '#/api/system/post';
+import { createSysPost, getSysPostInfo, updateSysPost } from '#/api/v1/sys-post';
 import { $t } from '#/locales';
 
 import { useFormSchema } from '../data';
 
 const emit = defineEmits(['success']);
-const formData = ref<SystemPostApi.Post>();
+const formData = ref<SysPostInfo>();
 const getTitle = computed(() => {
   return formData.value?.id
     ? $t('ui.actionTitle.edit', ['岗位'])
@@ -42,9 +42,9 @@ const [Modal, modalApi] = useVbenModal({
     }
     modalApi.lock();
     // 提交表单
-    const data = (await formApi.getValues()) as SystemPostApi.Post;
+    const data = (await formApi.getValues()) as SysPostInfo;
     try {
-      await (formData.value?.id ? updatePost(data) : createPost(data));
+      await (formData.value?.id ? updateSysPost(data) : createSysPost(data));
       // 关闭并提示
       await modalApi.close();
       emit('success');
@@ -62,13 +62,13 @@ const [Modal, modalApi] = useVbenModal({
       return;
     }
     // 加载数据
-    const data = modalApi.getData<SystemPostApi.Post>();
+    const data = modalApi.getData<SysPostInfo>();
     if (!data || !data.id) {
       return;
     }
     modalApi.lock();
     try {
-      const res = await getPostInfo(data.id);
+      const res = await getSysPostInfo(data.id);
       formData.value = res.info;
       // 设置到 values
       await formApi.setValues(formData.value);

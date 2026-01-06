@@ -3,7 +3,7 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { SystemDictDataApi } from '#/api/system/dict/data';
+import type { SystemDictDataApi } from '#/api/v1/dict-data';
 
 import { watch } from 'vue';
 
@@ -13,7 +13,7 @@ import { Plus } from '@vben/icons';
 import { Button, message } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { deleteDictData, getDictDataList } from '#/api/system/dict/data';
+import { deleteDictDatum, getDictDatumList } from '#/api/v1/dict-data';
 import { $t } from '#/locales';
 
 import { useDataGridColumns, useDataGridFormSchema } from '../data';
@@ -54,7 +54,7 @@ async function onDelete(row: any) {
     key: 'process_message',
   });
   try {
-    await deleteDictData(row.id);
+    await deleteDictDatum(row.id);
     message.success({
       content: $t('common.operationSuccess'),
       key: 'process_message',
@@ -90,7 +90,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
     proxyConfig: {
       ajax: {
         query: async ({ page }, formValues) => {
-          return await getDictDataList({
+          return await getDictDatumList({
             page: page.currentPage,
             pageSize: page.pageSize,
             type: props.dictType,
@@ -106,7 +106,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
       refresh: { code: 'query' },
       search: true,
     },
-  } as VxeTableGridOptions<SystemDictDataApi.DictData>,
+  } as VxeTableGridOptions<DictDataInfo>,
 });
 
 /** 监听 dictType 变化，重新查询 */

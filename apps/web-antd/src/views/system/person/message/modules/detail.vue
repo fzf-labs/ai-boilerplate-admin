@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { SystemNotifyMessageApi } from '#/api/system/notify/message';
+import type { SystemNotifyMessageApi } from '#/api/v1/sys-notify-message';
 
 import { computed, ref } from 'vue';
 
@@ -8,7 +8,7 @@ import { formatDateTime } from '@vben/utils';
 
 import { Card, Tag } from 'ant-design-vue';
 
-const formData = ref<SystemNotifyMessageApi.NotifyMessage>();
+const formData = ref<SysNotifyMessageInfo>();
 
 const getTitle = computed(() => {
   const data = formData.value;
@@ -41,7 +41,7 @@ const [Modal, modalApi] = useVbenModal({
       return;
     }
     // 加载数据
-    const data = modalApi.getData<SystemNotifyMessageApi.NotifyMessage>();
+    const data = modalApi.getData<SysNotifyMessageInfo>();
     if (!data || !data.id) {
       return;
     }

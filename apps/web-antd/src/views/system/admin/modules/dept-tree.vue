@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { SystemDeptApi } from '#/api/system/dept';
+import type { SystemDeptApi } from '#/api/v1/sys-dept';
 
 import { onMounted, ref } from 'vue';
 
@@ -8,10 +8,10 @@ import { handleTree } from '@vben/utils';
 
 import { Input, Spin, Tree } from 'ant-design-vue';
 
-import { getDeptList } from '#/api/system/dept';
+import { getSysDeptList } from '#/api/v1/sys-dept';
 
 const emit = defineEmits(['select']);
-const deptList = ref<SystemDeptApi.Dept[]>([]); // 部门列表
+const deptList = ref<SysDeptInfo[]>([]); // 部门列表
 const deptTree = ref<any[]>([]); // 部门树
 const expandedKeys = ref<number[]>([]); // 展开的节点
 const loading = ref(false); // 加载状态
@@ -44,7 +44,7 @@ const handleSelect = (selectedKeys: any[], info: any) => {
 onMounted(async () => {
   try {
     loading.value = true;
-    const data = await getDeptList();
+    const data = await getSysDeptList();
     deptList.value = data.list;
     deptTree.value = handleTree(data.list);
   } catch (error) {

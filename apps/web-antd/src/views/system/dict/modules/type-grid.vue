@@ -4,7 +4,7 @@ import type {
   VxeGridListeners,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { SystemDictTypeApi } from '#/api/system/dict/type';
+import type { SystemDictTypeApi } from '#/api/v1/dict-type';
 
 import { useVbenModal } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
@@ -12,7 +12,7 @@ import { Plus } from '@vben/icons';
 import { Button, message } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { deleteDictType, getDictTypeList } from '#/api/system/dict/type';
+import { deleteDictType, getDictTypeList } from '#/api/v1/dict-type';
 import { $t } from '#/locales';
 
 import { useTypeGridColumns, useTypeGridFormSchema } from '../data';
@@ -41,7 +41,7 @@ function onEdit(row: any) {
 }
 
 /** 删除字典类型 */
-async function onDelete(row: SystemDictTypeApi.DictType) {
+async function onDelete(row: DictTypeInfo) {
   const hideLoading = message.loading({
     content: $t('common.processing'),
     duration: 0,
@@ -63,7 +63,7 @@ async function onDelete(row: SystemDictTypeApi.DictType) {
 function onActionClick({
   code,
   row,
-}: OnActionClickParams<SystemDictTypeApi.DictType>) {
+}: OnActionClickParams<DictTypeInfo>) {
   switch (code) {
     case 'delete': {
       onDelete(row);
@@ -77,7 +77,7 @@ function onActionClick({
 }
 
 /** 表格事件 */
-const gridEvents: VxeGridListeners<SystemDictTypeApi.DictType> = {
+const gridEvents: VxeGridListeners<DictTypeInfo> = {
   cellClick: ({ row }) => {
     emit('select', row.type);
   },
@@ -110,7 +110,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
       refresh: { code: 'query' },
       search: true,
     },
-  } as VxeTableGridOptions<SystemDictTypeApi.DictType>,
+  } as VxeTableGridOptions<DictTypeInfo>,
   gridEvents,
 });
 </script>

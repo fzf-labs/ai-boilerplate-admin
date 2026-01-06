@@ -1,10 +1,10 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { SystemNotifyMessageApi } from '#/api/system/notify/message';
+import type { SystemNotifyMessageApi } from '#/api/v1/sys-notify-message';
 
 import { useAccess } from '@vben/access';
 
-import { getAdminSelector } from '#/api/system/admin';
+import { getSysAdminSelector } from '#/api/v1/sys-admin';
 import { getRangePickerDefaultProps } from '#/utils';
 
 const { hasAccessByCodes } = useAccess();
@@ -17,7 +17,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
       label: '发送人',
       component: 'ApiSelect',
       componentProps: {
-        api: async () => await getAdminSelector(),
+        api: async () => await getSysAdminSelector(),
         resultField: 'list',
         labelField: 'nickname',
         valueField: 'id',
@@ -53,7 +53,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
 }
 
 /** 列表的字段 */
-export function useGridColumns<T = SystemNotifyMessageApi.NotifyMessage>(
+export function useGridColumns<T = SysNotifyMessageInfo>(
   onActionClick: OnActionClickFn<T>,
 ): VxeTableGridOptions['columns'] {
   return [
@@ -99,7 +99,7 @@ export function useGridColumns<T = SystemNotifyMessageApi.NotifyMessage>(
       minWidth: 100,
       cellRender: {
         name: 'CellTag',
-        props: (params: { row: SystemNotifyMessageApi.NotifyMessage }) => {
+        props: (params: { row: SysNotifyMessageInfo }) => {
           const isRead = params.row.readTime && params.row.readTime !== '';
           return {
             color: isRead ? 'success' : 'warning',

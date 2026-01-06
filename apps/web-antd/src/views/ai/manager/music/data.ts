@@ -1,7 +1,7 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 
-import { getAdminSelector } from '#/api/system/admin';
+import { getSysAdminSelector } from '#/api/v1/sys-admin';
 import { getRangePickerDefaultProps } from '#/utils';
 
 // AI 音乐生成状态的枚举
@@ -25,7 +25,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
       label: '用户编号',
       component: 'ApiSelect',
       componentProps: {
-        api: getAdminSelector,
+        api: getSysAdminSelector,
         labelField: 'nickname',
         valueField: 'id',
       },

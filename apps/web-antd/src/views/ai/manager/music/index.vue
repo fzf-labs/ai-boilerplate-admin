@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 import type { AiMusicRecordApi } from '#/api/ai/manager/music';
-import type { SystemAdminApi } from '#/api/system/admin';
+import type { SysAdminInfo } from '#/api/v1/sys-admin';
 
 import { onMounted, ref } from 'vue';
 
@@ -19,12 +19,12 @@ import {
   getAiMusicRecordList,
   updateAiMusicRecord,
 } from '#/api/ai/manager/music';
-import { getAdminSelector } from '#/api/system/admin';
+import { getSysAdminSelector } from '#/api/v1/sys-admin';
 import { $t } from '#/locales';
 
 import { AiMusicStatusEnum, useGridColumns, useGridFormSchema } from './data';
 
-const userList = ref<SystemAdminApi.Admin[]>([]); // 用户列表
+const userList = ref<SysAdminInfo[]>([]); // 用户列表
 
 /** 刷新表格 */
 function onRefresh() {
@@ -99,7 +99,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
 
 onMounted(async () => {
   // 获得下拉数据
-  const res = await getAdminSelector();
+  const res = await getSysAdminSelector();
   userList.value = res.list;
 });
 </script>
