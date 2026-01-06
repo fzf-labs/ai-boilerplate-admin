@@ -2,6 +2,7 @@
  * 该文件可自行根据业务逻辑进行调整
  */
 import type {
+  RequestClientConfig,
   RequestClientOptions,
   ResponseInterceptorConfig,
 } from '@vben/request';
@@ -18,8 +19,6 @@ import { useAccessStore } from '@vben/stores';
 import { message } from 'ant-design-vue';
 
 import { useAuthStore } from '#/store';
-
-import { refreshTokenApi } from './core';
 
 const { apiURL } = useAppConfig(import.meta.env, import.meta.env.PROD);
 
@@ -122,3 +121,12 @@ export const requestClient = createRequestClient(apiURL, {
 });
 
 export const baseRequestClient = new RequestClient({ baseURL: apiURL });
+
+/**
+ * Request 函数包装器
+ * 用于生成的 API 文件中统一调用
+ */
+export const request = <T>(
+  url: string,
+  config: RequestClientConfig,
+): Promise<T> => requestClient.request<T>(url, config);
