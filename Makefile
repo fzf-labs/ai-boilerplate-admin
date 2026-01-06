@@ -98,8 +98,19 @@ subtree-status:
 define make-pull-target
 subtree-pull-$(call get-name,$(1)):
 	@echo "$(COLOR_BLUE)正在更新 $(call get-prefix,$(1))...$(COLOR_RESET)"
-	@git subtree pull --prefix=$(call get-prefix,$(1)) $(call get-repo,$(1)) $(call get-branch,$(1)) --squash
-	@echo "$(COLOR_GREEN)✓ $(call get-prefix,$(1)) 更新完成$(COLOR_RESET)"
+	@OUTPUT=$$$$(git subtree pull --prefix=$(call get-prefix,$(1)) $(call get-repo,$(1)) $(call get-branch,$(1)) --squash 2>&1); \
+	EXIT_CODE=$$$$?; \
+	if [ $$$$EXIT_CODE -ne 0 ] && echo "$$$$OUTPUT" | grep -q "does not exist; use 'git subtree add'"; then \
+		echo "$(COLOR_YELLOW)⚠️  $(call get-prefix,$(1)) 未添加，先执行添加操作...$(COLOR_RESET)"; \
+		$(MAKE) subtree-add-$(call get-name,$(1)); \
+		echo "$(COLOR_GREEN)✓ $(call get-prefix,$(1)) 添加完成，现在可以正常使用 pull 命令$(COLOR_RESET)"; \
+	elif [ $$$$EXIT_CODE -ne 0 ]; then \
+		echo "$$$$OUTPUT"; \
+		exit 1; \
+	else \
+		echo "$$$$OUTPUT"; \
+		echo "$(COLOR_GREEN)✓ $(call get-prefix,$(1)) 更新完成$(COLOR_RESET)"; \
+	fi
 endef
 
 # 动态生成 push 目标
@@ -124,12 +135,19 @@ endef
 define make-add-target
 subtree-add-$(call get-name,$(1)):
 	@echo "$(COLOR_BLUE)正在添加 $(call get-prefix,$(1)) 为 subtree...$(COLOR_RESET)"
-	@if [ -d "$(call get-prefix,$(1))" ]; then \
-		echo "$(COLOR_YELLOW)⚠️  目录 $(call get-prefix,$(1)) 已存在，跳过添加$(COLOR_RESET)"; \
-	else \
-		git subtree add --prefix=$(call get-prefix,$(1)) $(call get-repo,$(1)) $(call get-branch,$(1)) --squash; \
-		echo "$(COLOR_GREEN)✓ $(call get-prefix,$(1)) 添加完成$(COLOR_RESET)"; \
+	@if [ -n "$$$$(git status --porcelain)" ]; then \
+		echo "$(COLOR_YELLOW)⚠️  工作区有未提交的更改，需要先提交或暂存$(COLOR_RESET)"; \
+		echo "$(COLOR_YELLOW)   请先执行: git add . && git commit -m 'chore: prepare for subtree add'$(COLOR_RESET)"; \
+		exit 1; \
 	fi
+	@if [ -d "$(call get-prefix,$(1))" ]; then \
+		echo "$(COLOR_YELLOW)⚠️  目录 $(call get-prefix,$(1)) 已存在，先移除后重新添加$(COLOR_RESET)"; \
+		git rm -r --cached $(call get-prefix,$(1)) 2>/dev/null || true; \
+		rm -rf $(call get-prefix,$(1)); \
+		git commit -m "chore: remove $(call get-prefix,$(1)) for re-initialization" 2>/dev/null || true; \
+	fi
+	@git subtree add --prefix=$(call get-prefix,$(1)) $(call get-repo,$(1)) $(call get-branch,$(1)) --squash
+	@echo "$(COLOR_GREEN)✓ $(call get-prefix,$(1)) 添加完成$(COLOR_RESET)"
 endef
 
 # 动态生成 diff 目标
