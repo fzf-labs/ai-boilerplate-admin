@@ -1,10 +1,10 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { InfraFileApi } from '#/api/infra/file/data';
+import type { FileDatumInfo } from '#/api/v1/file-data';
 
 import { useAccess } from '@vben/access';
 
-import { getFileConfigSelector } from '#/api/infra/file/config';
+import { getFileConfigSelect } from '#/api/v1/file-config';
 
 const { hasAccessByCodes } = useAccess();
 
@@ -31,7 +31,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
       label: '存储器配置',
       component: 'ApiSelect',
       componentProps: {
-        api: async () => await getFileConfigSelector(),
+        api: async () => await getFileConfigSelect({ options: {} }),
         resultField: 'list',
         labelField: 'name',
         valueField: 'id',
@@ -75,7 +75,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
 }
 
 /** 列表的字段 */
-export function useGridColumns<T = InfraFileApi.File>(
+export function useGridColumns<T = FileDatumInfo>(
   onActionClick: OnActionClickFn<T>,
 ): VxeTableGridOptions['columns'] {
   return [

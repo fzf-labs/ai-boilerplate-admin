@@ -1,6 +1,6 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { MemberUserInfo } from '#/api/v1/member-user';
+import type { UserInfo } from '#/api/v1/user';
 
 import { useAccess } from '@vben/access';
 
@@ -133,7 +133,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
 }
 
 /** 列表的字段 */
-export function useGridColumns<T = MemberUserInfo>(
+export function useGridColumns<T = UserInfo>(
   onActionClick: OnActionClickFn<T>,
   onStatusChange?: (
     newStatus: number,
@@ -194,7 +194,7 @@ export function useGridColumns<T = MemberUserInfo>(
       title: '到期时间',
       minWidth: 180,
       formatter: ({ row }) => {
-        const membershipInfo = (row as UserApi.User).userMembershipInfo;
+        const membershipInfo = (row as UserInfo).userMembershipInfo;
         if (!membershipInfo || !membershipInfo.expiredAt) {
           return '';
         }

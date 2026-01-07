@@ -1,10 +1,10 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { SensitiveWordApi } from '#/api/infra/sensitiveword';
+import type { SensitiveWordInfo } from '#/api/v1/sensitive-word';
 
 import { useAccess } from '@vben/access';
 
-import { getSensitiveWordLabsSelector } from '#/api/infra/sensitiveword';
+import { getSensitiveWordLabsSelector } from '#/api/v1/sensitive-word';
 import { getRangePickerDefaultProps } from '#/utils';
 
 const { hasAccessByCodes } = useAccess();
@@ -85,7 +85,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
 }
 
 /** 列表的字段 */
-export function useGridColumns<T = SensitiveWordApi.SensitiveWordInfo>(
+export function useGridColumns<T = SensitiveWordInfo>(
   onActionClick: OnActionClickFn<T>,
 ): VxeTableGridOptions['columns'] {
   return [

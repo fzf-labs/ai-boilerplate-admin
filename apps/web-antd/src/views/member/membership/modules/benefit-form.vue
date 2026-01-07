@@ -1,7 +1,5 @@
 <script lang="ts" setup>
-import type { MembershipBenefitApi } from '#/api/member/membership-benefit';
-
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 
 import { useVbenModal } from '@vben/common-ui';
 
@@ -12,7 +10,7 @@ import {
   createMembershipBenefit,
   getMembershipBenefitInfo,
   updateMembershipBenefit,
-} from '#/api/member/membership-benefit';
+} from '#/api/v1/membership-benefit';
 import { $t } from '#/locales';
 
 import { useBenefitFormSchema } from './benefit-data';
@@ -20,8 +18,6 @@ import { useBenefitFormSchema } from './benefit-data';
 const emit = defineEmits<{
   success: [];
 }>();
-
-const formData = ref<MembershipBenefitApi.MembershipBenefit>();
 
 const getTitle = computed(() => {
   return formData.value?.id
@@ -45,11 +41,7 @@ const [Modal, modalApi] = useVbenModal({
 
     try {
       // 提交表单
-      const data =
-        (await formApi.getValues()) as MembershipBenefitApi.CreateMembershipBenefitReq &
-          MembershipBenefitApi.UpdateMembershipBenefitReq;
-
-      await (formData.value?.id
+      const data = await (formData.value?.id
         ? updateMembershipBenefit(data)
         : createMembershipBenefit(data));
 
@@ -71,9 +63,7 @@ const [Modal, modalApi] = useVbenModal({
     }
 
     // 加载数据
-    const data = modalApi.getData<
-      MembershipBenefitApi.MembershipBenefit & { membershipType?: string }
-    >();
+    const data = modalApi.getData<>();
     if (!data) {
       return;
     }

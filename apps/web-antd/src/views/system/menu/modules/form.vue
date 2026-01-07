@@ -42,8 +42,17 @@ const [Modal, modalApi] = useVbenModal({
     const data = (await formApi.getValues()) as SysMenuInfo;
     try {
       await (formData.value?.id
-        ? updateSysMenu({ body: { ...data, name: data.name || '', id: data.id || '', type: data.type || '' } })
-        : createSysMenu({ body: { ...data, name: data.name || '', type: data.type || '' } }));
+        ? updateSysMenu({
+            body: {
+              ...data,
+              name: data.name || '',
+              id: data.id || '',
+              type: data.type || '',
+            },
+          })
+        : createSysMenu({
+            body: { ...data, name: data.name || '', type: data.type || '' },
+          }));
       // 关闭并提示
       await modalApi.close();
       emit('success');

@@ -1,11 +1,11 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { MembershipBenefitApi } from '#/api/member/membership-benefit';
+import type { MembershipBenefitInfo } from '#/api/v1/membership-benefit';
 
 import { useAccess } from '@vben/access';
 
 import { z } from '#/adapter/form';
-import { getMembershipBenefitKeySelect } from '#/api/member/membership-benefit';
+import { getMembershipBenefitKeySelect } from '#/api/v1/membership-benefit';
 import { CommonStatusEnum } from '#/utils/constants';
 
 const { hasAccessByCodes } = useAccess();
@@ -146,9 +146,7 @@ export function useBenefitGridFormSchema(): VbenFormSchema[] {
 }
 
 /** 权益列表的字段 */
-export function useBenefitGridColumns<
-  T = MembershipBenefitApi.MembershipBenefit,
->(
+export function useBenefitGridColumns<T = MembershipBenefitInfo>(
   onActionClick: OnActionClickFn<T>,
   onStatusChange?: (
     newStatus: number,

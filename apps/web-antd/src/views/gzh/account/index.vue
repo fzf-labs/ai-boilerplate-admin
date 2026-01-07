@@ -3,7 +3,10 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { GetWxMpAccountListParams, WxMpAccountInfo } from '#/api/v1/wx-mp-account';
+import type {
+  GetWxGzhAccountListParams,
+  WxGzhAccountInfo,
+} from '#/api/v1/wx-gzh-account';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
@@ -12,11 +15,9 @@ import { Button, message } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import {
-  clearWxMpAccountQuota,
-  deleteWxMpAccount,
-  generateWxMpAccountQrCode,
-  getWxMpAccountList,
-} from '#/api/v1/wx-mp-account';
+  deleteWxGzhAccount,
+  getWxGzhAccountList,
+} from '#/api/v1/wx-gzh-account';
 import { $t } from '#/locales';
 
 import { useGridColumns, useGridFormSchema } from './data';
@@ -44,24 +45,25 @@ function onCreate() {
 }
 
 /** 查看详情 */
-function onDetail(row: WxMpAccountInfo) {
+function onDetail(row: WxGzhAccountInfo) {
   detailModalApi.setData(row).open();
 }
 
 /** 编辑账号 */
-function onEdit(row: WxMpAccountInfo) {
+function onEdit(row: WxGzhAccountInfo) {
   formModalApi.setData(row).open();
 }
 
 /** 删除账号 */
-async function onDelete(row: WxMpAccountInfo) {
+async function onDelete(row: WxGzhAccountInfo) {
   const hideLoading = message.loading({
     content: $t('ui.actionMessage.deleting', [row.name]),
     duration: 0,
     key: 'action_process_msg',
   });
   try {
-    await deleteWxMpAccount({ body: { id: row.id! } });
+    if (!row.id) return;
+    await deleteWxGzhAccount({ body: { id: row.id } });
     message.success({
       content: $t('ui.actionMessage.deleteSuccess', [row.name]),
       key: 'action_process_msg',
@@ -72,53 +74,9 @@ async function onDelete(row: WxMpAccountInfo) {
   }
 }
 
-/** 生成二维码 */
-async function onGenerateQrCode(row: WxMpAccountInfo) {
-  const hideLoading = message.loading({
-    content: '生成二维码',
-    duration: 0,
-    key: 'action_process_msg',
-  });
-  try {
-    await generateWxMpAccountQrCode({ params: { id: row.id! } });
-    message.success({
-      content: '生成二维码成功',
-      key: 'action_process_msg',
-    });
-    onRefresh();
-  } catch {
-    hideLoading();
-  }
-}
-
-/** 清空 API 配额 */
-async function onClearQuota(row: WxMpAccountInfo) {
-  const hideLoading = message.loading({
-    content: '清空 API 配额',
-    duration: 0,
-    key: 'action_process_msg',
-  });
-  try {
-    await clearWxMpAccountQuota({ params: { id: row.id! } });
-    message.success({
-      content: '清空 API 配额成功',
-      key: 'action_process_msg',
-    });
-  } catch {
-    hideLoading();
-  }
-}
-
 /** 表格操作按钮的回调函数 */
-function onActionClick({
-  code,
-  row,
-}: OnActionClickParams<WxMpAccountInfo>) {
+function onActionClick({ code, row }: OnActionClickParams<WxGzhAccountInfo>) {
   switch (code) {
-    case 'clearQuota': {
-      onClearQuota(row);
-      break;
-    }
     case 'delete': {
       onDelete(row);
       break;
@@ -129,10 +87,6 @@ function onActionClick({
     }
     case 'edit': {
       onEdit(row);
-      break;
-    }
-    case 'generateQrCode': {
-      onGenerateQrCode(row);
       break;
     }
   }
@@ -149,12 +103,12 @@ const [Grid, gridApi] = useVbenVxeGrid({
     proxyConfig: {
       ajax: {
         query: async ({ page }, formValues) => {
-          return await getWxMpAccountList({
+          return await getWxGzhAccountList({
             params: {
               page: page.currentPage,
               pageSize: page.pageSize,
               ...formValues,
-            } as GetWxMpAccountListParams,
+            } as GetWxGzhAccountListParams,
           });
         },
       },
@@ -170,7 +124,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
       refresh: { code: 'query' },
       search: true,
     },
-  } as VxeTableGridOptions<WxMpAccountInfo>,
+  } as VxeTableGridOptions<WxGzhAccountInfo>,
 });
 </script>
 

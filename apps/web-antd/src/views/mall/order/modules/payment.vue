@@ -8,8 +8,6 @@ import { useVbenModal } from '@vben/common-ui';
 
 import { Table, TableColumn } from 'ant-design-vue';
 
-import { getPaymentRecordListByOrderId } from '#/api/mall/payment';
-
 const formData = ref<OrderApi.OrderInfo>();
 const paymentRecords = ref<PaymentApi.PaymentRecordInfo[]>([]);
 const loading = ref(false);
@@ -38,7 +36,9 @@ const [Modal, modalApi] = useVbenModal({
 async function loadPaymentRecords(orderId: string) {
   loading.value = true;
   try {
-    const res = await getMallPaymentRecordListByOrderId({ params: { orderId } });
+    const res = await getMallPaymentRecordListByOrderId({
+      params: { orderId },
+    });
     paymentRecords.value = res.list || [];
   } finally {
     loading.value = false;

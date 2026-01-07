@@ -3,7 +3,7 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { MpAutoReplyApi } from '#/api/gzh/autoReply';
+import type { WxGzhAutoReplyInfo } from '#/api/v1/wx-gzh-auto-reply';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
@@ -11,7 +11,10 @@ import { Plus } from '@vben/icons';
 import { Button, message } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { deleteAutoReply, getAutoReplyList } from '#/api/gzh/autoReply';
+import {
+  deleteWxGzhAutoReply,
+  getWxGzhAutoReplyList,
+} from '#/api/v1/wx-gzh-auto-reply';
 import { $t } from '#/locales';
 
 import { useGridColumns, useGridFormSchema } from './data';
@@ -48,23 +51,24 @@ async function handleCreate() {
 }
 
 /** 查看自动回复 */
-function handleView(row: MpAutoReplyApi.AutoReply) {
+function handleView(row: WxGzhAutoReplyInfo) {
   DetailModalApi.setData(row).open();
 }
 
 /** 编辑自动回复 */
-function handleEdit(row: MpAutoReplyApi.AutoReply) {
+function handleEdit(row: WxGzhAutoReplyInfo) {
   formModalApi.setData(row).open();
 }
 
 /** 删除自动回复 */
-async function handleDelete(row: MpAutoReplyApi.AutoReply) {
+async function handleDelete(row: WxGzhAutoReplyInfo) {
+  if (!row.id) return;
   const hideLoading = message.loading({
     content: $t('ui.actionMessage.deleting', ['自动回复']),
     key: 'action_key_msg',
   });
   try {
-    await deleteAutoReply(row.id);
+    await deleteWxGzhAutoReply({ body: { id: row.id } });
     message.success({
       content: $t('ui.actionMessage.deleteSuccess', ['自动回复']),
       key: 'action_key_msg',
@@ -79,7 +83,7 @@ async function handleDelete(row: MpAutoReplyApi.AutoReply) {
 function onActionClick({
   code,
   row,
-}: OnActionClickParams<MpAutoReplyApi.AutoReply>) {
+}: OnActionClickParams<WxGzhAutoReplyInfo>) {
   switch (code) {
     case 'delete': {
       handleDelete(row);
@@ -112,10 +116,12 @@ const [Grid, gridApi] = useVbenVxeGrid({
       autoLoad: false,
       ajax: {
         query: async ({ page }, formValues) => {
-          return await getAutoReplyList({
-            page: page.currentPage,
-            pageSize: page.pageSize,
-            ...formValues,
+          return await getWxGzhAutoReplyList({
+            params: {
+              page: page.currentPage,
+              pageSize: page.pageSize,
+              ...formValues,
+            },
           });
         },
       },
@@ -127,7 +133,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
       refresh: true,
       search: true,
     },
-  } as VxeTableGridOptions<MpAutoReplyApi.AutoReply>,
+  } as VxeTableGridOptions<WxGzhAutoReplyInfo>,
 });
 </script>
 

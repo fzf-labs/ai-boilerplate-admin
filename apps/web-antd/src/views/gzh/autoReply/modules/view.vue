@@ -6,11 +6,31 @@ import { formatDateTime } from '@vben/utils';
 
 import { Descriptions, Tag } from 'ant-design-vue';
 
-import { getAutoReplyInfo, MpAutoReplyApi } from '#/api/gzh/autoReply';
+import type { WxGzhAutoReplyInfo } from '#/api/v1/wx-gzh-auto-reply';
+import { getWxGzhAutoReplyInfo } from '#/api/v1/wx-gzh-auto-reply';
 import { $t } from '#/locales';
 import { CommonStatusEnum } from '#/utils/constants';
 
-const autoReplyData = ref<MpAutoReplyApi.AutoReply>();
+// Constants for auto reply types
+const AutoReplyType = {
+  KEYWORD: 1, // 关键词回复
+  MESSAGE: 2, // 收到消息回复
+  SUBSCRIBE: 3, // 被关注回复
+} as const;
+
+const KeywordMatchType = {
+  EXACT: 1, // 全匹配
+  PARTIAL: 2, // 半匹配
+} as const;
+
+const ResponseMessageType = {
+  TEXT: 'text',
+  IMAGE: 'image',
+  VIDEO: 'video',
+  VOICE: 'voice',
+} as const;
+
+const autoReplyData = ref<WxGzhAutoReplyInfo>();
 
 const getTitle = computed(() => {
   return $t('ui.actionTitle.view', ['自动回复']);
@@ -20,13 +40,13 @@ const getTitle = computed(() => {
 const getTypeText = computed(() => {
   if (!autoReplyData.value) return '';
   switch (autoReplyData.value.type) {
-    case MpAutoReplyApi.AutoReplyType.KEYWORD: {
+    case AutoReplyType.KEYWORD: {
       return '关键词回复';
     }
-    case MpAutoReplyApi.AutoReplyType.MESSAGE: {
+    case AutoReplyType.MESSAGE: {
       return '收到消息回复';
     }
-    case MpAutoReplyApi.AutoReplyType.SUBSCRIBE: {
+    case AutoReplyType.SUBSCRIBE: {
       return '被关注回复';
     }
     default: {
@@ -39,15 +59,15 @@ const getTypeText = computed(() => {
 const getMatchTypeText = computed(() => {
   if (
     !autoReplyData.value ||
-    autoReplyData.value.type !== MpAutoReplyApi.AutoReplyType.KEYWORD
+    autoReplyData.value.type !== AutoReplyType.KEYWORD
   ) {
     return '-';
   }
   switch (autoReplyData.value.requestKeywordMatch) {
-    case MpAutoReplyApi.KeywordMatchType.EXACT: {
+    case KeywordMatchType.EXACT: {
       return '全匹配';
     }
-    case MpAutoReplyApi.KeywordMatchType.PARTIAL: {
+    case KeywordMatchType.PARTIAL: {
       return '半匹配';
     }
     default: {
@@ -60,16 +80,16 @@ const getMatchTypeText = computed(() => {
 const getMessageTypeText = computed(() => {
   if (!autoReplyData.value) return '';
   switch (autoReplyData.value.responseMessageType) {
-    case MpAutoReplyApi.ResponseMessageType.IMAGE: {
+    case ResponseMessageType.IMAGE: {
       return '图片消息';
     }
-    case MpAutoReplyApi.ResponseMessageType.TEXT: {
+    case ResponseMessageType.TEXT: {
       return '文本消息';
     }
-    case MpAutoReplyApi.ResponseMessageType.VIDEO: {
+    case ResponseMessageType.VIDEO: {
       return '视频消息';
     }
-    case MpAutoReplyApi.ResponseMessageType.VOICE: {
+    case ResponseMessageType.VOICE: {
       return '音频消息';
     }
     default: {
@@ -95,14 +115,14 @@ const [Modal, modalApi] = useVbenModal({
     }
 
     // 加载数据
-    const data = modalApi.getData<MpAutoReplyApi.AutoReply>();
+    const data = modalApi.getData<WxGzhAutoReplyInfo>();
     if (!data || !data.id) {
       return;
     }
 
     modalApi.lock();
     try {
-      const res = await getAutoReplyInfo(data.id);
+      const res = await getWxGzhAutoReplyInfo({ params: { id: data.id } });
       autoReplyData.value = res.info;
     } finally {
       modalApi.unlock();
@@ -130,14 +150,14 @@ const [Modal, modalApi] = useVbenModal({
         </Descriptions.Item>
 
         <Descriptions.Item
-          v-if="autoReplyData.type === MpAutoReplyApi.AutoReplyType.KEYWORD"
+          v-if="autoReplyData.type === AutoReplyType.KEYWORD"
           label="请求关键字"
         >
           {{ autoReplyData.requestKeyword || '-' }}
         </Descriptions.Item>
 
         <Descriptions.Item
-          v-if="autoReplyData.type === MpAutoReplyApi.AutoReplyType.KEYWORD"
+          v-if="autoReplyData.type === AutoReplyType.KEYWORD"
           label="匹配类型"
         >
           <Tag color="orange">{{ getMatchTypeText }}</Tag>
@@ -149,8 +169,7 @@ const [Modal, modalApi] = useVbenModal({
 
         <Descriptions.Item
           v-if="
-            autoReplyData.responseMessageType ===
-            MpAutoReplyApi.ResponseMessageType.TEXT
+            autoReplyData.responseMessageType === ResponseMessageType.TEXT
           "
           label="回复内容"
           :span="2"
@@ -162,8 +181,7 @@ const [Modal, modalApi] = useVbenModal({
 
         <Descriptions.Item
           v-if="
-            autoReplyData.responseMessageType !==
-            MpAutoReplyApi.ResponseMessageType.TEXT
+            autoReplyData.responseMessageType !== ResponseMessageType.TEXT
           "
           label="媒体文件ID"
           :span="2"
@@ -172,11 +190,11 @@ const [Modal, modalApi] = useVbenModal({
         </Descriptions.Item>
 
         <Descriptions.Item label="创建时间">
-          {{ formatDateTime(autoReplyData.createdAt) || '-' }}
+          {{ formatDateTime(autoReplyData.createdAt || '') || '-' }}
         </Descriptions.Item>
 
         <Descriptions.Item label="更新时间">
-          {{ formatDateTime(autoReplyData.updatedAt) || '-' }}
+          {{ formatDateTime(autoReplyData.updatedAt || '') || '-' }}
         </Descriptions.Item>
       </Descriptions>
 

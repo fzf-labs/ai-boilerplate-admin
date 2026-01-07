@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { DeviceApi } from '#/api/v1/device-info';
+import type { DeviceInfo } from '#/api/v1/device';
 
 import { computed, ref } from 'vue';
 
@@ -8,9 +8,9 @@ import { formatDateTime } from '@vben/utils';
 
 import { Avatar, Card, Tag } from 'ant-design-vue';
 
-import { getDeviceInfo } from '#/api/v1/device-info';
+import { getDeviceInfo } from '#/api/v1/device';
 
-const deviceData = ref<DeviceApi.DeviceInfo>();
+const deviceData = ref<DeviceInfo>();
 
 const getTitle = computed(() => {
   const data = deviceData.value;
@@ -45,12 +45,12 @@ const [Modal, modalApi] = useVbenModal({
       deviceData.value = undefined;
       return;
     }
-    const data = modalApi.getData<DeviceApi.DeviceInfo>();
+    const data = modalApi.getData<DeviceInfo>();
     if (!data || !data.sn) return;
 
     modalApi.lock();
     try {
-      const res = await getDeviceInfo(data.sn);
+      const res = await getDeviceInfo({ params: { sn: data.sn } });
       deviceData.value = res.info;
     } catch (error) {
       console.error('加载设备详情失败:', error);

@@ -3,7 +3,10 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { GetWxGzhUserListParams, WxGzhUserInfo } from '#/api/v1/wx-gzh-user';
+import type {
+  GetWxGzhUserListParams,
+  WxGzhUserInfo,
+} from '#/api/v1/wx-gzh-user';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 
@@ -24,10 +27,7 @@ function onDetail(row: WxGzhUserInfo) {
 }
 
 /** 表格操作按钮的回调函数 */
-function onActionClick({
-  code,
-  row,
-}: OnActionClickParams<WxGzhUserInfo>) {
+function onActionClick({ code, row }: OnActionClickParams<WxGzhUserInfo>) {
   switch (code) {
     case 'detail': {
       onDetail(row);

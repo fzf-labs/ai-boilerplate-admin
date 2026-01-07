@@ -1,11 +1,11 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { MailTemplateApi } from '#/api/infra/mail/template';
+import type { MailTemplateInfo } from '#/api/v1/mail-template';
 
 import { useAccess } from '@vben/access';
 
 import { z } from '#/adapter/form';
-import { getSimpleMailAccountSelector } from '#/api/infra/mail/account';
+import { getMailAccountSelector } from '#/api/v1/mail-account';
 import { getRangePickerDefaultProps } from '#/utils';
 import { CommonStatusEnum } from '#/utils/constants';
 
@@ -45,7 +45,7 @@ export function useFormSchema(): VbenFormSchema[] {
       label: '邮箱账号',
       component: 'ApiSelect',
       componentProps: {
-        api: async () => await getSimpleMailAccountSelector(),
+        api: async () => await getMailAccountSelector({ options: {} }),
         class: 'w-full',
         resultField: 'list',
         labelField: 'mail',
@@ -170,7 +170,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
       label: '邮箱账号',
       component: 'ApiSelect',
       componentProps: {
-        api: async () => await getSimpleMailAccountSelector(),
+        api: async () => await getMailAccountSelector({ options: {} }),
         resultField: 'list',
         labelField: 'mail',
         valueField: 'id',
@@ -210,7 +210,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
 }
 
 /** 列表的字段 */
-export function useGridColumns<T = MailTemplateApi.MailTemplate>(
+export function useGridColumns<T = MailTemplateInfo>(
   onActionClick: OnActionClickFn<T>,
   getAccountMail?: (accountId: string) => string | undefined,
 ): VxeTableGridOptions['columns'] {

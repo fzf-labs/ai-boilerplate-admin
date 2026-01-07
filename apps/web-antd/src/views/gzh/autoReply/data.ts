@@ -1,10 +1,10 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
+import type { WxGzhAutoReplyInfo } from '#/api/v1/wx-gzh-auto-reply';
 
 import { useAccess } from '@vben/access';
 
-import { getAccountSelector } from '#/api/gzh/account';
-import { MpAutoReplyApi } from '#/api/gzh/autoReply';
+import { getWxGzhAccountSelector } from '#/api/v1/wx-gzh-account';
 import { CommonStatusEnum } from '#/utils/constants';
 
 const { hasAccessByCodes } = useAccess();
@@ -35,14 +35,14 @@ export function useFormSchema(): VbenFormSchema[] {
       component: 'RadioGroup',
       componentProps: {
         options: [
-          { label: '关键词回复', value: MpAutoReplyApi.AutoReplyType.KEYWORD },
+          { label: '关键词回复', value: 1 },
           {
             label: '收到消息回复',
-            value: MpAutoReplyApi.AutoReplyType.MESSAGE,
+            value: 2,
           },
           {
             label: '被关注回复',
-            value: MpAutoReplyApi.AutoReplyType.SUBSCRIBE,
+            value: 3,
           },
         ],
         buttonStyle: 'solid',
@@ -55,7 +55,7 @@ export function useFormSchema(): VbenFormSchema[] {
         }),
       },
       rules: 'required',
-      defaultValue: MpAutoReplyApi.AutoReplyType.KEYWORD,
+      defaultValue: 1,
       help: '提示：被关注回复和收到消息回复每个公众号只能设置一个，关键词回复可以设置多个。编辑时不能修改回复类型。',
     },
     {
@@ -68,7 +68,7 @@ export function useFormSchema(): VbenFormSchema[] {
       help: '用户发送此关键字时触发自动回复',
       dependencies: {
         triggerFields: ['type'],
-        show: (values) => values.type === MpAutoReplyApi.AutoReplyType.KEYWORD,
+        show: (values) => values.type === 1,
       },
       rules: 'required',
     },
@@ -78,18 +78,18 @@ export function useFormSchema(): VbenFormSchema[] {
       component: 'RadioGroup',
       componentProps: {
         options: [
-          { label: '全匹配', value: MpAutoReplyApi.KeywordMatchType.EXACT },
-          { label: '半匹配', value: MpAutoReplyApi.KeywordMatchType.PARTIAL },
+          { label: '全匹配', value: 1 },
+          { label: '半匹配', value: 2 },
         ],
         buttonStyle: 'solid',
         optionType: 'button',
       },
       dependencies: {
         triggerFields: ['type'],
-        show: (values) => values.type === MpAutoReplyApi.AutoReplyType.KEYWORD,
+        show: (values) => values.type === 1,
       },
       rules: 'required',
-      defaultValue: MpAutoReplyApi.KeywordMatchType.EXACT,
+      defaultValue: 1,
     },
     {
       fieldName: 'responseMessageType',
@@ -98,23 +98,23 @@ export function useFormSchema(): VbenFormSchema[] {
       componentProps: {
         placeholder: '请选择回复消息类型',
         options: [
-          { label: '文本消息', value: MpAutoReplyApi.ResponseMessageType.TEXT },
+          { label: '文本消息', value: 'text' },
           {
             label: '图片消息',
-            value: MpAutoReplyApi.ResponseMessageType.IMAGE,
+            value: 'image',
           },
           {
             label: '音频消息',
-            value: MpAutoReplyApi.ResponseMessageType.VOICE,
+            value: 'voice',
           },
           {
             label: '视频消息',
-            value: MpAutoReplyApi.ResponseMessageType.VIDEO,
+            value: 'video',
           },
         ],
       },
       rules: 'required',
-      defaultValue: MpAutoReplyApi.ResponseMessageType.TEXT,
+      defaultValue: 'text',
     },
     {
       fieldName: 'responseContent',
@@ -128,9 +128,7 @@ export function useFormSchema(): VbenFormSchema[] {
       },
       dependencies: {
         triggerFields: ['responseMessageType'],
-        show: (values) =>
-          values.responseMessageType ===
-          MpAutoReplyApi.ResponseMessageType.TEXT,
+        show: (values) => values.responseMessageType === 'text',
       },
       rules: 'required',
     },
@@ -144,9 +142,7 @@ export function useFormSchema(): VbenFormSchema[] {
       help: '图片、语音、视频、音乐、图文消息需要提供媒体文件ID',
       dependencies: {
         triggerFields: ['responseMessageType'],
-        show: (values) =>
-          values.responseMessageType !==
-          MpAutoReplyApi.ResponseMessageType.TEXT,
+        show: (values) => values.responseMessageType !== 'text',
       },
       rules: 'required',
     },
@@ -176,7 +172,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
       label: '公众号',
       component: 'ApiSelect',
       componentProps: () => ({
-        api: async () => await getAccountSelector(),
+        api: async () => await getWxGzhAccountSelector({ options: {} }),
         resultField: 'list',
         labelField: 'name',
         valueField: 'appId',
@@ -192,14 +188,14 @@ export function useGridFormSchema(): VbenFormSchema[] {
       componentProps: {
         placeholder: '请选择回复类型',
         options: [
-          { label: '关键词回复', value: MpAutoReplyApi.AutoReplyType.KEYWORD },
+          { label: '关键词回复', value: 1 },
           {
             label: '收到消息回复',
-            value: MpAutoReplyApi.AutoReplyType.MESSAGE,
+            value: 2,
           },
           {
             label: '被关注回复',
-            value: MpAutoReplyApi.AutoReplyType.SUBSCRIBE,
+            value: 3,
           },
         ],
       },
@@ -208,7 +204,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
 }
 
 /** 表格列配置 */
-export function useGridColumns<T = MpAutoReplyApi.AutoReply>(
+export function useGridColumns<T = WxGzhAutoReplyInfo>(
   onActionClick: OnActionClickFn<T>,
 ): VxeTableGridOptions['columns'] {
   return [
@@ -238,7 +234,7 @@ export function useGridColumns<T = MpAutoReplyApi.AutoReply>(
       field: 'requestKeyword',
       width: 150,
       formatter: ({ cellValue, row }) => {
-        if (row.type === MpAutoReplyApi.AutoReplyType.KEYWORD) {
+        if (row.type === 1) {
           return cellValue || '-';
         }
         return '-';
@@ -249,7 +245,7 @@ export function useGridColumns<T = MpAutoReplyApi.AutoReply>(
       field: 'requestKeywordMatch',
       width: 100,
       formatter: ({ cellValue, row }) => {
-        if (row.type === MpAutoReplyApi.AutoReplyType.KEYWORD) {
+        if (row.type === 1) {
           switch (cellValue) {
             case 1: {
               return '全匹配';

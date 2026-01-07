@@ -1,10 +1,10 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { WxGzhUserApi } from '#/api/gzh/user';
+import type { WxGzhUserInfo } from '#/api/v1/wx-gzh-user';
 
 import { useAccess } from '@vben/access';
 
-import { getAccountSelector } from '#/api/gzh/account';
+import { getWxGzhAccountSelector } from '#/api/v1/wx-gzh-account';
 
 const { hasAccessByCodes } = useAccess();
 
@@ -16,7 +16,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
       label: '公众号',
       component: 'ApiSelect',
       componentProps: () => ({
-        api: async () => await getAccountSelector(),
+        api: async () => await getWxGzhAccountSelector({ options: {} }),
         resultField: 'list',
         labelField: 'name',
         valueField: 'appId',
@@ -60,7 +60,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
 }
 
 /** 列表字段 */
-export function useGridColumns<T = WxGzhUserApi.WxGzhUser>(
+export function useGridColumns<T = WxGzhUserInfo>(
   onActionClick: OnActionClickFn<T>,
 ): VxeTableGridOptions['columns'] {
   return [
@@ -100,7 +100,7 @@ export function useGridColumns<T = WxGzhUserApi.WxGzhUser>(
       },
       cellRender: {
         name: 'CellTag',
-        props: ({ row }: { row: WxGzhUserApi.WxGzhUser }) => {
+        props: ({ row }: { row: WxGzhUserInfo }) => {
           return {
             color: row.subscribeStatus === 1 ? 'success' : 'default',
           };

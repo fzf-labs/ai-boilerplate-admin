@@ -13,7 +13,6 @@ import { Button, message } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { deleteDictDatum, getDictDatumList } from '#/api/v1/dict-data';
-import type { DictDatumInfo } from '#/api/v1/dict-data';
 import { $t } from '#/locales';
 
 import { useDataGridColumns, useDataGridFormSchema } from '../data';

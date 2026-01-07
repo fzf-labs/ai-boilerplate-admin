@@ -3,7 +3,10 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { GetMallProductListParams, MallProductInfo } from '#/api/v1/mall-product';
+import type {
+  GetMallProductListParams,
+  MallProductInfo,
+} from '#/api/v1/mall-product';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
@@ -87,10 +90,7 @@ async function onStatusChange(newStatus: number, row: MallProductInfo) {
 }
 
 /** 表格操作按钮的回调函数 */
-function onActionClick({
-  code,
-  row,
-}: OnActionClickParams<MallProductInfo>) {
+function onActionClick({ code, row }: OnActionClickParams<MallProductInfo>) {
   switch (code) {
     case 'delete': {
       onDelete(row);

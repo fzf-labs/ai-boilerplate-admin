@@ -3,7 +3,10 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { GetMallOrderListParams, MallOrderInfo } from '#/api/v1/mall-order';
+import type {
+  GetMallOrderListParams,
+  MallOrderInfo,
+} from '#/api/v1/mall-order';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 

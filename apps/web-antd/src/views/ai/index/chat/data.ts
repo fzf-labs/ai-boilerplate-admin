@@ -1,7 +1,5 @@
 import type { VbenFormSchema } from '#/adapter/form';
 
-import { getModelSimpleList } from '#/api/ai/model/model';
-
 export function useFormSchema(): VbenFormSchema[] {
   return [
     {
@@ -26,7 +24,6 @@ export function useFormSchema(): VbenFormSchema[] {
       fieldName: 'modelId',
       label: '模型',
       componentProps: {
-        api: () => getModelSimpleList(1),
         labelField: 'name',
         valueField: 'id',
         allowClear: true,

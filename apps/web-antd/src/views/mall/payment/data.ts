@@ -1,6 +1,6 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { MallPaymentRecordInfo } from '#/api/v1/mall-payment';
+import type { MallPaymentRecordInfo } from '#/api/v1/mall-payment-record';
 
 import { useAccess } from '@vben/access';
 
@@ -132,16 +132,13 @@ export function useGridColumns<T = MallPaymentRecordInfo>(
       minWidth: 100,
       align: 'center',
       formatter: ({ row }: { row: MallPaymentRecordInfo }) => {
-        const methodMap = {
+        const methodMap: Record<string, string> = {
           mini_program: '小程序',
           h5: 'H5',
           native: '扫码',
           jsapi: 'JS API',
         };
-        return (
-          methodMap[row.paymentMethod as keyof typeof methodMap] ||
-          row.paymentMethod
-        );
+        return methodMap[row.paymentMethod ?? ''] || row.paymentMethod || '';
       },
     },
     {
@@ -211,7 +208,7 @@ export function useGridColumns<T = MallPaymentRecordInfo>(
             '1': { color: 'green', text: '正常' },
           };
           const config = statusMap[
-            row.status.toString() as keyof typeof statusMap
+            (row.status ?? 0).toString() as keyof typeof statusMap
           ] || {
             color: 'default',
             text: '未知',

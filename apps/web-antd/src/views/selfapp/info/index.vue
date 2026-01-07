@@ -104,10 +104,7 @@ async function onStatusChange(newStatus: number, row: SelfAppInfo) {
 }
 
 /** 表格操作按钮的回调函数 */
-function onActionClick({
-  code,
-  row,
-}: OnActionClickParams<SelfAppInfo>) {
+function onActionClick({ code, row }: OnActionClickParams<SelfAppInfo>) {
   switch (code) {
     case 'delete': {
       onDelete(row);

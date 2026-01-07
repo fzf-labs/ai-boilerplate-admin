@@ -6,7 +6,7 @@ import { useVbenModal } from '@vben/common-ui';
 import { message } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
-import { registerDevice } from '#/api/v1/device-info';
+import { registerDevice } from '#/api/v1/device';
 
 import { useFormSchema } from '../data';
 
@@ -32,7 +32,7 @@ const [Modal, modalApi] = useVbenModal({
     const data = await formApi.getValues();
     try {
       // 注册设备
-      await registerDevice(data.sn);
+      await registerDevice({ body: { sn: data.sn } });
       // 关闭并提示
       await modalApi.close();
       emit('success');

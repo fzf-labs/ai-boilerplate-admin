@@ -1,6 +1,6 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { MpAccountApi } from '#/api/gzh/account';
+import type { WxGzhAccountInfo } from '#/api/v1/wx-gzh-account';
 
 import { useAccess } from '@vben/access';
 
@@ -111,7 +111,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
 }
 
 /** 表格列配置 */
-export function useGridColumns<T = MpAccountApi.Account>(
+export function useGridColumns<T = WxGzhAccountInfo>(
   onActionClick: OnActionClickFn<T>,
 ): VxeTableGridOptions['columns'] {
   return [
@@ -134,7 +134,7 @@ export function useGridColumns<T = MpAccountApi.Account>(
       align: 'center',
       cellRender: {
         name: 'CellImage',
-        props: ({ row }: { row: MpAccountApi.Account }) => ({
+        props: ({ row }: { row: WxGzhAccountInfo }) => ({
           src: row.qrCodeURL,
           width: 60,
           height: 60,

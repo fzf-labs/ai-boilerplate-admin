@@ -1,5 +1,9 @@
 <script lang="ts" setup>
-import type { CreateMemberMembershipReq, MemberMembershipInfo, UpdateMemberMembershipReq } from '#/api/v1/member-membership';
+import type {
+  CreateMembershipReq,
+  MembershipInfo,
+  UpdateMembershipReq,
+} from '#/api/v1/membership';
 
 import { computed, ref } from 'vue';
 
@@ -10,15 +14,15 @@ import { message } from 'ant-design-vue';
 import { useVbenForm } from '#/adapter/form';
 import {
   createMemberMembership,
-  getMemberMembershipInfo,
+  getMembershipInfo,
   updateMemberMembership,
-} from '#/api/v1/member-membership';
+} from '#/api/v1/membership';
 import { $t } from '#/locales';
 
 import { useFormSchema } from '../data';
 
 const emit = defineEmits(['success']);
-const formData = ref<MemberMembershipInfo>();
+const formData = ref<MembershipInfo>();
 const getTitle = computed(() => {
   return formData.value?.id
     ? $t('ui.actionTitle.edit', ['会员类型'])
@@ -39,13 +43,12 @@ const [Modal, modalApi] = useVbenModal({
     }
     modalApi.lock();
     // 提交表单
-    const data =
-      (await formApi.getValues()) as CreateMemberMembershipReq &
-        UpdateMemberMembershipReq;
+    const data = (await formApi.getValues()) as CreateMembershipReq &
+      UpdateMembershipReq;
     try {
       await (formData.value?.id
-        ? updateMemberMembership({ body: data as UpdateMemberMembershipReq })
-        : createMemberMembership({ body: data as CreateMemberMembershipReq }));
+        ? updateMemberMembership({ body: data as UpdateMembershipReq })
+        : createMemberMembership({ body: data as CreateMembershipReq }));
       // 关闭并提示
       await modalApi.close();
       emit('success');
@@ -63,13 +66,13 @@ const [Modal, modalApi] = useVbenModal({
       return;
     }
     // 加载数据
-    const data = modalApi.getData<MemberMembershipInfo>();
+    const data = modalApi.getData<MembershipInfo>();
     if (!data || !data.id) {
       return;
     }
     modalApi.lock();
     try {
-      const res = await getMemberMembershipInfo({ params: { id: data.id } });
+      const res = await getMembershipInfo({ params: { id: data.id } });
       formData.value = res.info;
       // 设置到 values
       await formApi.setValues(formData.value);

@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import type { DictDatumInfo } from '#/api/v1/dict-data';
+
 import { computed, ref } from 'vue';
 
 import { useVbenModal } from '@vben/common-ui';
@@ -11,7 +13,6 @@ import {
   getDictDatumInfo,
   updateDictDatum,
 } from '#/api/v1/dict-data';
-import type { DictDatumInfo } from '#/api/v1/dict-data';
 import { $t } from '#/locales';
 
 import { useDataFormSchema } from '../data';

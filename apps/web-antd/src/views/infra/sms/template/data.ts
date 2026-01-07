@@ -1,11 +1,11 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { SmsTemplateApi } from '#/api/infra/sms/template';
+import type { SmsTemplateInfo } from '#/api/v1/sms-template';
 
 import { useAccess } from '@vben/access';
 
 import { z } from '#/adapter/form';
-import { getSmsChannelSelector } from '#/api/infra/sms/channel';
+import { getSmsChannelSelector } from '#/api/v1/sms-channel';
 import { getRangePickerDefaultProps } from '#/utils';
 import { CommonStatusEnum } from '#/utils/constants';
 
@@ -69,7 +69,7 @@ export function useFormSchema(): VbenFormSchema[] {
       label: '短信渠道',
       component: 'ApiSelect',
       componentProps: {
-        api: async () => await getSmsChannelSelector(),
+        api: async () => await getSmsChannelSelector({ options: {} }),
         class: 'w-full',
         resultField: 'list',
         labelField: 'name',
@@ -176,7 +176,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
       label: '短信渠道',
       component: 'ApiSelect',
       componentProps: {
-        api: async () => await getSmsChannelSelector(),
+        api: async () => await getSmsChannelSelector({ options: {} }),
         resultField: 'list',
         labelField: 'name',
         valueField: 'id',
@@ -229,7 +229,7 @@ export function useSendSmsFormSchema(): VbenFormSchema[] {
 }
 
 /** 列表的字段 */
-export function useGridColumns<T = SmsTemplateApi.SmsTemplate>(
+export function useGridColumns<T = SmsTemplateInfo>(
   onActionClick: OnActionClickFn<T>,
 ): VxeTableGridOptions['columns'] {
   return [

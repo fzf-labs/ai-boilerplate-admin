@@ -1,5 +1,9 @@
 <script lang="ts" setup>
-import type { MpAccountApi } from '#/api/gzh/account';
+import type {
+  CreateWxGzhAccountReq,
+  UpdateWxGzhAccountReq,
+  WxGzhAccountInfo,
+} from '#/api/v1/wx-gzh-account';
 
 import { computed, ref } from 'vue';
 
@@ -9,16 +13,16 @@ import { message } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
 import {
-  createAccount,
-  getAccountInfo,
-  updateAccount,
-} from '#/api/gzh/account';
+  createWxGzhAccount,
+  getWxGzhAccountInfo,
+  updateWxGzhAccount,
+} from '#/api/v1/wx-gzh-account';
 import { $t } from '#/locales';
 
 import { useFormSchema } from '../data';
 
 const emit = defineEmits(['success']);
-const formData = ref<MpAccountApi.Account>();
+const formData = ref<WxGzhAccountInfo>();
 const getTitle = computed(() => {
   return formData.value?.id
     ? $t('ui.actionTitle.edit', ['公众号账号'])
@@ -46,9 +50,11 @@ const [Modal, modalApi] = useVbenModal({
     }
     modalApi.lock();
     // 提交表单
-    const data = (await formApi.getValues()) as MpAccountApi.Account;
+    const data = await formApi.getValues();
     try {
-      await (formData.value?.id ? updateAccount(data) : createAccount(data));
+      await (formData.value?.id
+        ? updateWxGzhAccount({ body: data as UpdateWxGzhAccountReq })
+        : createWxGzhAccount({ body: data as CreateWxGzhAccountReq }));
       // 关闭并提示
       await modalApi.close();
       emit('success');
@@ -63,16 +69,18 @@ const [Modal, modalApi] = useVbenModal({
       return;
     }
     // 加载数据
-    const data = modalApi.getData<MpAccountApi.Account>();
+    const data = modalApi.getData<WxGzhAccountInfo>();
     if (!data || !data.id) {
       return;
     }
     modalApi.lock();
     try {
-      const res = await getAccountInfo(data.id);
+      const res = await getWxGzhAccountInfo({ params: { id: data.id } });
       formData.value = res.info;
       // 设置到 values
-      await formApi.setValues(formData.value);
+      if (formData.value) {
+        await formApi.setValues(formData.value);
+      }
     } finally {
       modalApi.unlock();
     }

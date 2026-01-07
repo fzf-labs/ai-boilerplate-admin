@@ -48,8 +48,27 @@ const [Modal, modalApi] = useVbenModal({
     const data = (await formApi.getValues()) as SysRoleInfo;
     try {
       await (formData.value?.id
-        ? updateSysRole({ body: { name: data.name || '', id: data.id || '', remark: data.remark || '', dataScope: data.dataScope || '', menuIds: data.menuIds || [], sort: data.sort || 0, status: data.status || 1 } })
-        : createSysRole({ body: { name: data.name || '', remark: data.remark || '', dataScope: data.dataScope || '', menuIds: data.menuIds || [], sort: data.sort || 0, status: data.status || 1 } }));
+        ? updateSysRole({
+            body: {
+              name: data.name || '',
+              id: data.id || '',
+              remark: data.remark || '',
+              dataScope: data.dataScope || '',
+              menuIds: data.menuIds || [],
+              sort: data.sort || 0,
+              status: data.status || 1,
+            },
+          })
+        : createSysRole({
+            body: {
+              name: data.name || '',
+              remark: data.remark || '',
+              dataScope: data.dataScope || '',
+              menuIds: data.menuIds || [],
+              sort: data.sort || 0,
+              status: data.status || 1,
+            },
+          }));
       // 关闭并提示
       await modalApi.close();
       emit('success');

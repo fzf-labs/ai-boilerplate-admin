@@ -6,10 +6,30 @@ import { formatDateTime } from '@vben/utils';
 
 import { Card } from 'ant-design-vue';
 
-import { getAutoReplyInfo, MpAutoReplyApi } from '#/api/gzh/autoReply';
+import type { WxGzhAutoReplyInfo } from '#/api/v1/wx-gzh-auto-reply';
+import { getWxGzhAutoReplyInfo } from '#/api/v1/wx-gzh-auto-reply';
 import { CommonStatusEnum } from '#/utils/constants';
 
-const autoReplyData = ref<MpAutoReplyApi.AutoReply>();
+// Constants for auto reply types
+const AutoReplyType = {
+  KEYWORD: 1, // 关键词回复
+  MESSAGE: 2, // 收到消息回复
+  SUBSCRIBE: 3, // 被关注回复
+} as const;
+
+const KeywordMatchType = {
+  EXACT: 1, // 全匹配
+  PARTIAL: 2, // 半匹配
+} as const;
+
+const ResponseMessageType = {
+  TEXT: 'text',
+  IMAGE: 'image',
+  VIDEO: 'video',
+  VOICE: 'voice',
+} as const;
+
+const autoReplyData = ref<WxGzhAutoReplyInfo>();
 
 // Utility functions
 const copyToClipboard = async (text: string) => {
@@ -51,17 +71,17 @@ const statusMap: Record<number, { color: string; icon: string; text: string }> =
 
 // 回复类型映射
 const typeMap: Record<number, { color: string; icon: string; text: string }> = {
-  [MpAutoReplyApi.AutoReplyType.KEYWORD]: {
+  [AutoReplyType.KEYWORD]: {
     color: 'blue',
     icon: '🔑',
     text: '关键词回复',
   },
-  [MpAutoReplyApi.AutoReplyType.MESSAGE]: {
+  [AutoReplyType.MESSAGE]: {
     color: 'green',
     icon: '💬',
     text: '收到消息回复',
   },
-  [MpAutoReplyApi.AutoReplyType.SUBSCRIBE]: {
+  [AutoReplyType.SUBSCRIBE]: {
     color: 'orange',
     icon: '👋',
     text: '被关注回复',
@@ -73,12 +93,12 @@ const matchTypeMap: Record<
   number,
   { color: string; icon: string; text: string }
 > = {
-  [MpAutoReplyApi.KeywordMatchType.EXACT]: {
+  [KeywordMatchType.EXACT]: {
     color: 'purple',
     icon: '🎯',
     text: '全匹配',
   },
-  [MpAutoReplyApi.KeywordMatchType.PARTIAL]: {
+  [KeywordMatchType.PARTIAL]: {
     color: 'cyan',
     icon: '🔍',
     text: '半匹配',
@@ -90,22 +110,22 @@ const messageTypeMap: Record<
   string,
   { color: string; icon: string; text: string }
 > = {
-  [MpAutoReplyApi.ResponseMessageType.TEXT]: {
+  [ResponseMessageType.TEXT]: {
     color: 'blue',
     icon: '📝',
     text: '文本消息',
   },
-  [MpAutoReplyApi.ResponseMessageType.IMAGE]: {
+  [ResponseMessageType.IMAGE]: {
     color: 'green',
     icon: '🖼️',
     text: '图片消息',
   },
-  [MpAutoReplyApi.ResponseMessageType.VIDEO]: {
+  [ResponseMessageType.VIDEO]: {
     color: 'red',
     icon: '🎥',
     text: '视频消息',
   },
-  [MpAutoReplyApi.ResponseMessageType.VOICE]: {
+  [ResponseMessageType.VOICE]: {
     color: 'orange',
     icon: '🎵',
     text: '音频消息',
@@ -129,11 +149,14 @@ const getTypeInfo = computed(() => {
 const getMatchTypeInfo = computed(() => {
   if (
     !autoReplyData.value ||
-    autoReplyData.value.type !== MpAutoReplyApi.AutoReplyType.KEYWORD
+    autoReplyData.value.type !== AutoReplyType.KEYWORD
   ) {
     return { color: 'default', icon: '➖', text: '-' };
   }
   const matchType = autoReplyData.value.requestKeywordMatch;
+  if (matchType === undefined) {
+    return { color: 'default', icon: '❓', text: '未知' };
+  }
   return (
     matchTypeMap[matchType] || { color: 'default', icon: '❓', text: '未知' }
   );
@@ -161,12 +184,12 @@ const [Modal, modalApi] = useVbenModal({
       return;
     }
 
-    const data = modalApi.getData<MpAutoReplyApi.AutoReply>();
+    const data = modalApi.getData<WxGzhAutoReplyInfo>();
     if (!data || !data.id) return;
 
     modalApi.lock();
     try {
-      const res = await getAutoReplyInfo(data.id);
+      const res = await getWxGzhAutoReplyInfo({ params: { id: data.id } });
       autoReplyData.value = res.info;
     } catch (error) {
       console.error('加载自动回复详情失败:', error);
@@ -273,7 +296,7 @@ defineExpose({ modalApi });
           </template>
           <div class="space-y-4">
             <div
-              v-if="autoReplyData.type === MpAutoReplyApi.AutoReplyType.KEYWORD"
+              v-if="autoReplyData.type === AutoReplyType.KEYWORD"
               class="space-y-4"
             >
               <div
@@ -313,8 +336,7 @@ defineExpose({ modalApi });
                 <div class="text-center">
                   <p class="font-semibold text-gray-900">
                     {{
-                      autoReplyData.type ===
-                      MpAutoReplyApi.AutoReplyType.MESSAGE
+                      autoReplyData.type === AutoReplyType.MESSAGE
                         ? '收到任意消息时触发'
                         : '用户关注时触发'
                     }}
@@ -352,8 +374,7 @@ defineExpose({ modalApi });
             </div>
             <div
               v-if="
-                autoReplyData.responseMessageType ===
-                MpAutoReplyApi.ResponseMessageType.TEXT
+                autoReplyData.responseMessageType === ResponseMessageType.TEXT
               "
               class="space-y-4"
             >
@@ -426,7 +447,7 @@ defineExpose({ modalApi });
               <div class="flex items-center justify-between">
                 <span class="font-medium text-gray-600">创建时间</span>
                 <span class="font-semibold text-gray-900">
-                  {{ formatDateTime(autoReplyData.createdAt) || '未设置' }}
+                  {{ formatDateTime(autoReplyData.createdAt || '') || '未设置' }}
                 </span>
               </div>
             </div>
@@ -436,7 +457,7 @@ defineExpose({ modalApi });
               <div class="flex items-center justify-between">
                 <span class="font-medium text-gray-600">更新时间</span>
                 <span class="font-semibold text-gray-900">
-                  {{ formatDateTime(autoReplyData.updatedAt) || '未设置' }}
+                  {{ formatDateTime(autoReplyData.updatedAt || '') || '未设置' }}
                 </span>
               </div>
             </div>

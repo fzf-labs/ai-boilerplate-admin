@@ -1,8 +1,4 @@
 <script lang="ts" setup>
-import type { WxGzhUserInfo } from '#/api/v1/wx-gzh-user';
-import type { MemberUserInfo, MemberUserMembershipInfo } from '#/api/v1/member-user';
-import type { WxXcxUserInfo } from '#/api/v1/wx-xcx-user';
-
 import { computed, ref } from 'vue';
 
 import { useVbenModal } from '@vben/common-ui';
@@ -10,14 +6,18 @@ import { formatDateTime } from '@vben/utils';
 
 import { Card, Image, Result, Spin, TabPane, Tabs, Tag } from 'ant-design-vue';
 
-import { getWxGzhUserInfo } from '#/api/gzh/user';
-import { getUserInfo } from '#/api/member/user';
-import { getWxXcxUserInfo } from '#/api/xcx/user';
+import type { UserInfo, UserMembershipInfo } from '#/api/v1/user';
+import type { WxGzhUserInfo } from '#/api/v1/wx-gzh-user';
+import type { WxXcxUserInfo } from '#/api/v1/wx-xcx-user';
 
-const userInfo = ref<UserApi.User>();
-const gzhUserInfo = ref<WxGzhUserApi.WxGzhUser>();
-const xcxUserInfo = ref<WxXcxUserApi.WxXcxUser>();
-const membershipInfo = ref<null | UserApi.UserMembershipInfo>();
+import { getUserInfo } from '#/api/v1/user';
+import { getWxGzhUserInfo } from '#/api/v1/wx-gzh-user';
+import { getWxXcxUserInfo } from '#/api/v1/wx-xcx-user';
+
+const userInfo = ref<UserInfo>();
+const gzhUserInfo = ref<WxGzhUserInfo>();
+const xcxUserInfo = ref<WxXcxUserInfo>();
+const membershipInfo = ref<null | UserMembershipInfo>();
 
 const activeTab = ref('user');
 const gzhLoading = ref(false);
@@ -38,7 +38,7 @@ const [Modal, modalApi] = useVbenModal({
       return;
     }
 
-    const data = modalApi.getData<UserApi.User>();
+    const data = modalApi.getData<UserInfo>();
     if (!data || !data.id) {
       return;
     }

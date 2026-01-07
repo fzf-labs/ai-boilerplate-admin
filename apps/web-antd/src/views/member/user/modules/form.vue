@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { CreateMemberUserReq, MemberUserInfo, UpdateMemberUserReq } from '#/api/v1/member-user';
+import type { CreateUserReq, UpdateUserReq, UserInfo } from '#/api/v1/user';
 
 import { computed, ref } from 'vue';
 
@@ -8,13 +8,13 @@ import { useVbenModal } from '@vben/common-ui';
 import { message } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
-import { createMemberUser, getMemberUserInfo, updateMemberUser } from '#/api/v1/member-user';
+import { createUser, getUserInfo, updateUser } from '#/api/v1/user';
 import { $t } from '#/locales';
 
 import { useFormSchema } from '../data';
 
 const emit = defineEmits(['success']);
-const formData = ref<MemberUserInfo>();
+const formData = ref<UserInfo>();
 const getTitle = computed(() => {
   return formData.value?.id
     ? $t('ui.actionTitle.edit', ['用户'])
@@ -35,11 +35,11 @@ const [Modal, modalApi] = useVbenModal({
     }
     modalApi.lock();
     // 提交表单
-    const data = (await formApi.getValues()) as CreateMemberUserReq & UpdateMemberUserReq;
+    const data = (await formApi.getValues()) as CreateUserReq & UpdateUserReq;
     try {
       await (formData.value?.id
-        ? updateMemberUser({ body: data as UpdateMemberUserReq })
-        : createMemberUser({ body: data as CreateMemberUserReq }));
+        ? updateUser({ body: data as UpdateUserReq })
+        : createUser({ body: data as CreateUserReq }));
       // 关闭并提示
       await modalApi.close();
       emit('success');
@@ -57,16 +57,18 @@ const [Modal, modalApi] = useVbenModal({
       return;
     }
     // 加载数据
-    const data = modalApi.getData<MemberUserInfo>();
+    const data = modalApi.getData<UserInfo>();
     if (!data || !data.id) {
       return;
     }
     modalApi.lock();
     try {
-      const res = await getMemberUserInfo({ params: { id: data.id } });
+      const res = await getUserInfo({ params: { id: data.id } });
       formData.value = res.info;
       // 设置到 values
-      await formApi.setValues(formData.value);
+      if (formData.value) {
+        await formApi.setValues(formData.value);
+      }
     } finally {
       modalApi.lock(false);
     }

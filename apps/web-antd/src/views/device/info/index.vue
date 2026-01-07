@@ -3,7 +3,7 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { DeviceApi } from '#/api/v1/device-info';
+import type { DeviceInfo } from '#/api/v1/device';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
@@ -15,7 +15,7 @@ import {
   deleteDevice,
   getDeviceList,
   updateDeviceStatus,
-} from '#/api/v1/device-info';
+} from '#/api/v1/device';
 import { $t } from '#/locales';
 
 import { useGridColumns, useGridFormSchema } from './data';
@@ -43,19 +43,20 @@ function onRegister() {
 }
 
 /** 查看设备详情 */
-function onDetail(row: DeviceApi.DeviceInfo) {
+function onDetail(row: DeviceInfo) {
   deviceDetailModalApi.setData(row).open();
 }
 
 /** 删除设备 */
-async function onDelete(row: DeviceApi.DeviceInfo) {
+async function onDelete(row: DeviceInfo) {
+  if (!row.sn) return;
   const hideLoading = message.loading({
     content: $t('ui.actionMessage.deleting', [row.name]),
     duration: 0,
     key: 'action_process_msg',
   });
   try {
-    await deleteDevice(row.sn);
+    await deleteDevice({ body: { sn: row.sn } });
     message.success({
       content: $t('ui.actionMessage.deleteSuccess', [row.name]),
       key: 'action_process_msg',
@@ -69,7 +70,7 @@ async function onDelete(row: DeviceApi.DeviceInfo) {
 /** 更新设备状态 */
 async function onStatusChange(
   newStatus: number,
-  row: DeviceApi.DeviceInfo,
+  row: DeviceInfo,
 ): Promise<boolean | undefined> {
   return new Promise((resolve, reject) => {
     // 启用 1 禁用 -1
@@ -85,7 +86,11 @@ async function onStatusChange(
       },
       onOk() {
         // 更新设备状态
-        updateDeviceStatus({ sn: row.sn, status: newStatus })
+        if (!row.sn) {
+          reject(new Error('设备SN不存在'));
+          return;
+        }
+        updateDeviceStatus({ body: { sn: row.sn, status: newStatus } })
           .then(() => {
             // 提示并返回成功
             message.success({
@@ -106,7 +111,7 @@ async function onStatusChange(
 function onActionClick({
   code,
   row,
-}: OnActionClickParams<DeviceApi.DeviceInfo>) {
+}: OnActionClickParams<DeviceInfo>) {
   switch (code) {
     case 'delete': {
       onDelete(row);
@@ -131,9 +136,11 @@ const [Grid, gridApi] = useVbenVxeGrid({
       ajax: {
         query: async ({ page }, formValues) => {
           return await getDeviceList({
-            page: page.currentPage,
-            pageSize: page.pageSize,
-            ...formValues,
+            body: {
+              page: page.currentPage,
+              pageSize: page.pageSize,
+              ...formValues,
+            },
           });
         },
       },
@@ -145,7 +152,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
       refresh: { code: 'query' },
       search: true,
     },
-  } as VxeTableGridOptions<DeviceApi.DeviceInfo>,
+  } as VxeTableGridOptions<DeviceInfo>,
 });
 </script>
 

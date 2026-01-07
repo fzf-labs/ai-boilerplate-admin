@@ -16,16 +16,27 @@ import { useVbenModal } from '@vben/common-ui';
 import { message } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
+import type {
+  CreateWxGzhAutoReplyReq,
+  UpdateWxGzhAutoReplyReq,
+  WxGzhAutoReplyInfo,
+} from '#/api/v1/wx-gzh-auto-reply';
 import {
-  createAutoReply,
-  getAutoReplyInfo,
-  getAutoReplyList,
-  MpAutoReplyApi,
-  updateAutoReply,
-} from '#/api/gzh/autoReply';
+  createWxGzhAutoReply,
+  getWxGzhAutoReplyInfo,
+  getWxGzhAutoReplyList,
+  updateWxGzhAutoReply,
+} from '#/api/v1/wx-gzh-auto-reply';
 import { $t } from '#/locales';
 
 import { useFormSchema } from '../data';
+
+// Constants for auto reply types
+const AutoReplyType = {
+  KEYWORD: 1, // 关键词回复
+  MESSAGE: 2, // 收到消息回复
+  SUBSCRIBE: 3, // 被关注回复
+} as const;
 
 const props = defineProps<{
   appId?: string; // 从搜索表单传递的公众号ID
@@ -33,7 +44,7 @@ const props = defineProps<{
 
 const emit = defineEmits(['success']);
 
-const formData = ref<MpAutoReplyApi.AutoReply>();
+const formData = ref<WxGzhAutoReplyInfo>();
 const isEditMode = ref(false);
 
 const getTitle = computed(() => {
@@ -68,22 +79,24 @@ async function checkExistingAutoReply(
 ): Promise<boolean> {
   // 只对被关注回复和收到消息回复进行限制
   if (
-    type !== MpAutoReplyApi.AutoReplyType.SUBSCRIBE &&
-    type !== MpAutoReplyApi.AutoReplyType.MESSAGE
+    type !== AutoReplyType.SUBSCRIBE &&
+    type !== AutoReplyType.MESSAGE
   ) {
     return false; // 关键词回复不限制
   }
 
   try {
-    const response = await getAutoReplyList({
-      page: 1,
-      pageSize: 1000, // 获取所有记录
-      appId,
-      type,
+    const response = await getWxGzhAutoReplyList({
+      params: {
+        page: 1,
+        pageSize: 1000, // 获取所有记录
+        appId,
+        type,
+      },
     });
 
     // 过滤掉当前编辑的记录
-    const existingReplies = response.list.filter(
+    const existingReplies = (response.list || []).filter(
       (item) => item.id !== currentId,
     );
 
@@ -104,7 +117,7 @@ const [Modal, modalApi] = useVbenModal({
 
     try {
       // 提交表单
-      const data = (await formApi.getValues()) as MpAutoReplyApi.AutoReply;
+      const data = await formApi.getValues();
       // 检查是否已存在相同类型的自动回复
       const hasExisting = await checkExistingAutoReply(
         data.type,
@@ -114,7 +127,7 @@ const [Modal, modalApi] = useVbenModal({
 
       if (hasExisting) {
         const typeText =
-          data.type === MpAutoReplyApi.AutoReplyType.SUBSCRIBE
+          data.type === AutoReplyType.SUBSCRIBE
             ? '被关注回复'
             : '收到消息回复';
         message.error(
@@ -124,8 +137,8 @@ const [Modal, modalApi] = useVbenModal({
       }
 
       await (formData.value?.id
-        ? updateAutoReply(data)
-        : createAutoReply(data));
+        ? updateWxGzhAutoReply({ body: data as UpdateWxGzhAutoReplyReq })
+        : createWxGzhAutoReply({ body: data as CreateWxGzhAutoReplyReq }));
       // 关闭并提示
       await modalApi.close();
       emit('success');
@@ -141,9 +154,7 @@ const [Modal, modalApi] = useVbenModal({
       return;
     }
     // 加载数据
-    const data = modalApi.getData<
-      MpAutoReplyApi.AutoReply & { appId?: string }
-    >();
+    const data = modalApi.getData<WxGzhAutoReplyInfo & { appId?: string }>();
     if (!data || !data.id) {
       // 新增模式
       isEditMode.value = false;
@@ -158,10 +169,12 @@ const [Modal, modalApi] = useVbenModal({
     isEditMode.value = true;
     modalApi.lock();
     try {
-      const res = await getAutoReplyInfo(data.id);
+      const res = await getWxGzhAutoReplyInfo({ params: { id: data.id } });
       formData.value = res.info;
       // 设置到 values
-      await formApi.setValues(formData.value);
+      if (formData.value) {
+        await formApi.setValues(formData.value);
+      }
     } finally {
       modalApi.unlock();
     }

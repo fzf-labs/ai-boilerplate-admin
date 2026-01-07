@@ -3,7 +3,10 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { GetMemberMembershipListParams, MemberMembershipInfo } from '#/api/v1/member-membership';
+import type {
+  GetMembershipListParams,
+  MembershipInfo,
+} from '#/api/v1/membership';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
@@ -15,7 +18,7 @@ import {
   deleteMemberMembership,
   getMemberMembershipList,
   updateMemberMembershipStatus,
-} from '#/api/v1/member-membership';
+} from '#/api/v1/membership';
 import { $t } from '#/locales';
 
 import { useGridColumns, useGridFormSchema } from './data';
@@ -45,17 +48,17 @@ function onCreate() {
 }
 
 /** 编辑会员类型 */
-function onEdit(row: MemberMembershipInfo) {
+function onEdit(row: MembershipInfo) {
   formModalApi.setData(row).open();
 }
 
 /** 权益管理 */
-function onBenefitManage(row: MemberMembershipInfo) {
+function onBenefitManage(row: MembershipInfo) {
   benefitManageModalApi.setData(row).open();
 }
 
 /** 删除会员类型 */
-async function onDelete(row: MemberMembershipInfo) {
+async function onDelete(row: MembershipInfo) {
   const hideLoading = message.loading({
     content: $t('ui.actionMessage.deleting', [row.name]),
     duration: 0,
@@ -74,10 +77,7 @@ async function onDelete(row: MemberMembershipInfo) {
 }
 
 /** 状态变更 */
-async function onStatusChange(
-  newStatus: number,
-  row: MemberMembershipInfo,
-) {
+async function onStatusChange(newStatus: number, row: MembershipInfo) {
   try {
     await updateMemberMembershipStatus({
       body: {
@@ -97,10 +97,7 @@ async function onStatusChange(
 }
 
 /** 表格操作按钮的回调函数 */
-function onActionClick({
-  code,
-  row,
-}: OnActionClickParams<MemberMembershipInfo>) {
+function onActionClick({ code, row }: OnActionClickParams<MembershipInfo>) {
   switch (code) {
     case 'benefit': {
       onBenefitManage(row);
@@ -133,7 +130,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
               page: page.currentPage,
               pageSize: page.pageSize,
               ...formValues,
-            } as GetMemberMembershipListParams,
+            } as GetMembershipListParams,
           });
         },
       },
@@ -149,7 +146,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
       refresh: { code: 'query' },
       search: true,
     },
-  } as VxeTableGridOptions<MemberMembershipInfo>,
+  } as VxeTableGridOptions<MembershipInfo>,
 });
 </script>
 

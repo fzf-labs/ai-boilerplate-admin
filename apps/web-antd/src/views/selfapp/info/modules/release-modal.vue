@@ -111,10 +111,7 @@ async function onDelete(row: SelfAppReleaseInfo) {
 }
 
 /** 状态变更 */
-async function onStatusChange(
-  newStatus: number,
-  row: SelfAppReleaseInfo,
-) {
+async function onStatusChange(newStatus: number, row: SelfAppReleaseInfo) {
   try {
     await updateSelfAppReleaseStatus({
       body: {
@@ -134,10 +131,7 @@ async function onStatusChange(
 }
 
 /** 表格操作按钮的回调函数 */
-function onActionClick({
-  code,
-  row,
-}: OnActionClickParams<SelfAppReleaseInfo>) {
+function onActionClick({ code, row }: OnActionClickParams<SelfAppReleaseInfo>) {
   switch (code) {
     case 'delete': {
       onDelete(row);

@@ -66,7 +66,9 @@ async function onMarkRead() {
     return;
   }
 
-  const ids = rows.map((row: SysNotifyMessageInfo) => row.id!).filter(Boolean) as string[];
+  const ids = rows
+    .map((row: SysNotifyMessageInfo) => row.id!)
+    .filter(Boolean) as string[];
   message.loading({
     content: '正在标记已读...',
     duration: 0,

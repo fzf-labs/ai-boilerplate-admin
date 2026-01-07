@@ -3,7 +3,10 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { GetMallActivationCodeListParams, MallActivationCodeInfo } from '#/api/v1/mall-activation-code';
+import type {
+  GetMallActivationCodeListParams,
+  MallActivationCodeInfo,
+} from '#/api/v1/mall-activation-code';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
@@ -72,12 +75,11 @@ async function onDelete(row: MallActivationCodeInfo) {
 }
 
 /** 状态变更 */
-async function onStatusChange(
-  newStatus: number,
-  row: MallActivationCodeInfo,
-) {
+async function onStatusChange(newStatus: number, row: MallActivationCodeInfo) {
   try {
-    await updateMallActivationCodeStatus({ body: { id: row.id!, status: newStatus } });
+    await updateMallActivationCodeStatus({
+      body: { id: row.id!, status: newStatus },
+    });
     message.success({
       content: $t('ui.actionMessage.operationSuccess'),
       key: 'action_process_msg',

@@ -67,7 +67,7 @@ export function useFormSchema(): VbenFormSchema[] {
       },
     },
     {
-      fieldName: 'productConfig.membership.durationDays',
+      fieldName: 'productConfig.membership.duration_days',
       label: '会员时长',
       component: 'InputNumber',
       componentProps: {
@@ -285,7 +285,7 @@ export function useGridColumns<T = MallProductInfo>(
             '2': { color: 'gray', text: '售罄' },
           };
           const config = statusMap[
-            row.status.toString() as keyof typeof statusMap
+            (row.status ?? 0).toString() as keyof typeof statusMap
           ] || {
             color: 'default',
             text: '未知',
@@ -320,14 +320,14 @@ export function useGridColumns<T = MallProductInfo>(
       },
     },
     {
-      field: 'productConfig.membership.durationDays',
+      field: 'productConfig.membership.duration_days',
       title: '会员时长',
       minWidth: 120,
       align: 'center',
       formatter: ({ row }) => {
         const productInfo = row as MallProductInfo;
         if (productInfo.productType !== 'membership') return '-';
-        const duration = productInfo.productConfig?.membership?.durationDays;
+        const duration = productInfo.productConfig?.membership?.duration_days;
         return duration ? `${duration}天` : '-';
       },
     },

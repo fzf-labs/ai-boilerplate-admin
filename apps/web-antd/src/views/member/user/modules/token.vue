@@ -6,7 +6,7 @@ import { Copy } from '@vben/icons';
 
 import { Button, Card, Input, message } from 'ant-design-vue';
 
-import { testToken } from '#/api/member/user';
+import { testToken } from '#/api/v1/user';
 
 const token = ref('');
 const loading = ref(false);

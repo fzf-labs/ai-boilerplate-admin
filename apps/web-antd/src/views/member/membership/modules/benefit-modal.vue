@@ -3,8 +3,6 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { MembershipApi } from '#/api/member/membership';
-import type { MembershipBenefitApi } from '#/api/member/membership-benefit';
 
 import { computed, ref } from 'vue';
 
@@ -18,7 +16,7 @@ import {
   deleteMembershipBenefit,
   getMembershipBenefitList,
   updateMembershipBenefitStatus,
-} from '#/api/member/membership-benefit';
+} from '#/api/v1/membership-benefit';
 import { $t } from '#/locales';
 
 import {
@@ -27,7 +25,6 @@ import {
 } from './benefit-data';
 import BenefitForm from './benefit-form.vue';
 
-const membershipData = ref<MembershipApi.Membership>();
 
 const modalTitle = computed(() => {
   return `${membershipData.value?.name || ''} - 权益管理`;
@@ -51,12 +48,10 @@ function onCreate() {
 }
 
 /** 编辑权益 */
-function onEdit(row: MembershipBenefitApi.MembershipBenefit) {
   benefitFormModalApi.setData(row).open();
 }
 
 /** 删除权益 */
-async function onDelete(row: MembershipBenefitApi.MembershipBenefit) {
   const hideLoading = message.loading({
     content: $t('ui.actionMessage.deleting', [row.benefitName]),
     duration: 0,
@@ -77,7 +72,6 @@ async function onDelete(row: MembershipBenefitApi.MembershipBenefit) {
 /** 状态变更 */
 async function onStatusChange(
   newStatus: number,
-  row: MembershipBenefitApi.MembershipBenefit,
 ) {
   try {
     await updateMembershipBenefitStatus({
@@ -99,7 +93,6 @@ async function onStatusChange(
 function onActionClick({
   code,
   row,
-}: OnActionClickParams<MembershipBenefitApi.MembershipBenefit>) {
   switch (code) {
     case 'delete': {
       onDelete(row);
@@ -144,7 +137,6 @@ const [Grid, gridApi] = useVbenVxeGrid({
       refresh: { code: 'query' },
       search: true,
     },
-  } as VxeTableGridOptions<MembershipBenefitApi.MembershipBenefit>,
 });
 
 const [Modal, modalApi] = useVbenModal({
@@ -155,7 +147,6 @@ const [Modal, modalApi] = useVbenModal({
     }
 
     // 获取传入的会员数据
-    const data = modalApi.getData<MembershipApi.Membership>();
     if (!data) {
       return;
     }

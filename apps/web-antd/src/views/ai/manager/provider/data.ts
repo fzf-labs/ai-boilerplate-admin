@@ -1,11 +1,11 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { AiProviderPlatformApi } from '#/api/ai/manager/providerPlatform';
+import type { AiProviderPlatformInfo } from '#/api/v1/ai-provider-platform';
 
 import { useAccess } from '@vben/access';
 
 import { z } from '#/adapter/form';
-import { getAiProviderPlatformSelector } from '#/api/ai/manager/providerPlatform';
+import { getAiProviderPlatformSelector } from '#/api/v1/ai-provider-platform';
 import { CommonStatusEnum } from '#/utils/constants';
 
 const { hasAccessByCodes } = useAccess();
@@ -150,9 +150,9 @@ export function useGridFormSchema(): VbenFormSchema[] {
 }
 
 /** 服务商平台 - 列表的字段 */
-export function useGridColumns<
-  T = AiProviderPlatformApi.AiProviderPlatformInfo,
->(onActionClick: OnActionClickFn<T>): VxeTableGridOptions['columns'] {
+export function useGridColumns<T = AiProviderPlatformInfo>(
+  onActionClick: OnActionClickFn<T>,
+): VxeTableGridOptions['columns'] {
   return [
     {
       field: 'platform',

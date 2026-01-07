@@ -53,7 +53,7 @@ export function useCreateFormSchema(): VbenFormSchema[] {
       component: 'ApiSelect',
       componentProps: {
         api: async () => {
-          const data = await getProductSelector();
+          const data = await getMallProductSelector({ params: {} });
           return data.list || [];
         },
         labelField: 'productName',
@@ -436,7 +436,7 @@ export function useGridColumns<T = MallActivationCodeInfo>(
             '3': { color: 'gray', text: '已过期' },
           };
           const config = statusMap[
-            row.status.toString() as keyof typeof statusMap
+            (row.status ?? 0).toString() as keyof typeof statusMap
           ] || {
             color: 'default',
             text: '未知',

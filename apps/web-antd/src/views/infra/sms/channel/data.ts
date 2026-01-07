@@ -1,11 +1,11 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { SmsChannelApi } from '#/api/infra/sms/channel';
+import type { SmsChannelInfo } from '#/api/v1/sms-channel';
 
 import { useAccess } from '@vben/access';
 
 import { z } from '#/adapter/form';
-import { getSmsChannelOperator } from '#/api/infra/sms/channel';
+import { getSmsChannelOperator } from '#/api/v1/sms-channel';
 import { getRangePickerDefaultProps } from '#/utils';
 import { CommonStatusEnum } from '#/utils/constants';
 
@@ -36,7 +36,7 @@ export function useFormSchema(): VbenFormSchema[] {
       label: '运营商',
       component: 'ApiSelect',
       componentProps: {
-        api: async () => await getSmsChannelOperator(),
+        api: async () => await getSmsChannelOperator({ options: {} }),
         resultField: 'list',
         labelField: 'name',
         valueField: 'operator',
@@ -117,7 +117,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
       label: '运营商',
       component: 'ApiSelect',
       componentProps: {
-        api: async () => await getSmsChannelOperator(),
+        api: async () => await getSmsChannelOperator({ options: {} }),
         resultField: 'list',
         labelField: 'name',
         valueField: 'operator',
@@ -156,7 +156,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
 }
 
 /** 列表的字段 */
-export function useGridColumns<T = SmsChannelApi.SmsChannel>(
+export function useGridColumns<T = SmsChannelInfo>(
   onActionClick: OnActionClickFn<T>,
 ): VxeTableGridOptions['columns'] {
   return [

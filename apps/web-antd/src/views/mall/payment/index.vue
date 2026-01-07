@@ -49,7 +49,9 @@ const [Grid] = useVbenVxeGrid({
         query: async ({ page: _page }, formValues) => {
           // For demo purposes, using existing API if orderId is provided
           if (formValues.orderId) {
-            return await getMallPaymentRecordListByOrderId({ params: { orderId: formValues.orderId } });
+            return await getMallPaymentRecordListByOrderId({
+              params: { orderId: formValues.orderId },
+            });
           }
           // Return empty result for now
           return { list: [], total: 0 };

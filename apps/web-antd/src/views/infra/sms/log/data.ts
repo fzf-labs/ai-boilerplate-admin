@@ -1,6 +1,6 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { SmsLogApi } from '#/api/infra/sms/log';
+import type { SmsLogInfo } from '#/api/v1/sms-log';
 
 import { useAccess } from '@vben/access';
 
@@ -62,7 +62,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
 }
 
 /** 列表的字段 */
-export function useGridColumns<T = SmsLogApi.SmsLog>(
+export function useGridColumns<T = SmsLogInfo>(
   onActionClick: OnActionClickFn<T>,
 ): VxeTableGridOptions['columns'] {
   return [

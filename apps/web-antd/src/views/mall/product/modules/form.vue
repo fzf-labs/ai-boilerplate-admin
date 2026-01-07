@@ -1,5 +1,9 @@
 <script lang="ts" setup>
-import type { CreateMallProductReq, MallProductInfo, UpdateMallProductReq } from '#/api/v1/mall-product';
+import type {
+  CreateMallProductReq,
+  MallProductInfo,
+  UpdateMallProductReq,
+} from '#/api/v1/mall-product';
 
 import { computed, ref } from 'vue';
 

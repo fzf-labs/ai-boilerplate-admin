@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import type { DictTypeInfo } from '#/api/v1/dict-type';
+
 import { computed, ref } from 'vue';
 
 import { useVbenModal } from '@vben/common-ui';
@@ -11,7 +13,6 @@ import {
   getDictTypeInfo,
   updateDictType,
 } from '#/api/v1/dict-type';
-import type { DictTypeInfo } from '#/api/v1/dict-type';
 import { $t } from '#/locales';
 
 import { useTypeFormSchema } from '../data';

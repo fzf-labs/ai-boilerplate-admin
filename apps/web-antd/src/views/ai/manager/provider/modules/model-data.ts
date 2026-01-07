@@ -1,6 +1,6 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { AiProviderModelApi } from '#/api/v1/ai-provider-model';
+import type { AiProviderModelInfo } from '#/api/v1/ai-provider-model';
 
 import { useAccess } from '@vben/access';
 
@@ -107,7 +107,7 @@ export function useModelFormSchema(): VbenFormSchema[] {
 }
 
 /** 供应商模型 - 列表的字段 */
-export function useModelColumns<T = AiProviderModelApi.AiProviderModelInfo>(
+export function useModelColumns<T = AiProviderModelInfo>(
   onActionClick: OnActionClickFn<T>,
 ): VxeTableGridOptions['columns'] {
   return [

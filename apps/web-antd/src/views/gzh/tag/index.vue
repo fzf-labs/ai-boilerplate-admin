@@ -11,7 +11,11 @@ import { Plus, RotateCw } from '@vben/icons';
 import { Button, message } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { deleteWxGzhTag, getWxGzhTagList, syncWxGzhTag } from '#/api/v1/wx-gzh-tag';
+import {
+  deleteWxGzhTag,
+  getWxGzhTagList,
+  syncWxGzhTag,
+} from '#/api/v1/wx-gzh-tag';
 import { $t } from '#/locales';
 
 import { useGridColumns, useGridFormSchema } from './data';
@@ -91,10 +95,7 @@ async function onSync() {
 }
 
 /** 表格操作按钮的回调函数 */
-function onActionClick({
-  code,
-  row,
-}: OnActionClickParams<WxGzhTagInfo>) {
+function onActionClick({ code, row }: OnActionClickParams<WxGzhTagInfo>) {
   switch (code) {
     case 'delete': {
       onDelete(row);

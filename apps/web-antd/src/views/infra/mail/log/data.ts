@@ -1,11 +1,11 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { MailLogApi } from '#/api/infra/mail/log';
+import type { MailLogInfo } from '#/api/v1/mail-log';
 
 import { useAccess } from '@vben/access';
 
-import { getSimpleMailAccountSelector } from '#/api/infra/mail/account';
-import { getSimpleMailTemplateSelector } from '#/api/infra/mail/template';
+import { getMailAccountSelector } from '#/api/v1/mail-account';
+import { getMailTemplateSelector } from '#/api/v1/mail-template';
 import { getRangePickerDefaultProps } from '#/utils';
 import { CommonStatusEnum } from '#/utils/constants';
 
@@ -19,7 +19,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
       label: '邮箱账号',
       component: 'ApiSelect',
       componentProps: {
-        api: async () => await getSimpleMailAccountSelector(),
+        api: async () => await getMailAccountSelector({ options: {} }),
         resultField: 'list',
         labelField: 'mail',
         valueField: 'id',
@@ -45,7 +45,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
           placeholder: '请选择模板编号',
           api: async (params: Record<string, any>) => {
             const accountId = params?.accountId || '';
-            return await getSimpleMailTemplateSelector(accountId);
+            return await getMailTemplateSelector({ params: { accountId } });
           },
           params: { accountId: formValues.accountId },
         }),
@@ -101,7 +101,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
 }
 
 /** 列表的字段 */
-export function useGridColumns<T = MailLogApi.MailLog>(
+export function useGridColumns<T = MailLogInfo>(
   onActionClick: OnActionClickFn<T>,
 ): VxeTableGridOptions['columns'] {
   return [

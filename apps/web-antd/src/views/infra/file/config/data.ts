@@ -1,10 +1,10 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { InfraFileConfigApi } from '#/api/infra/file/config';
+import type { FileConfigInfo } from '#/api/v1/file-config';
 
 import { useAccess } from '@vben/access';
 
-import { getFileConfigStorageSelect } from '#/api/infra/file/config';
+import { getFileConfigStorageSelect } from '#/api/v1/file-config';
 import { getRangePickerDefaultProps } from '#/utils';
 
 const { hasAccessByCodes } = useAccess();
@@ -406,7 +406,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
 }
 
 /** 列表的字段 */
-export function useGridColumns<T = InfraFileConfigApi.FileConfig>(
+export function useGridColumns<T = FileConfigInfo>(
   onActionClick: OnActionClickFn<T>,
 ): VxeTableGridOptions['columns'] {
   return [

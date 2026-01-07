@@ -1,6 +1,6 @@
-import { existsSync, statSync } from 'node:fs';
-import { mkdir, readdir, writeFile } from 'node:fs/promises';
-import { dirname, join, relative, resolve } from 'node:path';
+import { existsSync } from 'node:fs';
+import { mkdir, readdir, stat, writeFile } from 'node:fs/promises';
+import { basename, dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { generateService } from 'openapi-ts-request';
@@ -87,9 +87,9 @@ async function findSwaggerFiles(
 
   for (const entry of entries) {
     const fullPath = join(dir, entry);
-    const stat = statSync(fullPath);
+    const fileStat = await stat(fullPath);
 
-    if (stat.isDirectory()) {
+    if (fileStat.isDirectory()) {
       // 递归处理子目录
       const subFiles = await findSwaggerFiles(fullPath, baseDir);
       files.push(...subFiles);
@@ -179,7 +179,7 @@ async function main() {
 
   // 为每个 swagger 文件逐个生成
   for (const { filePath, relativePath } of swaggerFiles) {
-    const fileName = filePath.split(/[/\\]/).pop() || '';
+    const fileName = basename(filePath);
     const dirName = convertFileNameToDirName(fileName);
 
     // 构建输出目录，保持相对路径结构
