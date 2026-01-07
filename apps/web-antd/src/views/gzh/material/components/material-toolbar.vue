@@ -11,6 +11,15 @@ import {
 } from '@ant-design/icons-vue';
 import { Button, DatePicker, Flex, Input, Select, Space } from 'ant-design-vue';
 
+type MaterialTypeValue = 'image' | 'video' | 'voice';
+
+interface FilterOptions {
+  keyword: string;
+  type?: MaterialTypeValue;
+  dateRange?: [string, string];
+  sizeRange?: [number, number];
+}
+
 const props = defineProps<{
   filters?: FilterOptions;
   loading?: boolean;
@@ -34,20 +43,11 @@ const MaterialType = {
   VIDEO: 'video',
 } as const;
 
-type MaterialTypeValue = (typeof MaterialType)[keyof typeof MaterialType];
-
 const MaterialTypeLabels: Record<string, string> = {
   [MaterialType.IMAGE]: '图片',
   [MaterialType.VOICE]: '语音',
   [MaterialType.VIDEO]: '视频',
 };
-
-interface FilterOptions {
-  keyword: string;
-  type?: MaterialTypeValue;
-  dateRange?: [string, string];
-  sizeRange?: [number, number];
-}
 
 const showAdvancedFilter = ref(false);
 const localFilters = ref<FilterOptions>({

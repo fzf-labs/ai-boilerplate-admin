@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 
 import { useVbenModal } from '@vben/common-ui';
 
@@ -18,6 +18,8 @@ import { useBenefitFormSchema } from './benefit-data';
 const emit = defineEmits<{
   success: [];
 }>();
+
+const formData = ref<any>();
 
 const getTitle = computed(() => {
   return formData.value?.id
@@ -41,9 +43,10 @@ const [Modal, modalApi] = useVbenModal({
 
     try {
       // 提交表单
-      const data = await (formData.value?.id
-        ? updateMembershipBenefit(data)
-        : createMembershipBenefit(data));
+      const formValues = await formApi.getValues();
+      await (formData.value?.id
+        ? updateMembershipBenefit(formValues)
+        : createMembershipBenefit(formValues));
 
       // 关闭并提示
       await modalApi.close();

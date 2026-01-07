@@ -16,3 +16,6 @@ CODEOWNERS
 public
 .npmrc
 *-lock.yaml
+
+apps/web-antd/src/api
+apps/web-antd/node_modules

@@ -15,6 +15,13 @@ import {
 
 import { request } from '#/api/request';
 
+type MaterialTypeValue = 'image' | 'video' | 'voice';
+
+interface UploadData {
+  appId?: string;
+  type?: MaterialTypeValue;
+}
+
 const props = defineProps<{
   data?: UploadData;
   open: boolean;
@@ -32,8 +39,6 @@ const MaterialType = {
   VIDEO: 'video',
 } as const;
 
-type MaterialTypeValue = (typeof MaterialType)[keyof typeof MaterialType];
-
 const MaterialTypeLabels: Record<string, string> = {
   [MaterialType.IMAGE]: '图片',
   [MaterialType.VOICE]: '语音',
@@ -46,11 +51,6 @@ async function uploadMaterial(formData: FormData) {
     method: 'POST',
     data: formData,
   });
-}
-
-interface UploadData {
-  appId?: string;
-  type?: MaterialTypeValue;
 }
 
 interface UploadFile {

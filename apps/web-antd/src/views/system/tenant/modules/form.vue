@@ -53,32 +53,28 @@ const [Modal, modalApi] = useVbenModal({
     // 提交表单
     const data = (await formApi.getValues()) as SysTenantFormData;
     try {
-      if (formData.value) {
-        // 更新租户
-        await updateSysTenant({
-          body: {
-            id: data.id!,
-            name: data.name!,
-            remark: data.remark,
-            expireTime: data.expireTime,
-            menuIds: data.menuIds,
-            status: data.status,
-          },
-        });
-      } else {
-        // 创建租户
-        await createSysTenant({
-          body: {
-            name: data.name!,
-            remark: data.remark,
-            expireTime: data.expireTime,
-            menuIds: data.menuIds,
-            status: data.status,
-            username: data.username!,
-            password: data.password!,
-          },
-        });
-      }
+      formData.value
+        ? await updateSysTenant({
+            body: {
+              id: data.id!,
+              name: data.name!,
+              remark: data.remark,
+              expireTime: data.expireTime,
+              menuIds: data.menuIds,
+              status: data.status,
+            },
+          })
+        : await createSysTenant({
+            body: {
+              name: data.name!,
+              remark: data.remark,
+              expireTime: data.expireTime,
+              menuIds: data.menuIds,
+              status: data.status,
+              username: data.username!,
+              password: data.password!,
+            },
+          });
       // 关闭并提示
       await modalApi.close();
       emit('success');

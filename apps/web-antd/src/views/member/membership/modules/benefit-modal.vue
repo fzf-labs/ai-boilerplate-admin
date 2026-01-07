@@ -25,6 +25,7 @@ import {
 } from './benefit-data';
 import BenefitForm from './benefit-form.vue';
 
+const membershipData = ref<any>();
 
 const modalTitle = computed(() => {
   return `${membershipData.value?.name || ''} - 权益管理`;
@@ -35,23 +36,30 @@ const [BenefitFormModal, benefitFormModalApi] = useVbenModal({
   destroyOnClose: true,
 });
 
-/** 刷新表格 */
-function onRefresh() {
-  gridApi.query();
-}
-
-/** 创建权益 */
-function onCreate() {
-  benefitFormModalApi
-    .setData({ membershipType: membershipData.value?.type })
-    .open();
+/** 状态变更 */
+async function onStatusChange(newStatus: number, row: any) {
+  try {
+    await updateMembershipBenefitStatus({
+      id: row.id,
+      status: newStatus,
+    });
+    message.success({
+      content: $t('ui.actionMessage.operationSuccess'),
+      key: 'action_process_msg',
+    });
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 /** 编辑权益 */
+function onEdit(row: any) {
   benefitFormModalApi.setData(row).open();
 }
 
 /** 删除权益 */
+async function onDelete(row: any) {
   const hideLoading = message.loading({
     content: $t('ui.actionMessage.deleting', [row.benefitName]),
     duration: 0,
@@ -63,36 +71,13 @@ function onCreate() {
       content: $t('ui.actionMessage.deleteSuccess', [row.benefitName]),
       key: 'action_process_msg',
     });
-    onRefresh();
   } catch {
     hideLoading();
   }
 }
 
-/** 状态变更 */
-async function onStatusChange(
-  newStatus: number,
-) {
-  try {
-    await updateMembershipBenefitStatus({
-      id: row.id,
-      status: newStatus,
-    });
-    message.success({
-      content: $t('ui.actionMessage.operationSuccess'),
-      key: 'action_process_msg',
-    });
-    onRefresh();
-    return true;
-  } catch {
-    return false;
-  }
-}
-
 /** 表格操作按钮的回调函数 */
-function onActionClick({
-  code,
-  row,
+function onActionClick({ code, row }: OnActionClickParams) {
   switch (code) {
     case 'delete': {
       onDelete(row);
@@ -137,7 +122,20 @@ const [Grid, gridApi] = useVbenVxeGrid({
       refresh: { code: 'query' },
       search: true,
     },
+  } as VxeTableGridOptions,
 });
+
+/** 刷新表格 */
+function onRefresh() {
+  gridApi.query();
+}
+
+/** 创建权益 */
+function onCreate() {
+  benefitFormModalApi
+    .setData({ membershipType: membershipData.value?.type })
+    .open();
+}
 
 const [Modal, modalApi] = useVbenModal({
   async onOpenChange(isOpen: boolean) {
@@ -147,6 +145,7 @@ const [Modal, modalApi] = useVbenModal({
     }
 
     // 获取传入的会员数据
+    const data = modalApi.getData<any>();
     if (!data) {
       return;
     }
