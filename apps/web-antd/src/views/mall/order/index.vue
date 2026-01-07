@@ -3,12 +3,12 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { OrderApi } from '#/api/mall/order';
+import type { GetMallOrderListParams, MallOrderInfo } from '#/api/v1/mall-order';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getOrderList } from '#/api/mall/order';
+import { getMallOrderList } from '#/api/v1/mall-order';
 
 import { useGridColumns, useGridFormSchema } from './data';
 import DetailModal from './modules/detail.vue';
@@ -25,17 +25,17 @@ const [PaymentModalComponent, paymentModalApi] = useVbenModal({
 });
 
 /** 查看订单详情 */
-function onView(row: OrderApi.OrderInfo) {
+function onView(row: MallOrderInfo) {
   detailModalApi.setData(row).open();
 }
 
 /** 查看支付记录 */
-function onPayment(row: OrderApi.OrderInfo) {
+function onPayment(row: MallOrderInfo) {
   paymentModalApi.setData(row).open();
 }
 
 /** 表格操作按钮的回调函数 */
-function onActionClick({ code, row }: OnActionClickParams<OrderApi.OrderInfo>) {
+function onActionClick({ code, row }: OnActionClickParams<MallOrderInfo>) {
   switch (code) {
     case 'payment': {
       onPayment(row);
@@ -59,10 +59,12 @@ const [Grid] = useVbenVxeGrid({
     proxyConfig: {
       ajax: {
         query: async ({ page }, formValues) => {
-          return await getOrderList({
-            page: page.currentPage,
-            pageSize: page.pageSize,
-            ...formValues,
+          return await getMallOrderList({
+            params: {
+              page: page.currentPage,
+              pageSize: page.pageSize,
+              ...formValues,
+            } as GetMallOrderListParams,
           });
         },
       },
@@ -78,7 +80,7 @@ const [Grid] = useVbenVxeGrid({
       refresh: { code: 'query' },
       search: true,
     },
-  } as VxeTableGridOptions<OrderApi.OrderInfo>,
+  } as VxeTableGridOptions<MallOrderInfo>,
 });
 </script>
 

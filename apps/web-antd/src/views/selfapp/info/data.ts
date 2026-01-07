@@ -1,6 +1,6 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { SelfAppApi } from '#/api/selfapp/info';
+import type { SelfAppInfo } from '#/api/v1/self-app';
 
 import { useAccess } from '@vben/access';
 
@@ -103,7 +103,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
 }
 
 /** 列表的字段 */
-export function useGridColumns<T = SelfAppApi.SelfAppInfo>(
+export function useGridColumns<T = SelfAppInfo>(
   onActionClick: OnActionClickFn<T>,
   onStatusChange?: (
     newStatus: number,

@@ -1,10 +1,10 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { ActivationCodeApi } from '#/api/mall/activationcode';
+import type { MallActivationCodeInfo } from '#/api/v1/mall-activation-code';
 
 import { useAccess } from '@vben/access';
 
-import { getProductSelector } from '#/api/mall/product';
+import { getMallProductSelector } from '#/api/v1/mall-product';
 
 const { hasAccessByCodes } = useAccess();
 
@@ -231,7 +231,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
       component: 'ApiSelect',
       componentProps: {
         api: async () => {
-          const data = await getProductSelector();
+          const data = await getMallProductSelector({ params: {} });
           return data.list || [];
         },
         labelField: 'productName',
@@ -308,7 +308,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
 }
 
 /** 列表的字段 */
-export function useGridColumns<T = ActivationCodeApi.ActivationCodeInfo>(
+export function useGridColumns<T = MallActivationCodeInfo>(
   onActionClick: OnActionClickFn<T>,
   _onStatusChange?: (
     newStatus: number,
@@ -335,7 +335,7 @@ export function useGridColumns<T = ActivationCodeApi.ActivationCodeInfo>(
       align: 'center',
       cellRender: {
         name: 'CellTag',
-        props: ({ row }: { row: ActivationCodeApi.ActivationCodeInfo }) => {
+        props: ({ row }: { row: MallActivationCodeInfo }) => {
           const typeMap = {
             membership: { color: 'purple', text: '会员' },
             service: { color: 'blue', text: '服务' },
@@ -426,7 +426,7 @@ export function useGridColumns<T = ActivationCodeApi.ActivationCodeInfo>(
       align: 'center',
       cellRender: {
         name: 'CellTag',
-        props: ({ row }: { row: ActivationCodeApi.ActivationCodeInfo }) => {
+        props: ({ row }: { row: MallActivationCodeInfo }) => {
           const statusMap = {
             '-2': { color: 'red', text: '已退款' },
             '-1': { color: 'red', text: '禁用' },

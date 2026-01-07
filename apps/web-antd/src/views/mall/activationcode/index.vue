@@ -3,7 +3,7 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { ActivationCodeApi } from '#/api/mall/activationcode';
+import type { GetMallActivationCodeListParams, MallActivationCodeInfo } from '#/api/v1/mall-activation-code';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
@@ -12,10 +12,10 @@ import { Button, message } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import {
-  deleteActivationCode,
-  getActivationCodeList,
-  updateActivationCodeStatus,
-} from '#/api/mall/activationcode';
+  deleteMallActivationCode,
+  getMallActivationCodeList,
+  updateMallActivationCodeStatus,
+} from '#/api/v1/mall-activation-code';
 import { $t } from '#/locales';
 
 import { useGridColumns, useGridFormSchema } from './data';
@@ -43,24 +43,24 @@ function onCreate() {
 }
 
 /** 查看激活码详情 */
-function onView(row: ActivationCodeApi.ActivationCodeInfo) {
+function onView(row: MallActivationCodeInfo) {
   detailModalApi.setData(row).open();
 }
 
 /** 编辑激活码 */
-function onEdit(row: ActivationCodeApi.ActivationCodeInfo) {
+function onEdit(row: MallActivationCodeInfo) {
   formModalApi.setData(row).open();
 }
 
 /** 删除激活码 */
-async function onDelete(row: ActivationCodeApi.ActivationCodeInfo) {
+async function onDelete(row: MallActivationCodeInfo) {
   const hideLoading = message.loading({
     content: $t('ui.actionMessage.deleting', [row.code]),
     duration: 0,
     key: 'action_process_msg',
   });
   try {
-    await deleteActivationCode({ id: row.id });
+    await deleteMallActivationCode({ body: { id: row.id! } });
     message.success({
       content: $t('ui.actionMessage.deleteSuccess', [row.code]),
       key: 'action_process_msg',
@@ -74,10 +74,10 @@ async function onDelete(row: ActivationCodeApi.ActivationCodeInfo) {
 /** 状态变更 */
 async function onStatusChange(
   newStatus: number,
-  row: ActivationCodeApi.ActivationCodeInfo,
+  row: MallActivationCodeInfo,
 ) {
   try {
-    await updateActivationCodeStatus({ id: row.id, status: newStatus });
+    await updateMallActivationCodeStatus({ body: { id: row.id!, status: newStatus } });
     message.success({
       content: $t('ui.actionMessage.operationSuccess'),
       key: 'action_process_msg',
@@ -93,7 +93,7 @@ async function onStatusChange(
 function onActionClick({
   code,
   row,
-}: OnActionClickParams<ActivationCodeApi.ActivationCodeInfo>) {
+}: OnActionClickParams<MallActivationCodeInfo>) {
   switch (code) {
     case 'delete': {
       onDelete(row);
@@ -121,10 +121,12 @@ const [Grid, gridApi] = useVbenVxeGrid({
     proxyConfig: {
       ajax: {
         query: async ({ page }, formValues) => {
-          return await getActivationCodeList({
-            page: page.currentPage,
-            pageSize: page.pageSize,
-            ...formValues,
+          return await getMallActivationCodeList({
+            params: {
+              page: page.currentPage,
+              pageSize: page.pageSize,
+              ...formValues,
+            } as GetMallActivationCodeListParams,
           });
         },
       },
@@ -140,7 +142,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
       refresh: { code: 'query' },
       search: true,
     },
-  } as VxeTableGridOptions<ActivationCodeApi.ActivationCodeInfo>,
+  } as VxeTableGridOptions<MallActivationCodeInfo>,
 });
 </script>
 

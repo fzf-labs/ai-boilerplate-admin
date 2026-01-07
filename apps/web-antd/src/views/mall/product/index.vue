@@ -3,7 +3,7 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { ProductApi } from '#/api/mall/product';
+import type { GetMallProductListParams, MallProductInfo } from '#/api/v1/mall-product';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
@@ -12,10 +12,10 @@ import { Button, message } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import {
-  deleteProduct,
-  getProductList,
-  updateProductStatus,
-} from '#/api/mall/product';
+  deleteMallProduct,
+  getMallProductList,
+  updateMallProductStatus,
+} from '#/api/v1/mall-product';
 import { $t } from '#/locales';
 
 import { useGridColumns, useGridFormSchema } from './data';
@@ -43,24 +43,24 @@ function onCreate() {
 }
 
 /** 查看商品详情 */
-function onView(row: ProductApi.ProductInfo) {
+function onView(row: MallProductInfo) {
   detailModalApi.setData(row).open();
 }
 
 /** 编辑商品 */
-function onEdit(row: ProductApi.ProductInfo) {
+function onEdit(row: MallProductInfo) {
   formModalApi.setData(row).open();
 }
 
 /** 删除商品 */
-async function onDelete(row: ProductApi.ProductInfo) {
+async function onDelete(row: MallProductInfo) {
   const hideLoading = message.loading({
     content: $t('ui.actionMessage.deleting', [row.productName]),
     duration: 0,
     key: 'action_process_msg',
   });
   try {
-    await deleteProduct({ id: row.id });
+    await deleteMallProduct({ body: { id: row.id! } });
     message.success({
       content: $t('ui.actionMessage.deleteSuccess', [row.productName]),
       key: 'action_process_msg',
@@ -72,9 +72,9 @@ async function onDelete(row: ProductApi.ProductInfo) {
 }
 
 /** 状态变更 */
-async function onStatusChange(newStatus: number, row: ProductApi.ProductInfo) {
+async function onStatusChange(newStatus: number, row: MallProductInfo) {
   try {
-    await updateProductStatus({ id: row.id, status: newStatus });
+    await updateMallProductStatus({ body: { id: row.id!, status: newStatus } });
     message.success({
       content: $t('ui.actionMessage.operationSuccess'),
       key: 'action_process_msg',
@@ -90,7 +90,7 @@ async function onStatusChange(newStatus: number, row: ProductApi.ProductInfo) {
 function onActionClick({
   code,
   row,
-}: OnActionClickParams<ProductApi.ProductInfo>) {
+}: OnActionClickParams<MallProductInfo>) {
   switch (code) {
     case 'delete': {
       onDelete(row);
@@ -118,10 +118,12 @@ const [Grid, gridApi] = useVbenVxeGrid({
     proxyConfig: {
       ajax: {
         query: async ({ page }, formValues) => {
-          return await getProductList({
-            page: page.currentPage,
-            pageSize: page.pageSize,
-            ...formValues,
+          return await getMallProductList({
+            params: {
+              page: page.currentPage,
+              pageSize: page.pageSize,
+              ...formValues,
+            } as GetMallProductListParams,
           });
         },
       },
@@ -137,7 +139,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
       refresh: { code: 'query' },
       search: true,
     },
-  } as VxeTableGridOptions<ProductApi.ProductInfo>,
+  } as VxeTableGridOptions<MallProductInfo>,
 });
 </script>
 

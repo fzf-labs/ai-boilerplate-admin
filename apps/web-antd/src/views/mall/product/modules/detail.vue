@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { ProductApi } from '#/api/mall/product';
+import type { MallProductInfo } from '#/api/v1/mall-product';
 
 import { computed, ref } from 'vue';
 
@@ -7,7 +7,7 @@ import { useVbenModal } from '@vben/common-ui';
 
 import { Descriptions, DescriptionsItem } from 'ant-design-vue';
 
-const formData = ref<ProductApi.ProductInfo>();
+const formData = ref<MallProductInfo>();
 
 const getTitle = computed(() => {
   return `商品详情 - ${formData.value?.productName || ''}`;
@@ -20,7 +20,7 @@ const [Modal, modalApi] = useVbenModal({
       return;
     }
     // 获取数据
-    const data = modalApi.getData<ProductApi.ProductInfo>();
+    const data = modalApi.getData<MallProductInfo>();
     if (data) {
       formData.value = data;
     }

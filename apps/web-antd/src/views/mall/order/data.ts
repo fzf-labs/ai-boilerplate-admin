@@ -1,6 +1,6 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { OrderApi } from '#/api/mall/order';
+import type { MallOrderInfo } from '#/api/v1/mall-order';
 
 import { useAccess } from '@vben/access';
 
@@ -75,7 +75,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
 }
 
 /** 列表的字段 */
-export function useGridColumns<T = OrderApi.OrderInfo>(
+export function useGridColumns<T = MallOrderInfo>(
   onActionClick: OnActionClickFn<T>,
 ): VxeTableGridOptions['columns'] {
   return [
@@ -98,7 +98,7 @@ export function useGridColumns<T = OrderApi.OrderInfo>(
       align: 'center',
       cellRender: {
         name: 'CellTag',
-        props: ({ row }: { row: OrderApi.OrderInfo }) => {
+        props: ({ row }: { row: MallOrderInfo }) => {
           const typeMap = {
             membership: { color: 'purple', text: '会员' },
             service: { color: 'blue', text: '服务' },
@@ -162,7 +162,7 @@ export function useGridColumns<T = OrderApi.OrderInfo>(
       align: 'center',
       cellRender: {
         name: 'CellTag',
-        props: ({ row }: { row: OrderApi.OrderInfo }) => {
+        props: ({ row }: { row: MallOrderInfo }) => {
           const statusMap = {
             0: { color: 'orange', text: '待支付' },
             1: { color: 'green', text: '已支付' },
@@ -189,7 +189,7 @@ export function useGridColumns<T = OrderApi.OrderInfo>(
       align: 'center',
       cellRender: {
         name: 'CellTag',
-        props: ({ row }: { row: OrderApi.OrderInfo }) => {
+        props: ({ row }: { row: MallOrderInfo }) => {
           const statusMap = {
             pendingPayment: { color: 'orange', text: '待付款' },
             pendingDelivery: { color: 'blue', text: '待发货' },

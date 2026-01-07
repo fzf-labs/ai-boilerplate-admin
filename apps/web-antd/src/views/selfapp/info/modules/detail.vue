@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { SelfAppApi } from '#/api/selfapp/info';
+import type { SelfAppInfo } from '#/api/v1/self-app';
 
 import { computed, ref } from 'vue';
 
@@ -8,7 +8,7 @@ import { formatDateTime } from '@vben/utils';
 
 import { Card, Tag } from 'ant-design-vue';
 
-const appInfo = ref<SelfAppApi.SelfAppInfo>();
+const appInfo = ref<SelfAppInfo>();
 
 const getTitle = computed(() => {
   const info = appInfo.value;
@@ -22,7 +22,7 @@ const [Modal, modalApi] = useVbenModal({
       return;
     }
     // 获取传入的数据
-    const data = modalApi.getData<SelfAppApi.SelfAppInfo>();
+    const data = modalApi.getData<SelfAppInfo>();
     if (data) {
       appInfo.value = data;
     }

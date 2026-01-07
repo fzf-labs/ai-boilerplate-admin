@@ -1,6 +1,6 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { PaymentApi } from '#/api/mall/payment';
+import type { MallPaymentRecordInfo } from '#/api/v1/mall-payment';
 
 import { useAccess } from '@vben/access';
 
@@ -79,7 +79,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
 }
 
 /** 列表的字段 */
-export function useGridColumns<T = PaymentApi.PaymentRecordInfo>(
+export function useGridColumns<T = MallPaymentRecordInfo>(
   onActionClick: OnActionClickFn<T>,
 ): VxeTableGridOptions['columns'] {
   return [
@@ -108,7 +108,7 @@ export function useGridColumns<T = PaymentApi.PaymentRecordInfo>(
       align: 'center',
       cellRender: {
         name: 'CellTag',
-        props: ({ row }: { row: PaymentApi.PaymentRecordInfo }) => {
+        props: ({ row }: { row: MallPaymentRecordInfo }) => {
           const channelMap = {
             wechat: { color: 'green', text: '微信' },
             alipay: { color: 'blue', text: '支付宝' },
@@ -131,7 +131,7 @@ export function useGridColumns<T = PaymentApi.PaymentRecordInfo>(
       title: '支付方式',
       minWidth: 100,
       align: 'center',
-      formatter: ({ row }: { row: PaymentApi.PaymentRecordInfo }) => {
+      formatter: ({ row }: { row: MallPaymentRecordInfo }) => {
         const methodMap = {
           mini_program: '小程序',
           h5: 'H5',
@@ -164,7 +164,7 @@ export function useGridColumns<T = PaymentApi.PaymentRecordInfo>(
       align: 'center',
       cellRender: {
         name: 'CellTag',
-        props: ({ row }: { row: PaymentApi.PaymentRecordInfo }) => {
+        props: ({ row }: { row: MallPaymentRecordInfo }) => {
           const statusMap = {
             0: { color: 'orange', text: '待支付' },
             1: { color: 'green', text: '支付成功' },
@@ -205,7 +205,7 @@ export function useGridColumns<T = PaymentApi.PaymentRecordInfo>(
       align: 'center',
       cellRender: {
         name: 'CellTag',
-        props: ({ row }: { row: PaymentApi.PaymentRecordInfo }) => {
+        props: ({ row }: { row: MallPaymentRecordInfo }) => {
           const statusMap = {
             '-1': { color: 'red', text: '无效' },
             '1': { color: 'green', text: '正常' },

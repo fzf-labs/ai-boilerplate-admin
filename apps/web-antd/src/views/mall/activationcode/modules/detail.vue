@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { ActivationCodeApi } from '#/api/mall/activationcode';
+import type { MallActivationCodeInfo } from '#/api/v1/mall-activation-code';
 
 import { computed, ref } from 'vue';
 
@@ -8,7 +8,7 @@ import { formatDateTime } from '@vben/utils';
 
 import { Card, Tag } from 'ant-design-vue';
 
-const formData = ref<ActivationCodeApi.ActivationCodeInfo>();
+const formData = ref<MallActivationCodeInfo>();
 
 const getTitle = computed(() => {
   return `激活码详情 - ${formData.value?.code || ''}`;
@@ -21,7 +21,7 @@ const [Modal, modalApi] = useVbenModal({
       return;
     }
     // 获取数据
-    const data = modalApi.getData<ActivationCodeApi.ActivationCodeInfo>();
+    const data = modalApi.getData<MallActivationCodeInfo>();
     if (data) {
       formData.value = data;
     }

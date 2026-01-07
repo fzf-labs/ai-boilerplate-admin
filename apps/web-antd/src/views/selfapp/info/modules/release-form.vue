@@ -1,6 +1,10 @@
 <script lang="ts" setup>
-import type { SelfAppApi } from '#/api/selfapp/info';
-import type { SelfAppReleaseApi } from '#/api/selfapp/release';
+import type { SelfAppInfo } from '#/api/v1/self-app';
+import type {
+  CreateSelfAppReleaseReq,
+  SelfAppReleaseInfo,
+  UpdateSelfAppReleaseReq,
+} from '#/api/v1/self-app-release';
 
 import { computed, ref } from 'vue';
 
@@ -13,14 +17,14 @@ import {
   createSelfAppRelease,
   getSelfAppReleaseInfo,
   updateSelfAppRelease,
-} from '#/api/selfapp/release';
+} from '#/api/v1/self-app-release';
 import { $t } from '#/locales';
 
 import { useReleaseFormSchema } from './release-data';
 
 interface FormData {
-  appInfo: SelfAppApi.SelfAppInfo;
-  releaseInfo?: null | SelfAppReleaseApi.SelfAppReleaseInfo;
+  appInfo: SelfAppInfo;
+  releaseInfo?: null | SelfAppReleaseInfo;
 }
 
 const emit = defineEmits(['success']);
@@ -103,18 +107,20 @@ const [Modal, modalApi] = useVbenModal({
         if (formData.value?.releaseInfo?.id) {
           // 更新
           await updateSelfAppRelease({
-            id: formData.value.releaseInfo.id,
-            ...submitData,
-          } as SelfAppReleaseApi.UpdateSelfAppReleaseReq);
+            body: {
+              id: formData.value.releaseInfo.id,
+              ...submitData,
+            } as UpdateSelfAppReleaseReq,
+          });
           message.success({
             content: $t('ui.actionMessage.updateSuccess'),
             key: 'action_msg',
           });
         } else {
           // 创建
-          await createSelfAppRelease(
-            submitData as SelfAppReleaseApi.CreateSelfAppReleaseReq,
-          );
+          await createSelfAppRelease({
+            body: submitData as CreateSelfAppReleaseReq,
+          });
           message.success({
             content: $t('ui.actionMessage.createSuccess'),
             key: 'action_msg',
@@ -139,7 +145,9 @@ const [Modal, modalApi] = useVbenModal({
       if (data.releaseInfo?.id) {
         // 编辑模式，获取详细信息
         try {
-          const res = await getSelfAppReleaseInfo(data.releaseInfo.id);
+          const res = await getSelfAppReleaseInfo({
+            params: { id: data.releaseInfo.id },
+          });
           if (res.info) {
             await formApi.setValues({
               ...res.info,

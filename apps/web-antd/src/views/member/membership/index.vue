@@ -3,7 +3,7 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { MembershipApi } from '#/api/member/membership';
+import type { GetMemberMembershipListParams, MemberMembershipInfo } from '#/api/v1/member-membership';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
@@ -12,10 +12,10 @@ import { Button, message } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import {
-  deleteMembership,
-  getMembershipList,
-  updateMembershipStatus,
-} from '#/api/member/membership';
+  deleteMemberMembership,
+  getMemberMembershipList,
+  updateMemberMembershipStatus,
+} from '#/api/v1/member-membership';
 import { $t } from '#/locales';
 
 import { useGridColumns, useGridFormSchema } from './data';
@@ -45,24 +45,24 @@ function onCreate() {
 }
 
 /** 编辑会员类型 */
-function onEdit(row: MembershipApi.Membership) {
+function onEdit(row: MemberMembershipInfo) {
   formModalApi.setData(row).open();
 }
 
 /** 权益管理 */
-function onBenefitManage(row: MembershipApi.Membership) {
+function onBenefitManage(row: MemberMembershipInfo) {
   benefitManageModalApi.setData(row).open();
 }
 
 /** 删除会员类型 */
-async function onDelete(row: MembershipApi.Membership) {
+async function onDelete(row: MemberMembershipInfo) {
   const hideLoading = message.loading({
     content: $t('ui.actionMessage.deleting', [row.name]),
     duration: 0,
     key: 'action_process_msg',
   });
   try {
-    await deleteMembership({ id: row.id });
+    await deleteMemberMembership({ body: { id: row.id! } });
     message.success({
       content: $t('ui.actionMessage.deleteSuccess', [row.name]),
       key: 'action_process_msg',
@@ -76,12 +76,14 @@ async function onDelete(row: MembershipApi.Membership) {
 /** 状态变更 */
 async function onStatusChange(
   newStatus: number,
-  row: MembershipApi.Membership,
+  row: MemberMembershipInfo,
 ) {
   try {
-    await updateMembershipStatus({
-      id: row.id,
-      status: newStatus,
+    await updateMemberMembershipStatus({
+      body: {
+        id: row.id!,
+        status: newStatus,
+      },
     });
     message.success({
       content: $t('ui.actionMessage.operationSuccess'),
@@ -98,7 +100,7 @@ async function onStatusChange(
 function onActionClick({
   code,
   row,
-}: OnActionClickParams<MembershipApi.Membership>) {
+}: OnActionClickParams<MemberMembershipInfo>) {
   switch (code) {
     case 'benefit': {
       onBenefitManage(row);
@@ -126,10 +128,12 @@ const [Grid, gridApi] = useVbenVxeGrid({
     proxyConfig: {
       ajax: {
         query: async ({ page }, formValues) => {
-          return await getMembershipList({
-            page: page.currentPage,
-            pageSize: page.pageSize,
-            ...formValues,
+          return await getMemberMembershipList({
+            params: {
+              page: page.currentPage,
+              pageSize: page.pageSize,
+              ...formValues,
+            } as GetMemberMembershipListParams,
           });
         },
       },
@@ -145,7 +149,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
       refresh: { code: 'query' },
       search: true,
     },
-  } as VxeTableGridOptions<MembershipApi.Membership>,
+  } as VxeTableGridOptions<MemberMembershipInfo>,
 });
 </script>
 

@@ -3,7 +3,7 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { MpAccountApi } from '#/api/gzh/account';
+import type { GetWxMpAccountListParams, WxMpAccountInfo } from '#/api/v1/wx-mp-account';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
@@ -12,11 +12,11 @@ import { Button, message } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import {
-  clearAccountQuota,
-  deleteAccount,
-  generateAccountQrCode,
-  getAccountList,
-} from '#/api/gzh/account';
+  clearWxMpAccountQuota,
+  deleteWxMpAccount,
+  generateWxMpAccountQrCode,
+  getWxMpAccountList,
+} from '#/api/v1/wx-mp-account';
 import { $t } from '#/locales';
 
 import { useGridColumns, useGridFormSchema } from './data';
@@ -44,24 +44,24 @@ function onCreate() {
 }
 
 /** 查看详情 */
-function onDetail(row: MpAccountApi.Account) {
+function onDetail(row: WxMpAccountInfo) {
   detailModalApi.setData(row).open();
 }
 
 /** 编辑账号 */
-function onEdit(row: MpAccountApi.Account) {
+function onEdit(row: WxMpAccountInfo) {
   formModalApi.setData(row).open();
 }
 
 /** 删除账号 */
-async function onDelete(row: MpAccountApi.Account) {
+async function onDelete(row: WxMpAccountInfo) {
   const hideLoading = message.loading({
     content: $t('ui.actionMessage.deleting', [row.name]),
     duration: 0,
     key: 'action_process_msg',
   });
   try {
-    await deleteAccount(row.id);
+    await deleteWxMpAccount({ body: { id: row.id! } });
     message.success({
       content: $t('ui.actionMessage.deleteSuccess', [row.name]),
       key: 'action_process_msg',
@@ -73,14 +73,14 @@ async function onDelete(row: MpAccountApi.Account) {
 }
 
 /** 生成二维码 */
-async function onGenerateQrCode(row: MpAccountApi.Account) {
+async function onGenerateQrCode(row: WxMpAccountInfo) {
   const hideLoading = message.loading({
     content: '生成二维码',
     duration: 0,
     key: 'action_process_msg',
   });
   try {
-    await generateAccountQrCode(row.id);
+    await generateWxMpAccountQrCode({ params: { id: row.id! } });
     message.success({
       content: '生成二维码成功',
       key: 'action_process_msg',
@@ -92,14 +92,14 @@ async function onGenerateQrCode(row: MpAccountApi.Account) {
 }
 
 /** 清空 API 配额 */
-async function onClearQuota(row: MpAccountApi.Account) {
+async function onClearQuota(row: WxMpAccountInfo) {
   const hideLoading = message.loading({
     content: '清空 API 配额',
     duration: 0,
     key: 'action_process_msg',
   });
   try {
-    await clearAccountQuota(row.id);
+    await clearWxMpAccountQuota({ params: { id: row.id! } });
     message.success({
       content: '清空 API 配额成功',
       key: 'action_process_msg',
@@ -113,7 +113,7 @@ async function onClearQuota(row: MpAccountApi.Account) {
 function onActionClick({
   code,
   row,
-}: OnActionClickParams<MpAccountApi.Account>) {
+}: OnActionClickParams<WxMpAccountInfo>) {
   switch (code) {
     case 'clearQuota': {
       onClearQuota(row);
@@ -149,10 +149,12 @@ const [Grid, gridApi] = useVbenVxeGrid({
     proxyConfig: {
       ajax: {
         query: async ({ page }, formValues) => {
-          return await getAccountList({
-            page: page.currentPage,
-            pageSize: page.pageSize,
-            ...formValues,
+          return await getWxMpAccountList({
+            params: {
+              page: page.currentPage,
+              pageSize: page.pageSize,
+              ...formValues,
+            } as GetWxMpAccountListParams,
           });
         },
       },
@@ -168,7 +170,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
       refresh: { code: 'query' },
       search: true,
     },
-  } as VxeTableGridOptions<MpAccountApi.Account>,
+  } as VxeTableGridOptions<WxMpAccountInfo>,
 });
 </script>
 

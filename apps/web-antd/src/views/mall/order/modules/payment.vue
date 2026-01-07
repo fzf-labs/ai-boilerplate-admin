@@ -26,8 +26,8 @@ const [Modal, modalApi] = useVbenModal({
       return;
     }
     // 获取数据
-    const data = modalApi.getData<OrderApi.OrderInfo>();
-    if (data) {
+    const data = modalApi.getData<MallOrderInfo>();
+    if (data && data.id) {
       formData.value = data;
       await loadPaymentRecords(data.id);
     }
@@ -38,7 +38,7 @@ const [Modal, modalApi] = useVbenModal({
 async function loadPaymentRecords(orderId: string) {
   loading.value = true;
   try {
-    const res = await getPaymentRecordListByOrderId(orderId);
+    const res = await getMallPaymentRecordListByOrderId({ params: { orderId } });
     paymentRecords.value = res.list || [];
   } finally {
     loading.value = false;

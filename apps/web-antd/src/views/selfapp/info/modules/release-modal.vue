@@ -3,11 +3,11 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { SelfAppApi } from '#/api/selfapp/info';
+import type { SelfAppInfo } from '#/api/v1/self-app';
 import type {
-  GetSelfAppReleaseListReq,
-  SelfAppReleaseApi,
-} from '#/api/selfapp/release';
+  GetSelfAppReleaseListParams,
+  SelfAppReleaseInfo,
+} from '#/api/v1/self-app-release';
 
 import { computed, ref } from 'vue';
 
@@ -21,7 +21,7 @@ import {
   deleteSelfAppRelease,
   getSelfAppReleaseList,
   updateSelfAppReleaseStatus,
-} from '#/api/selfapp/release';
+} from '#/api/v1/self-app-release';
 import { $t } from '#/locales';
 
 import {
@@ -31,7 +31,7 @@ import {
 import ReleaseDetailModal from './release-detail.vue';
 import ReleaseForm from './release-form.vue';
 
-const appInfo = ref<SelfAppApi.SelfAppInfo>();
+const appInfo = ref<SelfAppInfo>();
 
 const getTitle = computed(() => {
   return appInfo.value?.name
@@ -69,12 +69,12 @@ function onCreate() {
 }
 
 /** 查看版本详情 */
-function onView(row: SelfAppReleaseApi.SelfAppReleaseInfo) {
+function onView(row: SelfAppReleaseInfo) {
   releaseDetailModalApi.setData(row).open();
 }
 
 /** 编辑版本发布 */
-function onEdit(row: SelfAppReleaseApi.SelfAppReleaseInfo) {
+function onEdit(row: SelfAppReleaseInfo) {
   if (!appInfo.value) {
     message.error('应用信息不存在');
     return;
@@ -88,7 +88,7 @@ function onEdit(row: SelfAppReleaseApi.SelfAppReleaseInfo) {
 }
 
 /** 删除版本发布 */
-async function onDelete(row: SelfAppReleaseApi.SelfAppReleaseInfo) {
+async function onDelete(row: SelfAppReleaseInfo) {
   const hideLoading = message.loading({
     content: $t('ui.actionMessage.deleting', [
       `${row.packageName} v${row.version}`,
@@ -97,7 +97,7 @@ async function onDelete(row: SelfAppReleaseApi.SelfAppReleaseInfo) {
     key: 'action_process_msg',
   });
   try {
-    await deleteSelfAppRelease({ id: row.id });
+    await deleteSelfAppRelease({ body: { id: row.id! } });
     message.success({
       content: $t('ui.actionMessage.deleteSuccess', [
         `${row.packageName} v${row.version}`,
@@ -113,12 +113,14 @@ async function onDelete(row: SelfAppReleaseApi.SelfAppReleaseInfo) {
 /** 状态变更 */
 async function onStatusChange(
   newStatus: number,
-  row: SelfAppReleaseApi.SelfAppReleaseInfo,
+  row: SelfAppReleaseInfo,
 ) {
   try {
     await updateSelfAppReleaseStatus({
-      id: row.id,
-      status: newStatus,
+      body: {
+        id: row.id!,
+        status: newStatus,
+      },
     });
     message.success({
       content: $t('ui.actionMessage.operationSuccess'),
@@ -135,7 +137,7 @@ async function onStatusChange(
 function onActionClick({
   code,
   row,
-}: OnActionClickParams<SelfAppReleaseApi.SelfAppReleaseInfo>) {
+}: OnActionClickParams<SelfAppReleaseInfo>) {
   switch (code) {
     case 'delete': {
       onDelete(row);
@@ -166,11 +168,13 @@ const [Grid, gridApi] = useVbenVxeGrid({
           if (!appInfo.value) return { list: [], total: 0 };
 
           return await getSelfAppReleaseList({
-            page: page.currentPage,
-            pageSize: page.pageSize,
-            packageName: appInfo.value.packageName,
-            ...formValues,
-          } as GetSelfAppReleaseListReq);
+            params: {
+              page: page.currentPage,
+              pageSize: page.pageSize,
+              packageName: appInfo.value.packageName!,
+              ...formValues,
+            } as GetSelfAppReleaseListParams,
+          });
         },
       },
     },
@@ -186,14 +190,14 @@ const [Grid, gridApi] = useVbenVxeGrid({
       'refresh-options': { code: 'query' },
       search: true,
     },
-  } as VxeTableGridOptions<SelfAppReleaseApi.SelfAppReleaseInfo>,
+  } as VxeTableGridOptions<SelfAppReleaseInfo>,
 });
 
 const [Modal, modalApi] = useVbenModal({
   onOpenChange: (isOpen: boolean) => {
     if (isOpen) {
       // 模态框打开时初始化数据
-      const data = modalApi.getData() as SelfAppApi.SelfAppInfo;
+      const data = modalApi.getData() as SelfAppInfo;
       appInfo.value = data;
       // 刷新表格数据
       setTimeout(() => {

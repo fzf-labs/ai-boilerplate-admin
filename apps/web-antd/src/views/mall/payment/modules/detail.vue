@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { PaymentApi } from '#/api/mall/payment';
+import type { MallPaymentRecordInfo } from '#/api/v1/mall-payment';
 
 import { computed, ref } from 'vue';
 
@@ -7,7 +7,7 @@ import { useVbenModal } from '@vben/common-ui';
 
 import { Descriptions, DescriptionsItem } from 'ant-design-vue';
 
-const formData = ref<PaymentApi.PaymentRecordInfo>();
+const formData = ref<MallPaymentRecordInfo>();
 
 const getTitle = computed(() => {
   return `支付记录详情 - ${formData.value?.id || ''}`;
@@ -20,7 +20,7 @@ const [Modal, modalApi] = useVbenModal({
       return;
     }
     // 获取数据
-    const data = modalApi.getData<PaymentApi.PaymentRecordInfo>();
+    const data = modalApi.getData<MallPaymentRecordInfo>();
     if (data) {
       formData.value = data;
     }

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { OrderApi } from '#/api/mall/order';
+import type { MallOrderInfo } from '#/api/v1/mall-order';
 
 import { computed, ref } from 'vue';
 
@@ -7,7 +7,7 @@ import { useVbenModal } from '@vben/common-ui';
 
 import { Descriptions, DescriptionsItem } from 'ant-design-vue';
 
-const formData = ref<OrderApi.OrderInfo>();
+const formData = ref<MallOrderInfo>();
 
 const getTitle = computed(() => {
   return `订单详情 - ${formData.value?.id || ''}`;
@@ -20,7 +20,7 @@ const [Modal, modalApi] = useVbenModal({
       return;
     }
     // 获取数据
-    const data = modalApi.getData<OrderApi.OrderInfo>();
+    const data = modalApi.getData<MallOrderInfo>();
     if (data) {
       formData.value = data;
     }

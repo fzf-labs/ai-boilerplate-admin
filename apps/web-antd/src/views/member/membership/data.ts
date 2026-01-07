@@ -1,6 +1,6 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { MembershipApi } from '#/api/member/membership';
+import type { MemberMembershipInfo } from '#/api/v1/member-membership';
 
 import { useAccess } from '@vben/access';
 
@@ -122,7 +122,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
 }
 
 /** 列表的字段 */
-export function useGridColumns<T = MembershipApi.Membership>(
+export function useGridColumns<T = MemberMembershipInfo>(
   onActionClick: OnActionClickFn<T>,
   onStatusChange?: (
     newStatus: number,

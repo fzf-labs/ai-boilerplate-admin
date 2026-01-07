@@ -3,7 +3,7 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { UserApi } from '#/api/member/user';
+import type { GetMemberUserListParams, MemberUserInfo } from '#/api/v1/member-user';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
@@ -11,7 +11,7 @@ import { Plus } from '@vben/icons';
 import { Button, message } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { deleteUser, getUserList, updateUserStatus } from '#/api/member/user';
+import { deleteMemberUser, getMemberUserList, updateMemberUserStatus } from '#/api/v1/member-user';
 import { $t } from '#/locales';
 
 import { useGridColumns, useGridFormSchema } from './data';
@@ -46,24 +46,24 @@ function onCreate() {
 }
 
 /** 查看用户详情 */
-function onView(row: UserApi.User) {
+function onView(row: MemberUserInfo) {
   detailModalApi.setData(row).open();
 }
 
 /** 编辑用户 */
-function onEdit(row: UserApi.User) {
+function onEdit(row: MemberUserInfo) {
   formModalApi.setData(row).open();
 }
 
 /** 删除用户 */
-async function onDelete(row: UserApi.User) {
+async function onDelete(row: MemberUserInfo) {
   const hideLoading = message.loading({
     content: $t('ui.actionMessage.deleting', [row.nickname || row.phone]),
     duration: 0,
     key: 'action_process_msg',
   });
   try {
-    await deleteUser({ id: row.id });
+    await deleteMemberUser({ body: { id: row.id! } });
     message.success({
       content: $t('ui.actionMessage.deleteSuccess', [
         row.nickname || row.phone,
@@ -77,11 +77,13 @@ async function onDelete(row: UserApi.User) {
 }
 
 /** 状态变更 */
-async function onStatusChange(newStatus: number, row: UserApi.User) {
+async function onStatusChange(newStatus: number, row: MemberUserInfo) {
   try {
-    await updateUserStatus({
-      id: row.id,
-      status: newStatus,
+    await updateMemberUserStatus({
+      body: {
+        id: row.id!,
+        status: newStatus,
+      },
     });
     message.success({
       content: $t('ui.actionMessage.operationSuccess'),
@@ -95,12 +97,12 @@ async function onStatusChange(newStatus: number, row: UserApi.User) {
 }
 
 /** 生成测试Token */
-function onGenerateToken(row: UserApi.User) {
+function onGenerateToken(row: MemberUserInfo) {
   tokenModalApi.setData({ id: row.id, nickname: row.nickname }).open();
 }
 
 /** 表格操作按钮的回调函数 */
-function onActionClick({ code, row }: OnActionClickParams<UserApi.User>) {
+function onActionClick({ code, row }: OnActionClickParams<MemberUserInfo>) {
   switch (code) {
     case 'delete': {
       onDelete(row);
@@ -132,10 +134,12 @@ const [Grid, gridApi] = useVbenVxeGrid({
     proxyConfig: {
       ajax: {
         query: async ({ page }, formValues) => {
-          return await getUserList({
-            page: page.currentPage,
-            pageSize: page.pageSize,
-            ...formValues,
+          return await getMemberUserList({
+            params: {
+              page: page.currentPage,
+              pageSize: page.pageSize,
+              ...formValues,
+            } as GetMemberUserListParams,
           });
         },
       },
@@ -151,7 +155,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
       refresh: { code: 'query' },
       search: true,
     },
-  } as VxeTableGridOptions<UserApi.User>,
+  } as VxeTableGridOptions<MemberUserInfo>,
 });
 </script>
 

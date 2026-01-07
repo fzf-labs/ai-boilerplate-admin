@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import type { WxGzhUserApi } from '#/api/gzh/user';
-import type { UserApi } from '#/api/member/user';
-import type { WxXcxUserApi } from '#/api/xcx/user';
+import type { WxGzhUserInfo } from '#/api/v1/wx-gzh-user';
+import type { MemberUserInfo, MemberUserMembershipInfo } from '#/api/v1/member-user';
+import type { WxXcxUserInfo } from '#/api/v1/wx-xcx-user';
 
 import { computed, ref } from 'vue';
 

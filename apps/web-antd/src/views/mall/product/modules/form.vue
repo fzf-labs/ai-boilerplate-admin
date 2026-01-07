@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { ProductApi } from '#/api/mall/product';
+import type { CreateMallProductReq, MallProductInfo, UpdateMallProductReq } from '#/api/v1/mall-product';
 
 import { computed, ref } from 'vue';
 
@@ -9,16 +9,16 @@ import { message } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
 import {
-  createProduct,
-  getProductInfo,
-  updateProduct,
-} from '#/api/mall/product';
+  createMallProduct,
+  getMallProductInfo,
+  updateMallProduct,
+} from '#/api/v1/mall-product';
 import { $t } from '#/locales';
 
 import { useFormSchema } from '../data';
 
 const emit = defineEmits(['success']);
-const formData = ref<ProductApi.ProductInfo>();
+const formData = ref<MallProductInfo>();
 const getTitle = computed(() => {
   return formData.value?.id
     ? $t('ui.actionTitle.edit', ['商品'])
@@ -42,7 +42,7 @@ const [Modal, modalApi] = useVbenModal({
     const rawData = (await formApi.getValues()) as any;
 
     // 处理数据格式转换
-    const data: ProductApi.CreateProductReq | ProductApi.UpdateProductReq = {
+    const data: CreateMallProductReq | UpdateMallProductReq = {
       ...rawData,
       // 确保数字类型字段正确
       originalPrice: Number(rawData.originalPrice),
@@ -59,8 +59,8 @@ const [Modal, modalApi] = useVbenModal({
 
     try {
       await (formData.value?.id
-        ? updateProduct(data as ProductApi.UpdateProductReq)
-        : createProduct(data as ProductApi.CreateProductReq));
+        ? updateMallProduct({ body: data as UpdateMallProductReq })
+        : createMallProduct({ body: data as CreateMallProductReq }));
       // 关闭并提示
       await modalApi.close();
       emit('success');
@@ -78,13 +78,13 @@ const [Modal, modalApi] = useVbenModal({
       return;
     }
     // 加载数据
-    const data = modalApi.getData<ProductApi.ProductInfo>();
+    const data = modalApi.getData<MallProductInfo>();
     if (!data || !data.id) {
       return;
     }
     modalApi.lock();
     try {
-      const res = await getProductInfo(data.id);
+      const res = await getMallProductInfo({ params: { id: data.id } });
       formData.value = res.info;
       // 处理数据格式，转换为表单可用的格式
       const formValues = {

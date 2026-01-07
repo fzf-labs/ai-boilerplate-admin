@@ -3,7 +3,7 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { WxGzhTagApi } from '#/api/gzh/tag';
+import type { GetWxGzhTagListParams, WxGzhTagInfo } from '#/api/v1/wx-gzh-tag';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 import { Plus, RotateCw } from '@vben/icons';
@@ -11,7 +11,7 @@ import { Plus, RotateCw } from '@vben/icons';
 import { Button, message } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { deleteWxGzhTag, getWxGzhTagList, syncWxGzhTag } from '#/api/gzh/tag';
+import { deleteWxGzhTag, getWxGzhTagList, syncWxGzhTag } from '#/api/v1/wx-gzh-tag';
 import { $t } from '#/locales';
 
 import { useGridColumns, useGridFormSchema } from './data';
@@ -37,18 +37,18 @@ async function onCreate() {
 }
 
 /** 编辑标签 */
-function onEdit(row: WxGzhTagApi.WxGzhTagInfo) {
+function onEdit(row: WxGzhTagInfo) {
   formModalApi.setData({ row }).open();
 }
 
 /** 删除标签 */
-async function onDelete(row: WxGzhTagApi.WxGzhTagInfo) {
+async function onDelete(row: WxGzhTagInfo) {
   const hideLoading = message.loading({
     content: $t('ui.actionMessage.deleting', [row.name]),
     key: 'action_key_msg',
   });
   try {
-    await deleteWxGzhTag({ id: row.id });
+    await deleteWxGzhTag({ body: { id: row.id! } });
     message.success({
       content: $t('ui.actionMessage.deleteSuccess', [row.name]),
       key: 'action_key_msg',
@@ -74,7 +74,7 @@ async function onSync() {
     key: 'sync_key_msg',
   });
   try {
-    await syncWxGzhTag(currentAppId);
+    await syncWxGzhTag({ params: { appId: currentAppId } });
     message.success({
       content: '标签同步成功',
       key: 'sync_key_msg',
@@ -94,7 +94,7 @@ async function onSync() {
 function onActionClick({
   code,
   row,
-}: OnActionClickParams<WxGzhTagApi.WxGzhTagInfo>) {
+}: OnActionClickParams<WxGzhTagInfo>) {
   switch (code) {
     case 'delete': {
       onDelete(row);
@@ -124,9 +124,11 @@ const [Grid, gridApi] = useVbenVxeGrid({
       ajax: {
         query: async ({ page }, formValues) => {
           return await getWxGzhTagList({
-            page: page.currentPage,
-            pageSize: page.pageSize,
-            ...formValues,
+            params: {
+              page: page.currentPage,
+              pageSize: page.pageSize,
+              ...formValues,
+            } as GetWxGzhTagListParams,
           });
         },
       },
@@ -142,7 +144,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
       refresh: { code: 'query' },
       search: true,
     },
-  } as VxeTableGridOptions<WxGzhTagApi.WxGzhTagInfo>,
+  } as VxeTableGridOptions<WxGzhTagInfo>,
 });
 </script>
 

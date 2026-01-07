@@ -26,7 +26,7 @@ const [Modal, modalApi] = useVbenModal({
 
     loading.value = true;
     try {
-      const res = await testToken({ id: data.id });
+      const res = await testToken({ params: { id: data.id } });
       token.value = res.token;
     } catch (error) {
       console.error('生成测试Token失败:', error);

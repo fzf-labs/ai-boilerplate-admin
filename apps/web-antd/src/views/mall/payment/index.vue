@@ -3,12 +3,12 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { PaymentApi } from '#/api/mall/payment';
+import type { MallPaymentRecordInfo } from '#/api/v1/mall-payment';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getPaymentRecordListByOrderId } from '#/api/mall/payment';
+import { getMallPaymentRecordListByOrderId } from '#/api/v1/mall-payment';
 
 import { useGridColumns, useGridFormSchema } from './data';
 import DetailModal from './modules/detail.vue';
@@ -19,7 +19,7 @@ const [DetailModalComponent, detailModalApi] = useVbenModal({
 });
 
 /** 查看支付记录详情 */
-function onView(row: PaymentApi.PaymentRecordInfo) {
+function onView(row: MallPaymentRecordInfo) {
   detailModalApi.setData(row).open();
 }
 
@@ -27,7 +27,7 @@ function onView(row: PaymentApi.PaymentRecordInfo) {
 function onActionClick({
   code,
   row,
-}: OnActionClickParams<PaymentApi.PaymentRecordInfo>) {
+}: OnActionClickParams<MallPaymentRecordInfo>) {
   switch (code) {
     case 'view': {
       onView(row);
@@ -49,7 +49,7 @@ const [Grid] = useVbenVxeGrid({
         query: async ({ page: _page }, formValues) => {
           // For demo purposes, using existing API if orderId is provided
           if (formValues.orderId) {
-            return await getPaymentRecordListByOrderId(formValues.orderId);
+            return await getMallPaymentRecordListByOrderId({ params: { orderId: formValues.orderId } });
           }
           // Return empty result for now
           return { list: [], total: 0 };
@@ -67,7 +67,7 @@ const [Grid] = useVbenVxeGrid({
       refresh: { code: 'query' },
       search: true,
     },
-  } as VxeTableGridOptions<PaymentApi.PaymentRecordInfo>,
+  } as VxeTableGridOptions<MallPaymentRecordInfo>,
 });
 </script>
 

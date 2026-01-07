@@ -1,6 +1,6 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { ProductApi } from '#/api/mall/product';
+import type { MallProductInfo } from '#/api/v1/mall-product';
 
 import { useAccess } from '@vben/access';
 
@@ -204,7 +204,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
 }
 
 /** 列表的字段 */
-export function useGridColumns<T = ProductApi.ProductInfo>(
+export function useGridColumns<T = MallProductInfo>(
   onActionClick: OnActionClickFn<T>,
   _onStatusChange?: (
     newStatus: number,
@@ -224,7 +224,7 @@ export function useGridColumns<T = ProductApi.ProductInfo>(
       align: 'center',
       cellRender: {
         name: 'CellTag',
-        props: ({ row }: { row: ProductApi.ProductInfo }) => {
+        props: ({ row }: { row: MallProductInfo }) => {
           const typeMap = {
             membership: { color: 'purple', text: '会员' },
             service: { color: 'blue', text: '服务' },
@@ -277,7 +277,7 @@ export function useGridColumns<T = ProductApi.ProductInfo>(
       align: 'center',
       cellRender: {
         name: 'CellTag',
-        props: ({ row }: { row: ProductApi.ProductInfo }) => {
+        props: ({ row }: { row: MallProductInfo }) => {
           const statusMap = {
             '-1': { color: 'red', text: '下架' },
             '0': { color: 'orange', text: '待上架' },
@@ -303,7 +303,7 @@ export function useGridColumns<T = ProductApi.ProductInfo>(
       minWidth: 120,
       align: 'center',
       formatter: ({ row }) => {
-        const productInfo = row as ProductApi.ProductInfo;
+        const productInfo = row as MallProductInfo;
         if (productInfo.productType !== 'membership') return '-';
         const membershipType =
           productInfo.productConfig?.membership?.membershipType;
@@ -325,7 +325,7 @@ export function useGridColumns<T = ProductApi.ProductInfo>(
       minWidth: 120,
       align: 'center',
       formatter: ({ row }) => {
-        const productInfo = row as ProductApi.ProductInfo;
+        const productInfo = row as MallProductInfo;
         if (productInfo.productType !== 'membership') return '-';
         const duration = productInfo.productConfig?.membership?.durationDays;
         return duration ? `${duration}天` : '-';

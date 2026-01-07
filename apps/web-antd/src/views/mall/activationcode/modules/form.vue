@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { ActivationCodeApi } from '#/api/mall/activationcode';
+import type { MallActivationCodeInfo } from '#/api/v1/mall-activation-code';
 
 import { computed, ref } from 'vue';
 
@@ -9,16 +9,16 @@ import { message } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
 import {
-  batchGenerateActivationCode,
-  getActivationCodeInfo,
-  updateActivationCode,
-} from '#/api/mall/activationcode';
+  batchGenerateMallActivationCode,
+  getMallActivationCodeInfo,
+  updateMallActivationCode,
+} from '#/api/v1/mall-activation-code';
 import { $t } from '#/locales';
 
 import { useCreateFormSchema, useEditFormSchema } from '../data';
 
 const emit = defineEmits(['success']);
-const formData = ref<ActivationCodeApi.ActivationCodeInfo>();
+const formData = ref<MallActivationCodeInfo>();
 const isEdit = ref(false);
 const getTitle = computed(() => {
   return isEdit.value
@@ -66,7 +66,7 @@ const [Modal, modalApi] = useVbenModal({
           platformBuyerName: rawData.platformBuyerName,
           remark: rawData.remark,
         };
-        await updateActivationCode(data);
+        await updateMallActivationCode({ body: data });
       } else {
         // 新增模式 - 批量生成激活码
         const data: any = {
@@ -78,7 +78,7 @@ const [Modal, modalApi] = useVbenModal({
           platform: rawData.platform,
           remark: rawData.remark,
         };
-        const result = await batchGenerateActivationCode(data);
+        const result = await batchGenerateMallActivationCode({ body: data });
         // 显示批次号信息
         message.success({
           content: `成功生成 ${data.num} 个激活码，批次号：${result.batchNo}`,
@@ -109,7 +109,7 @@ const [Modal, modalApi] = useVbenModal({
       return;
     }
     // 加载数据
-    const data = modalApi.getData<ActivationCodeApi.ActivationCodeInfo>();
+    const data = modalApi.getData<MallActivationCodeInfo>();
     if (!data || !data.id) {
       // 新增模式
       isEdit.value = false;
@@ -122,7 +122,7 @@ const [Modal, modalApi] = useVbenModal({
     modalApi.lock();
     try {
       // 加载数据
-      const res = await getActivationCodeInfo(data.id);
+      const res = await getMallActivationCodeInfo({ params: { id: data.id } });
       formData.value = res.info;
 
       // 处理数据格式，转换为表单可用的格式

@@ -3,12 +3,12 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { WxGzhUserApi } from '#/api/gzh/user';
+import type { GetWxGzhUserListParams, WxGzhUserInfo } from '#/api/v1/wx-gzh-user';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getWxGzhUserList } from '#/api/gzh/user';
+import { getWxGzhUserList } from '#/api/v1/wx-gzh-user';
 
 import { useGridColumns, useGridFormSchema } from './data';
 import DetailModalComponent from './modules/detail.vue';
@@ -19,7 +19,7 @@ const [DetailModal, detailModalApi] = useVbenModal({
 });
 
 /** 查看用户详情 */
-function onDetail(row: WxGzhUserApi.WxGzhUser) {
+function onDetail(row: WxGzhUserInfo) {
   detailModalApi.setData(row).open();
 }
 
@@ -27,7 +27,7 @@ function onDetail(row: WxGzhUserApi.WxGzhUser) {
 function onActionClick({
   code,
   row,
-}: OnActionClickParams<WxGzhUserApi.WxGzhUser>) {
+}: OnActionClickParams<WxGzhUserInfo>) {
   switch (code) {
     case 'detail': {
       onDetail(row);
@@ -53,9 +53,11 @@ const [Grid] = useVbenVxeGrid({
       ajax: {
         query: async ({ page }, formValues) => {
           return await getWxGzhUserList({
-            page: page.currentPage,
-            pageSize: page.pageSize,
-            ...formValues,
+            params: {
+              page: page.currentPage,
+              pageSize: page.pageSize,
+              ...formValues,
+            } as GetWxGzhUserListParams,
           });
         },
       },
@@ -71,7 +73,7 @@ const [Grid] = useVbenVxeGrid({
       refresh: { code: 'query' },
       search: true,
     },
-  } as VxeTableGridOptions<WxGzhUserApi.WxGzhUser>,
+  } as VxeTableGridOptions<WxGzhUserInfo>,
 });
 </script>
 

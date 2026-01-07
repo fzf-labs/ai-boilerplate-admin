@@ -1,6 +1,6 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { SelfAppReleaseApi } from '#/api/selfapp/release';
+import type { SelfAppReleaseInfo } from '#/api/v1/self-app-release';
 
 import { useAccess } from '@vben/access';
 
@@ -269,7 +269,7 @@ export function useReleaseGridFormSchema(): VbenFormSchema[] {
 }
 
 /** 版本发布列表的字段 */
-export function useReleaseGridColumns<T = SelfAppReleaseApi.SelfAppReleaseInfo>(
+export function useReleaseGridColumns<T = SelfAppReleaseInfo>(
   onActionClick: OnActionClickFn<T>,
   onStatusChange?: (
     newStatus: number,
@@ -315,7 +315,7 @@ export function useReleaseGridColumns<T = SelfAppReleaseApi.SelfAppReleaseInfo>(
       align: 'center',
       cellRender: {
         name: 'CellTag',
-        props: ({ row }: { row: SelfAppReleaseApi.SelfAppReleaseInfo }) => {
+        props: ({ row }: { row: SelfAppReleaseInfo }) => {
           const typeMap = {
             1: { color: 'red', text: '强制' },
             2: { color: 'orange', text: '提示' },
@@ -341,7 +341,7 @@ export function useReleaseGridColumns<T = SelfAppReleaseApi.SelfAppReleaseInfo>(
       align: 'center',
       cellRender: {
         name: 'CellTag',
-        props: ({ row }: { row: SelfAppReleaseApi.SelfAppReleaseInfo }) => {
+        props: ({ row }: { row: SelfAppReleaseInfo }) => {
           const strategyMap = {
             1: { color: 'green', text: '全量' },
             2: { color: 'blue', text: '自定义' },

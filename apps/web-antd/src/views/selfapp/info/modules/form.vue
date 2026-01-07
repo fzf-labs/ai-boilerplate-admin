@@ -1,4 +1,10 @@
 <script lang="ts" setup>
+import type {
+  CreateSelfAppReq,
+  SelfAppInfo,
+  UpdateSelfAppReq,
+} from '#/api/v1/self-app';
+
 import { computed, ref } from 'vue';
 
 import { useVbenModal } from '@vben/common-ui';
@@ -16,7 +22,7 @@ import { $t } from '#/locales';
 import { useFormSchema } from '../data';
 
 const emit = defineEmits(['success']);
-const formData = ref<SelfAppApi.SelfAppInfo>();
+const formData = ref<SelfAppInfo>();
 const getTitle = computed(() => {
   return formData.value?.id
     ? $t('ui.actionTitle.edit', ['自应用'])
@@ -40,7 +46,7 @@ const [Modal, modalApi] = useVbenModal({
     const rawData = (await formApi.getValues()) as any;
 
     // 处理数据格式转换
-    const data: SelfAppApi.CreateSelfAppReq | SelfAppApi.UpdateSelfAppReq = {
+    const data: CreateSelfAppReq | UpdateSelfAppReq = {
       ...rawData,
       // 确保数字类型字段正确
       status: Number(rawData.status),
@@ -48,8 +54,8 @@ const [Modal, modalApi] = useVbenModal({
 
     try {
       await (formData.value?.id
-        ? updateSelfApp(data as SelfAppApi.UpdateSelfAppReq)
-        : createSelfApp(data as SelfAppApi.CreateSelfAppReq));
+        ? updateSelfApp({ body: data as UpdateSelfAppReq })
+        : createSelfApp({ body: data as CreateSelfAppReq }));
       // 关闭并提示
       await modalApi.close();
       emit('success');
@@ -67,19 +73,19 @@ const [Modal, modalApi] = useVbenModal({
       return;
     }
     // 加载数据
-    const data = modalApi.getData<SelfAppApi.SelfAppInfo>();
+    const data = modalApi.getData<SelfAppInfo>();
     if (!data || !data.id) {
       return;
     }
     modalApi.lock();
     try {
-      const res = await getSelfAppInfo(data.id);
+      const res = await getSelfAppInfo({ params: { id: data.id } });
       formData.value = res.info;
       // 处理数据格式，转换为表单可用的格式
       const formValues = {
         ...formData.value,
         // 确保数字类型字段正确转换
-        status: Number(formData.value.status),
+        status: Number(formData.value?.status),
       };
 
       // 设置到 values

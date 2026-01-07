@@ -3,7 +3,7 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { GetSelfAppListReq, SelfAppApi } from '#/api/selfapp/info';
+import type { GetSelfAppListParams, SelfAppInfo } from '#/api/v1/self-app';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
@@ -15,7 +15,7 @@ import {
   deleteSelfApp,
   getSelfAppList,
   updateSelfAppStatus,
-} from '#/api/selfapp/info';
+} from '#/api/v1/self-app';
 import { $t } from '#/locales';
 
 import { useGridColumns, useGridFormSchema } from './data';
@@ -50,29 +50,29 @@ function onCreate() {
 }
 
 /** 查看自应用详情 */
-function onView(row: SelfAppApi.SelfAppInfo) {
+function onView(row: SelfAppInfo) {
   detailModalApi.setData(row).open();
 }
 
 /** 编辑自应用 */
-function onEdit(row: SelfAppApi.SelfAppInfo) {
+function onEdit(row: SelfAppInfo) {
   formModalApi.setData(row).open();
 }
 
 /** 版本管理 */
-function onVersions(row: SelfAppApi.SelfAppInfo) {
+function onVersions(row: SelfAppInfo) {
   releaseModalApi.setData(row).open();
 }
 
 /** 删除自应用 */
-async function onDelete(row: SelfAppApi.SelfAppInfo) {
+async function onDelete(row: SelfAppInfo) {
   const hideLoading = message.loading({
     content: $t('ui.actionMessage.deleting', [row.name]),
     duration: 0,
     key: 'action_process_msg',
   });
   try {
-    await deleteSelfApp({ id: row.id });
+    await deleteSelfApp({ body: { id: row.id! } });
     message.success({
       content: $t('ui.actionMessage.deleteSuccess', [row.name]),
       key: 'action_process_msg',
@@ -84,11 +84,13 @@ async function onDelete(row: SelfAppApi.SelfAppInfo) {
 }
 
 /** 状态变更 */
-async function onStatusChange(newStatus: number, row: SelfAppApi.SelfAppInfo) {
+async function onStatusChange(newStatus: number, row: SelfAppInfo) {
   try {
     await updateSelfAppStatus({
-      id: row.id,
-      status: newStatus,
+      body: {
+        id: row.id!,
+        status: newStatus,
+      },
     });
     message.success({
       content: $t('ui.actionMessage.operationSuccess'),
@@ -105,7 +107,7 @@ async function onStatusChange(newStatus: number, row: SelfAppApi.SelfAppInfo) {
 function onActionClick({
   code,
   row,
-}: OnActionClickParams<SelfAppApi.SelfAppInfo>) {
+}: OnActionClickParams<SelfAppInfo>) {
   switch (code) {
     case 'delete': {
       onDelete(row);
@@ -138,10 +140,12 @@ const [Grid, gridApi] = useVbenVxeGrid({
       ajax: {
         query: async ({ page }, formValues) => {
           return await getSelfAppList({
-            page: page.currentPage,
-            pageSize: page.pageSize,
-            ...formValues,
-          } as GetSelfAppListReq);
+            params: {
+              page: page.currentPage,
+              pageSize: page.pageSize,
+              ...formValues,
+            } as GetSelfAppListParams,
+          });
         },
       },
     },
@@ -157,7 +161,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
       'refresh-options': { code: 'query' },
       search: true,
     },
-  } as VxeTableGridOptions<SelfAppApi.SelfAppInfo>,
+  } as VxeTableGridOptions<SelfAppInfo>,
 });
 </script>
 

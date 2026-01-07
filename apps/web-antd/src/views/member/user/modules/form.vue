@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { UserApi } from '#/api/member/user';
+import type { CreateMemberUserReq, MemberUserInfo, UpdateMemberUserReq } from '#/api/v1/member-user';
 
 import { computed, ref } from 'vue';
 
@@ -8,13 +8,13 @@ import { useVbenModal } from '@vben/common-ui';
 import { message } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
-import { createUser, getUserInfo, updateUser } from '#/api/member/user';
+import { createMemberUser, getMemberUserInfo, updateMemberUser } from '#/api/v1/member-user';
 import { $t } from '#/locales';
 
 import { useFormSchema } from '../data';
 
 const emit = defineEmits(['success']);
-const formData = ref<UserApi.User>();
+const formData = ref<MemberUserInfo>();
 const getTitle = computed(() => {
   return formData.value?.id
     ? $t('ui.actionTitle.edit', ['用户'])
@@ -35,10 +35,11 @@ const [Modal, modalApi] = useVbenModal({
     }
     modalApi.lock();
     // 提交表单
-    const data = (await formApi.getValues()) as UserApi.CreateUserReq &
-      UserApi.UpdateUserReq;
+    const data = (await formApi.getValues()) as CreateMemberUserReq & UpdateMemberUserReq;
     try {
-      await (formData.value?.id ? updateUser(data) : createUser(data));
+      await (formData.value?.id
+        ? updateMemberUser({ body: data as UpdateMemberUserReq })
+        : createMemberUser({ body: data as CreateMemberUserReq }));
       // 关闭并提示
       await modalApi.close();
       emit('success');
@@ -56,13 +57,13 @@ const [Modal, modalApi] = useVbenModal({
       return;
     }
     // 加载数据
-    const data = modalApi.getData<UserApi.User>();
+    const data = modalApi.getData<MemberUserInfo>();
     if (!data || !data.id) {
       return;
     }
     modalApi.lock();
     try {
-      const res = await getUserInfo(data.id);
+      const res = await getMemberUserInfo({ params: { id: data.id } });
       formData.value = res.info;
       // 设置到 values
       await formApi.setValues(formData.value);
