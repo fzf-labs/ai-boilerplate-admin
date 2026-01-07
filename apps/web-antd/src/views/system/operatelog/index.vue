@@ -3,7 +3,7 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { SystemOperateLogApi } from '#/api/v1/sys-operate-log';
+import type { SysOperateLogInfo } from '#/api/v1/sys-operate-log';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 
@@ -29,10 +29,7 @@ function onDetail(row: SysOperateLogInfo) {
 }
 
 /** 表格操作按钮的回调函数 */
-function onActionClick({
-  code,
-  row,
-}: OnActionClickParams<SysOperateLogInfo>) {
+function onActionClick({ code, row }: OnActionClickParams<SysOperateLogInfo>) {
   switch (code) {
     case 'detail': {
       onDetail(row);

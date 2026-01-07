@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { DeviceApi } from '#/api/device/info';
+import type { DeviceApi } from '#/api/v1/device-info';
 
 import { computed, ref } from 'vue';
 
@@ -8,7 +8,7 @@ import { formatDateTime } from '@vben/utils';
 
 import { Avatar, Card, Tag } from 'ant-design-vue';
 
-import { getDeviceInfo } from '#/api/device/info';
+import { getDeviceInfo } from '#/api/v1/device-info';
 
 const deviceData = ref<DeviceApi.DeviceInfo>();
 

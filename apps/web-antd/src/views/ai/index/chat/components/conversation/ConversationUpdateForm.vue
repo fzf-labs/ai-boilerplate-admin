@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { AiChatConversationApi } from '#/api/ai/chat/conversation';
+import type { AiChatConversationApi } from '#/api/v1/ai-chat-conversation';
 
 import { ref } from 'vue';
 
@@ -11,7 +11,7 @@ import { useVbenForm } from '#/adapter/form';
 import {
   getChatConversationMy,
   updateChatConversationMy,
-} from '#/api/ai/chat/conversation';
+} from '#/api/v1/ai-chat-conversation';
 import { $t } from '#/locales';
 
 import { useFormSchema } from '../../data';

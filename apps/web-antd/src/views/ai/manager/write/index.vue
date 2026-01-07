@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { AiWriteRecordApi } from '#/api/ai/manager/write';
+import type { AiWriteRecordApi } from '#/api/v1/ai-write-record';
 import type { SysAdminInfo } from '#/api/v1/sys-admin';
 
 import { onMounted, ref } from 'vue';
@@ -17,7 +17,7 @@ import {
 import {
   deleteAiWriteRecord,
   getAiWriteRecordList,
-} from '#/api/ai/manager/write';
+} from '#/api/v1/ai-write-record';
 import { getSysAdminSelector } from '#/api/v1/sys-admin';
 import { $t } from '#/locales';
 

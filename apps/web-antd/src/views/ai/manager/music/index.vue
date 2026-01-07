@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { AiMusicRecordApi } from '#/api/ai/manager/music';
+import type { AiMusicRecordApi } from '#/api/v1/ai-audio-record';
 import type { SysAdminInfo } from '#/api/v1/sys-admin';
 
 import { onMounted, ref } from 'vue';
@@ -18,7 +18,7 @@ import {
   deleteAiMusicRecord,
   getAiMusicRecordList,
   updateAiMusicRecord,
-} from '#/api/ai/manager/music';
+} from '#/api/v1/ai-audio-record';
 import { getSysAdminSelector } from '#/api/v1/sys-admin';
 import { $t } from '#/locales';
 

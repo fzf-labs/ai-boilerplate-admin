@@ -1,7 +1,7 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { SystemDictDataApi } from '#/api/v1/dict-data';
-import type { SystemDictTypeApi } from '#/api/v1/dict-type';
+import type { DictDatumInfo } from '#/api/v1/dict-data';
+import type { DictTypeInfo } from '#/api/v1/dict-type';
 
 import { useAccess } from '@vben/access';
 
@@ -358,7 +358,7 @@ export function useDataGridFormSchema(): VbenFormSchema[] {
 /**
  * 字典数据表格列
  */
-export function useDataGridColumns<T = DictDataInfo>(
+export function useDataGridColumns<T = DictDatumInfo>(
   onActionClick: OnActionClickFn<T>,
 ): VxeTableGridOptions['columns'] {
   return [

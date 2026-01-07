@@ -4,7 +4,6 @@ import type {
   VxeGridListeners,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { SystemDictTypeApi } from '#/api/v1/dict-type';
 
 import { useVbenModal } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
@@ -13,6 +12,7 @@ import { Button, message } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { deleteDictType, getDictTypeList } from '#/api/v1/dict-type';
+import type { DictTypeInfo } from '#/api/v1/dict-type';
 import { $t } from '#/locales';
 
 import { useTypeGridColumns, useTypeGridFormSchema } from '../data';
@@ -48,7 +48,7 @@ async function onDelete(row: DictTypeInfo) {
     key: 'process_message',
   });
   try {
-    await deleteDictType(row.id);
+    await deleteDictType({ body: { id: row.id } });
     message.success({
       content: $t('common.operationSuccess'),
       key: 'process_message',
@@ -60,10 +60,7 @@ async function onDelete(row: DictTypeInfo) {
 }
 
 /** 表格操作按钮回调 */
-function onActionClick({
-  code,
-  row,
-}: OnActionClickParams<DictTypeInfo>) {
+function onActionClick({ code, row }: OnActionClickParams<DictTypeInfo>) {
   switch (code) {
     case 'delete': {
       onDelete(row);

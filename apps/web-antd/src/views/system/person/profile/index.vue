@@ -8,7 +8,7 @@ import { Page } from '@vben/common-ui';
 
 import { Card, message, Spin, Tabs } from 'ant-design-vue';
 
-import { getAdminInfoApi } from '#/api';
+import { sysAuthAdminInfo } from '#/api/v1/sys-auth';
 import { useAuthStore } from '#/store';
 
 import BaseInfo from './modules/base-info.vue';
@@ -24,7 +24,7 @@ const profile = ref<SysAdminInfo>();
 async function loadProfile() {
   try {
     loading.value = true;
-    const result = await getAdminInfoApi();
+    const result = await sysAuthAdminInfo({ options: {} });
     profile.value = result.info as unknown as SysAdminInfo;
   } catch (error: any) {
     console.error('加载个人信息失败:', error);

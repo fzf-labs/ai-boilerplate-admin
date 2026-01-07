@@ -68,10 +68,7 @@ async function onDelete(row: SysTenantInfo) {
 }
 
 /** 表格操作按钮的回调函数 */
-function onActionClick({
-  code,
-  row,
-}: OnActionClickParams<SysTenantInfo>) {
+function onActionClick({ code, row }: OnActionClickParams<SysTenantInfo>) {
   switch (code) {
     case 'delete': {
       onDelete(row);

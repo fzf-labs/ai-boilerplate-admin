@@ -6,7 +6,7 @@ import { $t } from '@vben/locales';
 import { message } from 'ant-design-vue';
 
 import { useVbenForm, z } from '#/adapter/form';
-import { updateAdminPassword } from '#/api/core/auth';
+import { sysAuthUpdateAdminPassword } from '#/api/v1/sys-auth';
 
 const [Form, formApi] = useVbenForm({
   commonConfig: {
@@ -73,9 +73,11 @@ const [Form, formApi] = useVbenForm({
 async function handleSubmit(values: Recordable<any>) {
   try {
     // 提交表单
-    await updateAdminPassword({
-      oldPassword: values.oldPassword,
-      newPassword: values.newPassword,
+    await sysAuthUpdateAdminPassword({
+      body: {
+        oldPassword: values.oldPassword,
+        newPassword: values.newPassword,
+      },
     });
     message.success($t('ui.actionMessage.operationSuccess'));
     // 重置表单

@@ -11,7 +11,11 @@ import { message } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
 import { getSysMenuList } from '#/api/v1/sys-menu';
-import { createSysTenant, getSysTenantInfo, updateSysTenant } from '#/api/v1/sys-tenant';
+import {
+  createSysTenant,
+  getSysTenantInfo,
+  updateSysTenant,
+} from '#/api/v1/sys-tenant';
 import { $t } from '#/locales';
 
 import { useFormSchema } from '../data';

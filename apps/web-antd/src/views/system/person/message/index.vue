@@ -3,7 +3,7 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { SystemNotifyMessageApi } from '#/api/v1/sys-notify-message';
+import type { SysNotifyMessageInfo } from '#/api/v1/sys-notify-message';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 import { MdiCheckboxMarkedCircleOutline } from '@vben/icons';
@@ -12,9 +12,9 @@ import { Button, message } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import {
-  getMyNotifyMessagePage,
-  updateMyAllNotifyMessageRead,
-  updateMyNotifyMessageRead,
+  getSysNotifyMessageMyUnreadList,
+  updateSysNotifyMessageAllRead,
+  updateSysNotifyMessageRead,
 } from '#/api/v1/sys-notify-message';
 
 import { useGridColumns, useGridFormSchema } from './data';
@@ -43,7 +43,7 @@ async function onRead(row: SysNotifyMessageInfo) {
     key: 'action_process_msg',
   });
   // 执行标记已读操作
-  await updateMyNotifyMessageRead([row.id]);
+  await updateSysNotifyMessageRead({ body: { ids: [row.id!] } });
   // 提示成功
   message.success({
     content: '标记已读成功',
@@ -66,14 +66,14 @@ async function onMarkRead() {
     return;
   }
 
-  const ids = rows.map((row: SysNotifyMessageInfo) => row.id);
+  const ids = rows.map((row: SysNotifyMessageInfo) => row.id!).filter(Boolean) as string[];
   message.loading({
     content: '正在标记已读...',
     duration: 0,
     key: 'action_process_msg',
   });
   // 执行标记已读操作
-  await updateMyNotifyMessageRead(ids);
+  await updateSysNotifyMessageRead({ body: { ids } });
   // 提示成功
   message.success({
     content: '标记已读成功',
@@ -91,7 +91,7 @@ async function onMarkAllRead() {
     key: 'action_process_msg',
   });
   // 执行标记已读操作
-  await updateMyAllNotifyMessageRead();
+  await updateSysNotifyMessageAllRead({ body: {} });
   // 提示成功
   message.success({
     content: '全部标记已读成功',
@@ -129,10 +129,14 @@ const [Grid, gridApi] = useVbenVxeGrid({
     proxyConfig: {
       ajax: {
         query: async ({ page }, formValues) => {
-          return await getMyNotifyMessagePage({
-            page: page.currentPage,
-            pageSize: page.pageSize,
-            ...formValues,
+          return await getSysNotifyMessageMyUnreadList({
+            options: {
+              params: {
+                page: page.currentPage,
+                pageSize: page.pageSize,
+                ...formValues,
+              },
+            },
           });
         },
       },

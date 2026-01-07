@@ -1,5 +1,9 @@
 <script lang="ts" setup>
-import type { CreateSysAdminReq, SysAdminInfo, UpdateSysAdminReq } from '#/api/v1/sys-admin';
+import type {
+  CreateSysAdminReq,
+  SysAdminInfo,
+  UpdateSysAdminReq,
+} from '#/api/v1/sys-admin';
 
 import { computed, ref } from 'vue';
 
@@ -8,7 +12,11 @@ import { useVbenModal } from '@vben/common-ui';
 import { message } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
-import { createSysAdmin, getSysAdminInfo, updateSysAdmin } from '#/api/v1/sys-admin';
+import {
+  createSysAdmin,
+  getSysAdminInfo,
+  updateSysAdmin,
+} from '#/api/v1/sys-admin';
 import { $t } from '#/locales';
 
 import { useFormSchema } from '../data';
@@ -37,11 +45,9 @@ const [Modal, modalApi] = useVbenModal({
     // 提交表单
     const data = (await formApi.getValues()) as SysAdminInfo;
     try {
-      if (formData.value?.id) {
-        await updateSysAdmin({ body: data as UpdateSysAdminReq });
-      } else {
-        await createSysAdmin({ body: data as CreateSysAdminReq });
-      }
+      await (formData.value?.id
+        ? updateSysAdmin({ body: data as UpdateSysAdminReq })
+        : createSysAdmin({ body: data as CreateSysAdminReq }));
       // 关闭并提示
       await modalApi.close();
       emit('success');

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { AiProviderModelApi } from '#/api/ai/manager/providerModel';
+import type { AiProviderModelApi } from '#/api/v1/ai-provider-model';
 
 import { computed, ref } from 'vue';
 
@@ -12,7 +12,7 @@ import {
   createAiProviderModel,
   getAiProviderModelInfo,
   updateAiProviderModel,
-} from '#/api/ai/manager/providerModel';
+} from '#/api/v1/ai-provider-model';
 import { $t } from '#/locales';
 
 import { useModelFormSchema } from './model-data';

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { SystemNotifyMessageApi } from '#/api/v1/sys-notify-message';
+import type { SysNotifyMessageInfo } from '#/api/v1/sys-notify-message';
 
 import { computed, ref } from 'vue';
 

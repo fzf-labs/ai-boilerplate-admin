@@ -1,6 +1,6 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { SystemOperateLogApi } from '#/api/v1/sys-operate-log';
+import type { SysOperateLogInfo } from '#/api/v1/sys-operate-log';
 
 import { useAccess } from '@vben/access';
 
@@ -26,7 +26,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
       label: '操作人',
       component: 'ApiSelect',
       componentProps: {
-        api: async () => await getSysAdminSelector(),
+        api: async () => await getSysAdminSelector({ options: {} }),
         resultField: 'list',
         labelField: 'nickname',
         valueField: 'id',
@@ -62,7 +62,7 @@ export function useGridColumns<T = SysOperateLogInfo>(
       minWidth: 120,
     },
     {
-      field: 'ip',
+      field: 'IP',
       title: '操作IP',
       minWidth: 120,
     },

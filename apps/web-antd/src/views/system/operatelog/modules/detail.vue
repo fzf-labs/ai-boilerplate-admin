@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { SystemOperateLogApi } from '#/api/v1/sys-operate-log';
+import type { SysOperateLogInfo } from '#/api/v1/sys-operate-log';
 
 import { h, ref } from 'vue';
 
@@ -129,7 +129,7 @@ const [Modal, modalApi] = useVbenModal({
               class="flex items-center justify-between border-b border-green-100 py-2"
             >
               <span class="font-medium text-green-800">操作人IP</span>
-              <span class="font-mono text-green-700">{{ formData?.ip }}</span>
+              <span class="font-mono text-green-700">{{ formData?.IP }}</span>
             </div>
             <div class="flex items-start justify-between py-2">
               <span class="font-medium text-green-800">用户代理</span>

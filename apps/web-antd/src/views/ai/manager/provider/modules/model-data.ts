@@ -1,6 +1,6 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { AiProviderModelApi } from '#/api/ai/manager/providerModel';
+import type { AiProviderModelApi } from '#/api/v1/ai-provider-model';
 
 import { useAccess } from '@vben/access';
 

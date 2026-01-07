@@ -6,7 +6,7 @@ import { useVbenModal } from '@vben/common-ui';
 import { message } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
-import { registerDevice } from '#/api/device/info';
+import { registerDevice } from '#/api/v1/device-info';
 
 import { useFormSchema } from '../data';
 

@@ -1,6 +1,6 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { SystemNotifyMessageApi } from '#/api/v1/sys-notify-message';
+import type { SysNotifyMessageInfo } from '#/api/v1/sys-notify-message';
 
 import { useAccess } from '@vben/access';
 
@@ -17,7 +17,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
       label: '发送人',
       component: 'ApiSelect',
       componentProps: {
-        api: async () => await getSysAdminSelector(),
+        api: async () => await getSysAdminSelector({ options: {} }),
         resultField: 'list',
         labelField: 'nickname',
         valueField: 'id',

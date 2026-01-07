@@ -8,7 +8,11 @@ import { useVbenModal } from '@vben/common-ui';
 import { message } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
-import { createSysDept, getSysDeptInfo, updateSysDept } from '#/api/v1/sys-dept';
+import {
+  createSysDept,
+  getSysDeptInfo,
+  updateSysDept,
+} from '#/api/v1/sys-dept';
 import { $t } from '#/locales';
 
 import { useFormSchema } from '../data';
@@ -37,11 +41,9 @@ const [Modal, modalApi] = useVbenModal({
     // 提交表单
     const data = (await formApi.getValues()) as SysDeptInfo;
     try {
-      if (formData.value?.id) {
-        await updateSysDept({ body: data });
-      } else {
-        await createSysDept({ body: data });
-      }
+      await (formData.value?.id
+        ? updateSysDept({ body: { ...data, id: formData.value.id } })
+        : createSysDept({ body: data }));
       // 关闭并提示
       await modalApi.close();
       emit('success');

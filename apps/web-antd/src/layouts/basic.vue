@@ -18,12 +18,6 @@ import { preferences } from '@vben/preferences';
 import { useAccessStore, useUserStore } from '@vben/stores';
 import { formatDateTime } from '@vben/utils';
 
-import {
-  getMyUnreadSysNotifyMessageCount,
-  getMyUnreadSysNotifyMessageList,
-  updateMyAllSysNotifyMessageRead,
-  updateMySysNotifyMessageRead,
-} from '#/api/v1/sys-notify-message';
 import { router } from '#/router';
 import { useAuthStore } from '#/store';
 import LoginForm from '#/views/_core/authentication/login.vue';

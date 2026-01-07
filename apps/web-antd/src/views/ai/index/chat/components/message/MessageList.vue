@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { PropType } from 'vue';
 
-import type { AiChatConversationApi } from '#/api/ai/chat/conversation';
-import type { AiChatMessageApi } from '#/api/ai/chat/message';
+import type { AiChatConversationApi } from '#/api/v1/ai-chat-conversation';
+import type { AiChatMessageApi } from '#/api/v1/ai-chat-message';
 
 import { computed, nextTick, onMounted, ref, toRefs } from 'vue';
 
@@ -14,7 +14,7 @@ import { formatDate } from '@vben/utils';
 import { useClipboard } from '@vueuse/core';
 import { Avatar, Button, message } from 'ant-design-vue';
 
-import { deleteChatMessage } from '#/api/ai/chat/message';
+import { deleteChatMessage } from '#/api/v1/ai-chat-message';
 import { MarkdownView } from '#/components/markdown-view';
 
 import MessageKnowledge from './MessageKnowledge.vue';

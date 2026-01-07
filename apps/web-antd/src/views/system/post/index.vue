@@ -3,7 +3,7 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { SystemPostApi } from '#/api/v1/sys-post';
+import type { SysPostInfo } from '#/api/v1/sys-post';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
@@ -45,7 +45,7 @@ async function onDelete(row: SysPostInfo) {
     key: 'action_process_msg',
   });
   try {
-    await deleteSysPost(row.id);
+    await deleteSysPost({ body: { id: row.id! } });
     message.success({
       content: $t('ui.actionMessage.deleteSuccess', [row.name]),
       key: 'action_process_msg',

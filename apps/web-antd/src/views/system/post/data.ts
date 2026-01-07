@@ -1,6 +1,6 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { SystemPostApi } from '#/api/v1/sys-post';
+import type { SysPostInfo } from '#/api/v1/sys-post';
 
 import { useAccess } from '@vben/access';
 

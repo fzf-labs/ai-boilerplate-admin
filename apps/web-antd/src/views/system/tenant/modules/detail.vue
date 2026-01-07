@@ -61,9 +61,7 @@ const [Modal, modalApi] = useVbenModal({
       return;
     }
     // 加载数据
-    const data = modalApi.getData<
-      SysTenantInfo & { adminName?: string }
-    >();
+    const data = modalApi.getData<SysTenantInfo & { adminName?: string }>();
     if (!data || !data.id) {
       return;
     }

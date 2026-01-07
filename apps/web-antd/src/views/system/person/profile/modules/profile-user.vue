@@ -9,7 +9,7 @@ import { formatDateTime } from '@vben/utils';
 
 import { Descriptions, DescriptionsItem, Tooltip } from 'ant-design-vue';
 
-import { updateAdminInfo } from '#/api/core/auth';
+import { sysAuthUpdateAdminInfo } from '#/api/v1/sys-auth';
 import { CropperAvatar } from '#/components/cropper';
 import { useUpload } from '#/components/upload/use-upload';
 
@@ -39,10 +39,12 @@ async function handelUpload({
     const fileObj = new File([file], filename, { type: file.type });
     const avatar = await httpRequest(fileObj);
     // 2. 更新用户头像
-    await updateAdminInfo({
-      nickname: props.profile?.nickname || '',
-      sex: props.profile?.sex || 0,
-      avatar: avatar.url,
+    await sysAuthUpdateAdminInfo({
+      body: {
+        nickname: props.profile?.nickname || '',
+        sex: props.profile?.sex || 0,
+        avatar: avatar.url,
+      },
     });
   } catch (error) {
     console.error('上传头像失败:', error);
@@ -135,7 +137,7 @@ async function handelUpload({
               创建时间
             </div>
           </template>
-          {{ formatDateTime(profile.createdAt) }}
+          {{ formatDateTime(profile.createdAt || '') }}
         </DescriptionsItem>
       </Descriptions>
     </div>

@@ -3,7 +3,7 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { DeviceApi } from '#/api/device/info';
+import type { DeviceApi } from '#/api/v1/device-info';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
@@ -15,7 +15,7 @@ import {
   deleteDevice,
   getDeviceList,
   updateDeviceStatus,
-} from '#/api/device/info';
+} from '#/api/v1/device-info';
 import { $t } from '#/locales';
 
 import { useGridColumns, useGridFormSchema } from './data';

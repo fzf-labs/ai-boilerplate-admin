@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { SystemMenuApi } from '#/api/v1/sys-menu';
+import type { SysMenuInfo } from '#/api/v1/sys-menu';
 
 import { computed, ref } from 'vue';
 
@@ -8,7 +8,11 @@ import { useVbenModal } from '@vben/common-ui';
 import { message } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
-import { createSysMenu, getSysMenuInfo, updateSysMenu } from '#/api/v1/sys-menu';
+import {
+  createSysMenu,
+  getSysMenuInfo,
+  updateSysMenu,
+} from '#/api/v1/sys-menu';
 import { $t } from '#/locales';
 
 import { useFormSchema } from '../data';
@@ -37,7 +41,9 @@ const [Modal, modalApi] = useVbenModal({
     // 提交表单
     const data = (await formApi.getValues()) as SysMenuInfo;
     try {
-      await (formData.value?.id ? updateSysMenu(data) : createSysMenu(data));
+      await (formData.value?.id
+        ? updateSysMenu({ body: { ...data, name: data.name || '', id: data.id || '', type: data.type || '' } })
+        : createSysMenu({ body: { ...data, name: data.name || '', type: data.type || '' } }));
       // 关闭并提示
       await modalApi.close();
       emit('success');
@@ -62,7 +68,7 @@ const [Modal, modalApi] = useVbenModal({
     if (data.id) {
       modalApi.lock();
       try {
-        const res = await getSysMenuInfo(data.id);
+        const res = await getSysMenuInfo({ params: { id: data.id } });
         data = res.info;
       } finally {
         modalApi.lock(false);
@@ -70,7 +76,9 @@ const [Modal, modalApi] = useVbenModal({
     }
     // 设置到 values
     formData.value = data;
-    await formApi.setValues(formData.value);
+    if (formData.value) {
+      await formApi.setValues(formData.value);
+    }
   },
 });
 </script>

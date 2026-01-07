@@ -113,7 +113,9 @@ async function onStatusChange(
       },
       onOk() {
         // 更新用户状态
-        updateSysAdminStatus({ body: { id: row.id as string, status: newStatus } })
+        updateSysAdminStatus({
+          body: { id: row.id as string, status: newStatus },
+        })
           .then(() => {
             // 提示并返回成功
             message.success({
@@ -131,10 +133,7 @@ async function onStatusChange(
 }
 
 /** 表格操作按钮的回调函数 */
-function onActionClick({
-  code,
-  row,
-}: OnActionClickParams<SysAdminInfo>) {
+function onActionClick({ code, row }: OnActionClickParams<SysAdminInfo>) {
   switch (code) {
     case 'delete': {
       onDelete(row);

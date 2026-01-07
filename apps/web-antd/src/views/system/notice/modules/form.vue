@@ -1,5 +1,9 @@
 <script lang="ts" setup>
-import type { CreateSysNoticeReq, SysNoticeInfo, UpdateSysNoticeReq } from '#/api/v1/sys-notice';
+import type {
+  CreateSysNoticeReq,
+  SysNoticeInfo,
+  UpdateSysNoticeReq,
+} from '#/api/v1/sys-notice';
 
 import { computed, ref } from 'vue';
 
@@ -8,7 +12,11 @@ import { useVbenModal } from '@vben/common-ui';
 import { message } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
-import { createSysNotice, getSysNoticeInfo, updateSysNotice } from '#/api/v1/sys-notice';
+import {
+  createSysNotice,
+  getSysNoticeInfo,
+  updateSysNotice,
+} from '#/api/v1/sys-notice';
 import { $t } from '#/locales';
 
 import { useFormSchema } from '../data';

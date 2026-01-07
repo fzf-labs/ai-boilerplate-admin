@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { SystemPostApi } from '#/api/v1/sys-post';
+import type { SysPostInfo } from '#/api/v1/sys-post';
 
 import { computed, ref } from 'vue';
 
@@ -8,7 +8,11 @@ import { useVbenModal } from '@vben/common-ui';
 import { message } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
-import { createSysPost, getSysPostInfo, updateSysPost } from '#/api/v1/sys-post';
+import {
+  createSysPost,
+  getSysPostInfo,
+  updateSysPost,
+} from '#/api/v1/sys-post';
 import { $t } from '#/locales';
 
 import { useFormSchema } from '../data';
@@ -44,7 +48,9 @@ const [Modal, modalApi] = useVbenModal({
     // 提交表单
     const data = (await formApi.getValues()) as SysPostInfo;
     try {
-      await (formData.value?.id ? updateSysPost(data) : createSysPost(data));
+      await (formData.value?.id
+        ? updateSysPost({ body: data })
+        : createSysPost({ body: data }));
       // 关闭并提示
       await modalApi.close();
       emit('success');
@@ -68,10 +74,12 @@ const [Modal, modalApi] = useVbenModal({
     }
     modalApi.lock();
     try {
-      const res = await getSysPostInfo(data.id);
+      const res = await getSysPostInfo({ params: { id: data.id } });
       formData.value = res.info;
       // 设置到 values
-      await formApi.setValues(formData.value);
+      if (formData.value) {
+        await formApi.setValues(formData.value);
+      }
     } finally {
       modalApi.lock(false);
     }

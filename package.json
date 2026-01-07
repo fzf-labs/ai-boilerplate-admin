@@ -59,9 +59,6 @@
   },
   "devDependencies": {
     "@ant-design/icons-vue": "^7.0.1",
-    "openapi-ts-request": "^1.10.0",
-    "orval": "^7.3.0",
-    "tsx": "^4.19.0",
     "@changesets/changelog-github": "catalog:",
     "@changesets/cli": "catalog:",
     "@playwright/test": "catalog:",
@@ -72,6 +69,9 @@
     "@vben/stylelint-config": "workspace:*",
     "@vben/tailwind-config": "workspace:*",
     "@vben/tsconfig": "workspace:*",
+    "openapi-ts-request": "^1.10.0",
+    "orval": "^7.3.0",
+    "tsx": "^4.19.0",
     "@vben/turbo-run": "workspace:*",
     "@vben/vite-config": "workspace:*",
     "@vben/vsh": "workspace:*",
@@ -111,9 +111,9 @@
       "@ctrl/tinycolor": "catalog:",
       "clsx": "catalog:",
       "esbuild": "0.25.3",
+      "jiti": "^2.6.1",
       "pinia": "catalog:",
-      "vue": "catalog:",
-      "jiti": "^2.6.1"
+      "vue": "catalog:"
     },
     "neverBuiltDependencies": [
       "canvas",

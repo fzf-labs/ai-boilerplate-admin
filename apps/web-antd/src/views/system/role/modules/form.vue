@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import type { SystemMenuApi } from '#/api/v1/sys-menu';
-import type { SystemRoleApi } from '#/api/v1/sys-role';
+import type { SysMenuInfo } from '#/api/v1/sys-menu';
+import type { SysRoleInfo } from '#/api/v1/sys-role';
 
 import { computed, ref } from 'vue';
 
@@ -11,7 +11,11 @@ import { message } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
 import { getSysMenuList } from '#/api/v1/sys-menu';
-import { createSysRole, getSysRoleInfo, updateSysRole } from '#/api/v1/sys-role';
+import {
+  createSysRole,
+  getSysRoleInfo,
+  updateSysRole,
+} from '#/api/v1/sys-role';
 import { $t } from '#/locales';
 
 import { useFormSchema } from '../data';
@@ -43,7 +47,9 @@ const [Modal, modalApi] = useVbenModal({
     // 提交表单
     const data = (await formApi.getValues()) as SysRoleInfo;
     try {
-      await (formData.value?.id ? updateSysRole(data) : createSysRole(data));
+      await (formData.value?.id
+        ? updateSysRole({ body: { name: data.name || '', id: data.id || '', remark: data.remark || '', dataScope: data.dataScope || '', menuIds: data.menuIds || [], sort: data.sort || 0, status: data.status || 1 } })
+        : createSysRole({ body: { name: data.name || '', remark: data.remark || '', dataScope: data.dataScope || '', menuIds: data.menuIds || [], sort: data.sort || 0, status: data.status || 1 } }));
       // 关闭并提示
       await modalApi.close();
       emit('success');
@@ -69,10 +75,12 @@ const [Modal, modalApi] = useVbenModal({
     }
     modalApi.lock();
     try {
-      const res = await getSysRoleInfo(data.id);
+      const res = await getSysRoleInfo({ params: { id: data.id } });
       formData.value = res.info;
       // 设置到 values
-      await formApi.setValues(formData.value);
+      if (formData.value) {
+        await formApi.setValues(formData.value);
+      }
     } finally {
       modalApi.lock(false);
     }
@@ -83,8 +91,8 @@ const [Modal, modalApi] = useVbenModal({
 async function loadMenuTree() {
   menuLoading.value = true;
   try {
-    const data = await getSysMenuList();
-    menuTree.value = handleTree(data.list) as SysMenuInfo[];
+    const data = await getSysMenuList({ options: {} });
+    menuTree.value = handleTree(data.list || []) as SysMenuInfo[];
   } finally {
     menuLoading.value = false;
   }

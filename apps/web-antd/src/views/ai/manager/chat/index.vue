@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { AiChatConversationApi } from '#/api/ai/manager/chatConversation';
+import type { AiChatConversationApi } from '#/api/v1/ai-chat-conversation';
 import type { AiChatMessageApi } from '#/api/ai/manager/chatMessage';
 import type { SysAdminInfo } from '#/api/v1/sys-admin';
 
@@ -18,7 +18,7 @@ import {
 import {
   deleteAiChatConversation,
   getAiChatConversationList,
-} from '#/api/ai/manager/chatConversation';
+} from '#/api/v1/ai-chat-conversation';
 import {
   deleteAiChatMessage,
   getAiChatMessageList,

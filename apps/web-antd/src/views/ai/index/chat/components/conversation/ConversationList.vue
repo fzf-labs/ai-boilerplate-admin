@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { PropType } from 'vue';
 
-import type { AiChatConversationApi } from '#/api/ai/chat/conversation';
+import type { AiChatConversationApi } from '#/api/v1/ai-chat-conversation';
 
 import { h, onMounted, ref, toRefs, watch } from 'vue';
 
@@ -16,7 +16,7 @@ import {
   deleteChatConversationMyByUnpinned,
   getChatConversationMyList,
   updateChatConversationMy,
-} from '#/api/ai/chat/conversation';
+} from '#/api/v1/ai-chat-conversation';
 
 import RoleRepository from '../role/RoleRepository.vue';
 

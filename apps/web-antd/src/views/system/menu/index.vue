@@ -3,7 +3,7 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { SystemMenuApi } from '#/api/v1/sys-menu';
+import type { SysMenuInfo } from '#/api/v1/sys-menu';
 
 import { ref } from 'vue';
 
@@ -53,7 +53,7 @@ async function onDelete(row: SysMenuInfo) {
     key: 'action_process_msg',
   });
   try {
-    await deleteSysMenu(row.id);
+    await deleteSysMenu({ body: { id: row.id! } });
     message.success({
       content: $t('ui.actionMessage.deleteSuccess', [row.name]),
       key: 'action_process_msg',
@@ -100,7 +100,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
     proxyConfig: {
       ajax: {
         query: async (_params) => {
-          return await getSysMenuList();
+          return await getSysMenuList({ options: {} });
         },
       },
     },

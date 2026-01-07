@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import type { SelfAppInfo, CreateSelfAppReq, UpdateSelfAppReq } from '#/api/v1/self-app';
-
 import { computed, ref } from 'vue';
 
 import { useVbenModal } from '@vben/common-ui';

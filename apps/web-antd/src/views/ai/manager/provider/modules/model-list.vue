@@ -3,7 +3,7 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { AiProviderModelApi } from '#/api/ai/manager/providerModel';
+import type { AiProviderModelApi } from '#/api/v1/ai-provider-model';
 import type { AiProviderPlatformApi } from '#/api/ai/manager/providerPlatform';
 
 import { computed, ref } from 'vue';
@@ -17,7 +17,7 @@ import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import {
   deleteAiProviderModel,
   getAiProviderModelList,
-} from '#/api/ai/manager/providerModel';
+} from '#/api/v1/ai-provider-model';
 import { $t } from '#/locales';
 
 import { useModelColumns } from './model-data';

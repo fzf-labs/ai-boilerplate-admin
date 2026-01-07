@@ -3,9 +3,10 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { SystemRoleApi } from '#/api/v1/sys-role';
+import type { SysRoleInfo } from '#/api/v1/sys-role';
 
 import { Page, useVbenModal } from '@vben/common-ui';
+import { Plus } from '@vben/icons';
 
 import { Button, message } from 'ant-design-vue';
 
@@ -44,7 +45,7 @@ async function onDelete(row: SysRoleInfo) {
     key: 'action_process_msg',
   });
   try {
-    await deleteSysRole(row.id);
+    await deleteSysRole({ body: { id: row.id! } });
     message.success({
       content: $t('ui.actionMessage.deleteSuccess', [row.name]),
       key: 'action_process_msg',

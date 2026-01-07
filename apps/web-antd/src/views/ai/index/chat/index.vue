@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import type { AiChatConversationApi } from '#/api/ai/chat/conversation';
-import type { AiChatMessageApi } from '#/api/ai/chat/message';
+import type { AiChatConversationApi } from '#/api/v1/ai-chat-conversation';
+import type { AiChatMessageApi } from '#/api/v1/ai-chat-message';
 
 import { computed, nextTick, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
@@ -10,12 +10,12 @@ import { IconifyIcon } from '@vben/icons';
 
 import { Button, Layout, message, Switch } from 'ant-design-vue';
 
-import { getChatConversationMy } from '#/api/ai/chat/conversation';
+import { getChatConversationMy } from '#/api/v1/ai-chat-conversation';
 import {
   deleteByConversationId,
   getChatMessageListByConversationId,
   sendChatMessageStream,
-} from '#/api/ai/chat/message';
+} from '#/api/v1/ai-chat-message';
 
 import ConversationList from './components/conversation/ConversationList.vue';
 import ConversationUpdateForm from './components/conversation/ConversationUpdateForm.vue';

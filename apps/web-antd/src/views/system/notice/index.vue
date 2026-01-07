@@ -11,7 +11,11 @@ import { Plus } from '@vben/icons';
 import { Button, message } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { deleteSysNotice, getSysNoticeList, updateSysNoticeStatus } from '#/api/v1/sys-notice';
+import {
+  deleteSysNotice,
+  getSysNoticeList,
+  updateSysNoticeStatus,
+} from '#/api/v1/sys-notice';
 import { $t } from '#/locales';
 
 import { useGridColumns, useGridFormSchema } from './data';
@@ -75,10 +79,7 @@ async function onPush(row: SysNoticeInfo) {
 }
 
 /** 表格操作按钮的回调函数 */
-function onActionClick({
-  code,
-  row,
-}: OnActionClickParams<SysNoticeInfo>) {
+function onActionClick({ code, row }: OnActionClickParams<SysNoticeInfo>) {
   switch (code) {
     case 'delete': {
       onDelete(row);

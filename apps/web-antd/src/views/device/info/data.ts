@@ -1,6 +1,6 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { DeviceApi } from '#/api/device/info';
+import type { DeviceApi } from '#/api/v1/device-info';
 
 import { useAccess } from '@vben/access';
 

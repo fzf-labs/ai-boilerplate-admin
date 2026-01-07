@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { Recordable } from '@vben/types';
 
-import type { AuthApi } from '#/api/core/auth';
 import type { SysAdminInfo } from '#/api/v1/sys-admin';
 
 import { watch } from 'vue';
@@ -11,7 +10,7 @@ import { $t } from '@vben/locales';
 import { message } from 'ant-design-vue';
 
 import { useVbenForm, z } from '#/adapter/form';
-import { updateAdminInfo } from '#/api/core/auth';
+import { sysAuthUpdateAdminInfo } from '#/api/v1/sys-auth';
 
 const props = defineProps<{
   profile?: SysAdminInfo;
@@ -61,10 +60,12 @@ const [Form, formApi] = useVbenForm({
 async function handleSubmit(values: Recordable<any>) {
   try {
     // 提交表单，头像使用原值
-    await updateAdminInfo({
-      ...values,
-      avatar: props.profile?.avatar || '',
-    } as AuthApi.UpdateAdminInfoReq);
+    await sysAuthUpdateAdminInfo({
+      body: {
+        ...values,
+        avatar: props.profile?.avatar || '',
+      },
+    });
     // 关闭并提示
     emit('success');
     message.success($t('ui.actionMessage.operationSuccess'));

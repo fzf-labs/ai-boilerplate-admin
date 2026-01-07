@@ -3,7 +3,7 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { SystemNotifyMessageApi } from '#/api/v1/sys-notify-message';
+import type { SysNotifyMessageInfo } from '#/api/v1/sys-notify-message';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 

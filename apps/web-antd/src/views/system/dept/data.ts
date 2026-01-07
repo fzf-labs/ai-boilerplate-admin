@@ -62,7 +62,7 @@ export function useFormSchema(): VbenFormSchema[] {
       label: '负责人',
       component: 'ApiSelect',
       componentProps: {
-        api: getSysAdminSelector,
+        api: () => getSysAdminSelector({ options: {} }),
         class: 'w-full',
         resultField: 'list',
         labelField: 'nickname',
@@ -179,7 +179,7 @@ export function useGridColumns(
           {
             code: 'delete',
             show: hasAccessByCodes(['system:dept:delete']),
-            disabled: (row: SysDeptInfo) => {
+            disabled: (row: any) => {
               return !!(row.children && row.children.length > 0);
             },
           },

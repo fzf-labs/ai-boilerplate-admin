@@ -2,7 +2,7 @@ import type { Recordable } from '@vben/types';
 
 import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { SystemMenuApi } from '#/api/v1/sys-menu';
+import type { SysMenuInfo } from '#/api/v1/sys-menu';
 
 import { h } from 'vue';
 
@@ -36,12 +36,12 @@ export function useFormSchema(): VbenFormSchema[] {
       componentProps: {
         allowClear: true,
         api: async () => {
-          const data = await getSysMenuList();
-          data.list.unshift({
+          const data = await getSysMenuList({ options: {} });
+          data.list?.unshift({
             id: '',
             name: '顶级菜单',
           } as SysMenuInfo);
-          return handleTree(data.list);
+          return handleTree(data.list || []);
         },
         class: 'w-full',
         labelField: 'name',
