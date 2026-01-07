@@ -1,5 +1,9 @@
 <script lang="ts" setup>
-import type { SensitiveWordApi } from '#/api/infra/sensitiveword';
+import type {
+  CreateSensitiveWordReq,
+  SensitiveWordInfo,
+  UpdateSensitiveWordReq,
+} from '#/api/v1/sensitive-word';
 
 import { computed, ref } from 'vue';
 
@@ -12,13 +16,13 @@ import {
   createSensitiveWord,
   getSensitiveWordInfo,
   updateSensitiveWord,
-} from '#/api/infra/sensitiveword';
+} from '#/api/v1/sensitive-word';
 import { $t } from '#/locales';
 
 import { useFormSchema } from '../data';
 
 const emit = defineEmits(['success']);
-const formData = ref<SensitiveWordApi.SensitiveWordInfo>();
+const formData = ref<SensitiveWordInfo>();
 const getTitle = computed(() => {
   return formData.value?.id
     ? $t('ui.actionTitle.edit', ['敏感词'])
@@ -39,12 +43,11 @@ const [Modal, modalApi] = useVbenModal({
     }
     modalApi.lock();
     // 提交表单
-    const data =
-      (await formApi.getValues()) as SensitiveWordApi.SensitiveWordInfo;
+    const data = await formApi.getValues();
     try {
       await (formData.value?.id
-        ? updateSensitiveWord(data)
-        : createSensitiveWord(data));
+        ? updateSensitiveWord({ body: data as UpdateSensitiveWordReq })
+        : createSensitiveWord({ body: data as CreateSensitiveWordReq }));
       // 关闭并提示
       await modalApi.close();
       emit('success');
@@ -62,16 +65,18 @@ const [Modal, modalApi] = useVbenModal({
       return;
     }
     // 加载数据
-    const data = modalApi.getData<SensitiveWordApi.SensitiveWordInfo>();
+    const data = modalApi.getData<SensitiveWordInfo>();
     if (!data || !data.id) {
       return;
     }
     modalApi.lock();
     try {
-      const { info } = await getSensitiveWordInfo(data.id);
-      formData.value = info;
+      const res = await getSensitiveWordInfo({ params: { id: data.id } });
+      formData.value = res.info;
       // 设置到 values
-      await formApi.setValues(formData.value as Record<string, any>);
+      if (formData.value) {
+        await formApi.setValues(formData.value);
+      }
     } finally {
       modalApi.lock(false);
     }

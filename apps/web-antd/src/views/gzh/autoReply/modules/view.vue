@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import type { WxGzhAutoReplyInfo } from '#/api/v1/wx-gzh-auto-reply';
+
 import { computed, ref } from 'vue';
 
 import { useVbenModal } from '@vben/common-ui';
@@ -6,7 +8,6 @@ import { formatDateTime } from '@vben/utils';
 
 import { Descriptions, Tag } from 'ant-design-vue';
 
-import type { WxGzhAutoReplyInfo } from '#/api/v1/wx-gzh-auto-reply';
 import { getWxGzhAutoReplyInfo } from '#/api/v1/wx-gzh-auto-reply';
 import { $t } from '#/locales';
 import { CommonStatusEnum } from '#/utils/constants';
@@ -168,9 +169,7 @@ const [Modal, modalApi] = useVbenModal({
         </Descriptions.Item>
 
         <Descriptions.Item
-          v-if="
-            autoReplyData.responseMessageType === ResponseMessageType.TEXT
-          "
+          v-if="autoReplyData.responseMessageType === ResponseMessageType.TEXT"
           label="回复内容"
           :span="2"
         >
@@ -180,9 +179,7 @@ const [Modal, modalApi] = useVbenModal({
         </Descriptions.Item>
 
         <Descriptions.Item
-          v-if="
-            autoReplyData.responseMessageType !== ResponseMessageType.TEXT
-          "
+          v-if="autoReplyData.responseMessageType !== ResponseMessageType.TEXT"
           label="媒体文件ID"
           :span="2"
         >

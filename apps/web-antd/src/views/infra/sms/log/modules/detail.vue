@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { SmsLogApi } from '#/api/infra/sms/log';
+import type { SmsLogInfo } from '#/api/v1/sms-log';
 
 import { ref } from 'vue';
 
@@ -8,7 +8,7 @@ import { formatDateTime } from '@vben/utils';
 
 import { Descriptions } from 'ant-design-vue';
 
-const formData = ref<SmsLogApi.SmsLog>();
+const formData = ref<SmsLogInfo>();
 
 const [Modal, modalApi] = useVbenModal({
   async onOpenChange(isOpen: boolean) {
@@ -17,7 +17,7 @@ const [Modal, modalApi] = useVbenModal({
       return;
     }
     // 加载数据
-    const data = modalApi.getData<SmsLogApi.SmsLog>();
+    const data = modalApi.getData<SmsLogInfo>();
     if (!data || !data.id) {
       return;
     }

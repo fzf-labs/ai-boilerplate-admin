@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { MailLogApi } from '#/api/infra/mail/log';
+import type { MailLogInfo } from '#/api/v1/mail-log';
 
 import { computed, ref } from 'vue';
 
@@ -9,7 +9,7 @@ import { formatDateTime } from '@vben/utils';
 import { Descriptions } from 'ant-design-vue';
 import DOMPurify from 'dompurify';
 
-const formData = ref<MailLogApi.MailLog>();
+const formData = ref<MailLogInfo>();
 
 const sanitizedContent = computed(() => {
   if (!formData.value?.templateContent) return '';
@@ -23,7 +23,7 @@ const [Modal, modalApi] = useVbenModal({
       return;
     }
     // 加载数据
-    const data = modalApi.getData<MailLogApi.MailLog>();
+    const data = modalApi.getData<MailLogInfo>();
     if (!data || !data.id) {
       return;
     }

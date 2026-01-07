@@ -3,7 +3,7 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { SmsTemplateApi } from '#/api/infra/sms/template';
+import type { SmsTemplateInfo } from '#/api/v1/sms-template';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
@@ -11,10 +11,7 @@ import { Plus } from '@vben/icons';
 import { Button, message } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import {
-  deleteSmsTemplate,
-  getSmsTemplateList,
-} from '#/api/infra/sms/template';
+import { deleteSmsTemplate, getSmsTemplateList } from '#/api/v1/sms-template';
 import { $t } from '#/locales';
 
 import { useGridColumns, useGridFormSchema } from './data';
@@ -42,24 +39,25 @@ function onCreate() {
 }
 
 /** 编辑短信模板 */
-function onEdit(row: SmsTemplateApi.SmsTemplate) {
+function onEdit(row: SmsTemplateInfo) {
   formModalApi.setData(row).open();
 }
 
 /** 发送测试短信 */
-function onSend(row: SmsTemplateApi.SmsTemplate) {
+function onSend(row: SmsTemplateInfo) {
   sendModalApi.setData(row).open();
 }
 
 /** 删除短信模板 */
-async function onDelete(row: SmsTemplateApi.SmsTemplate) {
+async function onDelete(row: SmsTemplateInfo) {
+  if (!row.id) return;
   const hideLoading = message.loading({
-    content: $t('ui.actionMessage.deleting', [row.templateName]),
+    content: $t('ui.actionMessage.deleting', [row.name]),
     duration: 0,
     key: 'action_process_msg',
   });
   try {
-    await deleteSmsTemplate(row.id);
+    await deleteSmsTemplate({ body: { id: row.id } });
     message.success({
       content: $t('ui.actionMessage.deleteSuccess', [row.templateName]),
       key: 'action_process_msg',
@@ -71,10 +69,7 @@ async function onDelete(row: SmsTemplateApi.SmsTemplate) {
 }
 
 /** 表格操作按钮的回调函数 */
-function onActionClick({
-  code,
-  row,
-}: OnActionClickParams<SmsTemplateApi.SmsTemplate>) {
+function onActionClick({ code, row }: OnActionClickParams<SmsTemplateInfo>) {
   switch (code) {
     case 'delete': {
       onDelete(row);
@@ -103,9 +98,11 @@ const [Grid, gridApi] = useVbenVxeGrid({
       ajax: {
         query: async ({ page }, formValues) => {
           return await getSmsTemplateList({
-            page: page.currentPage,
-            pageSize: page.pageSize,
-            ...formValues,
+            params: {
+              page: page.currentPage,
+              pageSize: page.pageSize,
+              ...formValues,
+            },
           });
         },
       },
@@ -117,7 +114,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
       refresh: { code: 'query' },
       search: true,
     },
-  } as VxeTableGridOptions<SmsTemplateApi.SmsTemplate>,
+  } as VxeTableGridOptions<SmsTemplateInfo>,
 });
 </script>
 

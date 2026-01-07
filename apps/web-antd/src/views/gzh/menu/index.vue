@@ -20,7 +20,7 @@ import {
   Row,
 } from 'ant-design-vue';
 
-import { getMenuInfo, storeMenu } from '#/api/gzh/menu';
+import { getWxGzhMenuInfo, storeWxGzhMenu } from '#/api/v1/wx-gzh-menu';
 
 import AccountSelect from '../components/account-select/index.vue';
 
@@ -245,7 +245,7 @@ const resetMenuData = () => {
 // 加载菜单数据
 const loadMenuData = async (appId: string) => {
   try {
-    const res = await getMenuInfo(appId);
+    const res = await getWxGzhMenuInfo({ params: { appId } });
     if (
       res &&
       res.info &&
@@ -474,11 +474,17 @@ const submitMenuData = async () => {
     transformFrontendToBackend(item),
   );
 
+  if (!appId.value) {
+    message.error('缺少账号信息');
+    return;
+  }
   try {
-    await storeMenu({
-      appId: appId.value,
-      selfmenuInfo: {
-        button: menus,
+    await storeWxGzhMenu({
+      body: {
+        appId: appId.value,
+        selfmenuInfo: {
+          button: menus,
+        },
       },
     });
     message.success('保存成功');

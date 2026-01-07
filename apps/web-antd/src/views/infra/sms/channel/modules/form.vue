@@ -1,5 +1,9 @@
 <script lang="ts" setup>
-import type { SmsChannelApi } from '#/api/infra/sms/channel';
+import type {
+  CreateSmsChannelReq,
+  SmsChannelInfo,
+  UpdateSmsChannelReq,
+} from '#/api/v1/sms-channel';
 
 import { computed, ref } from 'vue';
 
@@ -12,13 +16,13 @@ import {
   createSmsChannel,
   getSmsChannelInfo,
   updateSmsChannel,
-} from '#/api/infra/sms/channel';
+} from '#/api/v1/sms-channel';
 import { $t } from '#/locales';
 
 import { useFormSchema } from '../data';
 
 const emit = defineEmits(['success']);
-const formData = ref<SmsChannelApi.SmsChannel>();
+const formData = ref<SmsChannelInfo>();
 const getTitle = computed(() => {
   return formData.value?.id
     ? $t('ui.actionTitle.edit', ['短信渠道'])
@@ -42,11 +46,11 @@ const [Modal, modalApi] = useVbenModal({
     }
     modalApi.lock();
     // 提交表单
-    const data = (await formApi.getValues()) as SmsChannelApi.SmsChannel;
+    const data = await formApi.getValues();
     try {
       await (formData.value?.id
-        ? updateSmsChannel(data)
-        : createSmsChannel(data));
+        ? updateSmsChannel({ body: data as UpdateSmsChannelReq })
+        : createSmsChannel({ body: data as CreateSmsChannelReq }));
       // 关闭并提示
       await modalApi.close();
       emit('success');
@@ -64,16 +68,18 @@ const [Modal, modalApi] = useVbenModal({
       return;
     }
     // 加载数据
-    const data = modalApi.getData<SmsChannelApi.SmsChannel>();
+    const data = modalApi.getData<SmsChannelInfo>();
     if (!data || !data.id) {
       return;
     }
     modalApi.lock();
     try {
-      const res = await getSmsChannelInfo(data.id);
+      const res = await getSmsChannelInfo({ params: { id: data.id } });
       formData.value = res.info;
       // 设置到 values
-      await formApi.setValues(formData.value);
+      if (formData.value) {
+        await formApi.setValues(formData.value);
+      }
     } finally {
       modalApi.lock(false);
     }

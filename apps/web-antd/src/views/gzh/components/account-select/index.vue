@@ -6,7 +6,7 @@ import { useTabs } from '@vben/hooks';
 
 import { Card, Flex, message, Select } from 'ant-design-vue';
 
-import { getAccountSelector } from '#/api/gzh/account';
+import { getWxGzhAccountSelector } from '#/api/v1/wx-gzh-account';
 
 // 类型定义
 interface AccountOption {
@@ -46,16 +46,19 @@ const accountOptions = ref<AccountOption[]>([]);
 // 获取账号列表
 async function getAccountList() {
   try {
-    const res = await getAccountSelector();
+    const res = await getWxGzhAccountSelector({});
     if (res.list && res.list.length > 0) {
-      accountOptions.value = res.list.map((item) => ({
-        label: item.name,
-        value: String(item.appId),
-      }));
+      accountOptions.value = res.list
+        .filter((item) => item.name && item.appId)
+        .map((item) => ({
+          label: item.name!,
+          value: String(item.appId!),
+        }));
 
       // 如果没有选中值且有账号列表，自动选择第一个
-      if (!props.modelValue && res.list[0]) {
-        const firstAppId = String(res.list[0].appId);
+      const firstItem = res.list.find((item) => item.name && item.appId);
+      if (!props.modelValue && firstItem) {
+        const firstAppId = String(firstItem.appId!);
         emits('update:modelValue', firstAppId);
         emits('change', firstAppId);
       }

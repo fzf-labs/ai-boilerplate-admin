@@ -3,12 +3,12 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { MailLogApi } from '#/api/infra/mail/log';
+import type { MailLogInfo } from '#/api/v1/mail-log';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getMailLogList } from '#/api/infra/mail/log';
+import { getMailLogList } from '#/api/v1/mail-log';
 
 import { useGridColumns, useGridFormSchema } from './data';
 import Detail from './modules/detail.vue';
@@ -24,12 +24,12 @@ function onRefresh() {
 }
 
 /** 查看邮件日志 */
-function onDetail(row: MailLogApi.MailLog) {
+function onDetail(row: MailLogInfo) {
   detailModalApi.setData(row).open();
 }
 
 /** 表格操作按钮的回调函数 */
-function onActionClick({ code, row }: OnActionClickParams<MailLogApi.MailLog>) {
+function onActionClick({ code, row }: OnActionClickParams<MailLogInfo>) {
   switch (code) {
     case 'detail': {
       onDetail(row);
@@ -50,9 +50,11 @@ const [Grid, gridApi] = useVbenVxeGrid({
       ajax: {
         query: async ({ page }, formValues) => {
           return await getMailLogList({
-            page: page.currentPage,
-            pageSize: page.pageSize,
-            ...formValues,
+            params: {
+              page: page.currentPage,
+              pageSize: page.pageSize,
+              ...formValues,
+            },
           });
         },
       },
@@ -64,7 +66,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
       refresh: { code: 'query' },
       search: true,
     },
-  } as VxeTableGridOptions<MailLogApi.MailLog>,
+  } as VxeTableGridOptions<MailLogInfo>,
 });
 </script>
 <template>

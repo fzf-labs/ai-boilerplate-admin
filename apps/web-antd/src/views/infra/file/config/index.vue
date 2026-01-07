@@ -3,7 +3,7 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { InfraFileConfigApi } from '#/api/infra/file/config';
+import type { FileConfigInfo } from '#/api/v1/file-config';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
@@ -15,7 +15,7 @@ import {
   deleteFileConfig,
   getFileConfigList,
   setFileConfigMaster,
-} from '#/api/infra/file/config';
+} from '#/api/v1/file-config';
 import { $t } from '#/locales';
 
 import { useGridColumns, useGridFormSchema } from './data';
@@ -37,12 +37,12 @@ function onCreate() {
 }
 
 /** 编辑文件配置 */
-function onEdit(row: InfraFileConfigApi.FileConfig) {
+function onEdit(row: FileConfigInfo) {
   formModalApi.setData(row).open();
 }
 
 /** 设为主配置 */
-async function onMaster(row: InfraFileConfigApi.FileConfig) {
+async function onMaster(row: FileConfigInfo) {
   if (!row.id) return;
   const hideLoading = message.loading({
     content: $t('ui.actionMessage.updating', [row.name]),
@@ -50,7 +50,7 @@ async function onMaster(row: InfraFileConfigApi.FileConfig) {
     key: 'action_process_msg',
   });
   try {
-    await setFileConfigMaster({ id: row.id });
+    await setFileConfigMaster({ body: { id: row.id } });
     message.success({
       content: $t('ui.actionMessage.operationSuccess'),
       key: 'action_process_msg',
@@ -62,7 +62,7 @@ async function onMaster(row: InfraFileConfigApi.FileConfig) {
 }
 
 /** 删除文件配置 */
-async function onDelete(row: InfraFileConfigApi.FileConfig) {
+async function onDelete(row: FileConfigInfo) {
   if (!row.id) return;
   const hideLoading = message.loading({
     content: $t('ui.actionMessage.deleting', [row.name]),
@@ -70,7 +70,7 @@ async function onDelete(row: InfraFileConfigApi.FileConfig) {
     key: 'action_process_msg',
   });
   try {
-    await deleteFileConfig({ id: row.id });
+    await deleteFileConfig({ body: { id: row.id } });
     message.success({
       content: $t('ui.actionMessage.deleteSuccess', [row.name]),
       key: 'action_process_msg',
@@ -82,10 +82,7 @@ async function onDelete(row: InfraFileConfigApi.FileConfig) {
 }
 
 /** 表格操作按钮的回调函数 */
-function onActionClick({
-  code,
-  row,
-}: OnActionClickParams<InfraFileConfigApi.FileConfig>) {
+function onActionClick({ code, row }: OnActionClickParams<FileConfigInfo>) {
   switch (code) {
     case 'delete': {
       onDelete(row);
@@ -114,9 +111,11 @@ const [Grid, gridApi] = useVbenVxeGrid({
       ajax: {
         query: async ({ page }, formValues) => {
           return await getFileConfigList({
-            page: page.currentPage,
-            pageSize: page.pageSize,
-            ...formValues,
+            params: {
+              page: page.currentPage,
+              pageSize: page.pageSize,
+              ...formValues,
+            },
           });
         },
       },
@@ -128,7 +127,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
       refresh: { code: 'query' },
       search: true,
     },
-  } as VxeTableGridOptions<InfraFileConfigApi.FileConfig>,
+  } as VxeTableGridOptions<FileConfigInfo>,
 });
 </script>
 

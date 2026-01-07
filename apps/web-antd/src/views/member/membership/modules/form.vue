@@ -73,6 +73,9 @@ const [Modal, modalApi] = useVbenModal({
     modalApi.lock();
     try {
       const res = await getMembershipInfo({ params: { id: data.id } });
+      if (!res.info) {
+        return;
+      }
       formData.value = res.info;
       // 设置到 values
       await formApi.setValues(formData.value);

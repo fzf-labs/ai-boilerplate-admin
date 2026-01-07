@@ -3,8 +3,8 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { MailAccountApi } from '#/api/infra/mail/account';
-import type { MailTemplateApi } from '#/api/infra/mail/template';
+import type { MailAccountInfo } from '#/api/v1/mail-account';
+import type { MailTemplateInfo } from '#/api/v1/mail-template';
 
 import { onMounted, ref } from 'vue';
 
@@ -14,18 +14,18 @@ import { Plus } from '@vben/icons';
 import { Button, message } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getSimpleMailAccountSelector } from '#/api/infra/mail/account';
+import { getMailAccountSelector } from '#/api/v1/mail-account';
 import {
   deleteMailTemplate,
   getMailTemplateList,
-} from '#/api/infra/mail/template';
+} from '#/api/v1/mail-template';
 import { $t } from '#/locales';
 
 import { useGridColumns, useGridFormSchema } from './data';
 import Form from './modules/form.vue';
 import SendForm from './modules/send-form.vue';
 
-const accountList = ref<MailAccountApi.MailAccount[]>([]);
+const accountList = ref<MailAccountInfo[]>([]);
 
 /** 获取邮箱账号 */
 const getAccountMail = (accountId: string) => {
@@ -53,24 +53,25 @@ function onCreate() {
 }
 
 /** 编辑邮件模板 */
-function onEdit(row: MailTemplateApi.MailTemplate) {
+function onEdit(row: MailTemplateInfo) {
   formModalApi.setData(row).open();
 }
 
 /** 发送测试邮件 */
-function onSend(row: MailTemplateApi.MailTemplate) {
+function onSend(row: MailTemplateInfo) {
   sendModalApi.setData(row).open();
 }
 
 /** 删除邮件模板 */
-async function onDelete(row: MailTemplateApi.MailTemplate) {
+async function onDelete(row: MailTemplateInfo) {
+  if (!row.id) return;
   const hideLoading = message.loading({
     content: $t('ui.actionMessage.deleting', [row.name]),
     duration: 0,
     key: 'action_process_msg',
   });
   try {
-    await deleteMailTemplate(row.id);
+    await deleteMailTemplate({ body: { id: row.id } });
     message.success({
       content: $t('ui.actionMessage.deleteSuccess', [row.name]),
       key: 'action_process_msg',
@@ -82,10 +83,7 @@ async function onDelete(row: MailTemplateApi.MailTemplate) {
 }
 
 /** 表格操作按钮的回调函数 */
-function onActionClick({
-  code,
-  row,
-}: OnActionClickParams<MailTemplateApi.MailTemplate>) {
+function onActionClick({ code, row }: OnActionClickParams<MailTemplateInfo>) {
   switch (code) {
     case 'delete': {
       onDelete(row);
@@ -114,9 +112,11 @@ const [Grid, gridApi] = useVbenVxeGrid({
       ajax: {
         query: async ({ page }, formValues) => {
           return await getMailTemplateList({
-            page: page.currentPage,
-            pageSize: page.pageSize,
-            ...formValues,
+            params: {
+              page: page.currentPage,
+              pageSize: page.pageSize,
+              ...formValues,
+            },
           });
         },
       },
@@ -128,13 +128,13 @@ const [Grid, gridApi] = useVbenVxeGrid({
       refresh: { code: 'query' },
       search: true,
     },
-  } as VxeTableGridOptions<MailTemplateApi.MailTemplate>,
+  } as VxeTableGridOptions<MailTemplateInfo>,
 });
 
 /** 初始化 */
 onMounted(async () => {
-  const res = await getSimpleMailAccountSelector();
-  accountList.value = res.list;
+  const res = await getMailAccountSelector({});
+  accountList.value = res.list || [];
 });
 </script>
 <template>

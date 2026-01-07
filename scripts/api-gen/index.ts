@@ -206,6 +206,7 @@ async function main() {
         isGenReactQuery: false,
         reactQueryMode: 'vue',
         isGenJavaScript: false,
+        isCamelCase: true, // 确保生成的文件和函数都是驼峰命名
         hook: {
           customFunctionName,
         },

@@ -123,6 +123,9 @@ const [Modal, modalApi] = useVbenModal({
     try {
       // 加载数据
       const res = await getMallActivationCodeInfo({ params: { id: data.id } });
+      if (!res.info) {
+        return;
+      }
       formData.value = res.info;
 
       // 处理数据格式，转换为表单可用的格式

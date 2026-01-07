@@ -1,5 +1,9 @@
 <script lang="ts" setup>
-import type { MailTemplateApi } from '#/api/infra/mail/template';
+import type {
+  CreateMailTemplateReq,
+  MailTemplateInfo,
+  UpdateMailTemplateReq,
+} from '#/api/v1/mail-template';
 
 import { computed, ref } from 'vue';
 
@@ -12,13 +16,13 @@ import {
   createMailTemplate,
   getMailTemplateInfo,
   updateMailTemplate,
-} from '#/api/infra/mail/template';
+} from '#/api/v1/mail-template';
 import { $t } from '#/locales';
 
 import { useFormSchema } from '../data';
 
 const emit = defineEmits(['success']);
-const formData = ref<MailTemplateApi.MailTemplate>();
+const formData = ref<MailTemplateInfo>();
 const getTitle = computed(() => {
   return formData.value?.id
     ? $t('ui.actionTitle.edit', ['邮件模板'])
@@ -39,11 +43,11 @@ const [Modal, modalApi] = useVbenModal({
     }
     modalApi.lock();
     // 提交表单
-    const data = (await formApi.getValues()) as MailTemplateApi.MailTemplate;
+    const data = await formApi.getValues();
     try {
       await (formData.value?.id
-        ? updateMailTemplate(data)
-        : createMailTemplate(data));
+        ? updateMailTemplate({ body: data as UpdateMailTemplateReq })
+        : createMailTemplate({ body: data as CreateMailTemplateReq }));
       // 关闭并提示
       await modalApi.close();
       emit('success');
@@ -61,16 +65,18 @@ const [Modal, modalApi] = useVbenModal({
       return;
     }
     // 加载数据
-    const data = modalApi.getData<MailTemplateApi.MailTemplate>();
+    const data = modalApi.getData<MailTemplateInfo>();
     if (!data || !data.id) {
       return;
     }
     modalApi.lock();
     try {
-      const res = await getMailTemplateInfo(data.id);
+      const res = await getMailTemplateInfo({ params: { id: data.id } });
       formData.value = res.info;
       // 设置到 values
-      await formApi.setValues(formData.value);
+      if (formData.value) {
+        await formApi.setValues(formData.value);
+      }
     } finally {
       modalApi.lock(false);
     }

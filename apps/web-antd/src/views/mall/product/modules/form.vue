@@ -89,6 +89,9 @@ const [Modal, modalApi] = useVbenModal({
     modalApi.lock();
     try {
       const res = await getMallProductInfo({ params: { id: data.id } });
+      if (!res.info) {
+        return;
+      }
       formData.value = res.info;
       // 处理数据格式，转换为表单可用的格式
       const formValues = {

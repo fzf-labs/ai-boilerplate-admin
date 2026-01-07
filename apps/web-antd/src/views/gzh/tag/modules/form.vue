@@ -1,5 +1,9 @@
 <script lang="ts" setup>
-import type { WxGzhTagApi } from '#/api/gzh/tag';
+import type {
+  CreateWxGzhTagReq,
+  UpdateWxGzhTagReq,
+  WxGzhTagInfo,
+} from '#/api/v1/wx-gzh-tag';
 
 import { computed, ref } from 'vue';
 
@@ -8,7 +12,11 @@ import { useVbenModal } from '@vben/common-ui';
 import { message } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
-import { createWxGzhTag, getWxGzhTagInfo, updateWxGzhTag } from '#/api/gzh/tag';
+import {
+  createWxGzhTag,
+  getWxGzhTagInfo,
+  updateWxGzhTag,
+} from '#/api/v1/wx-gzh-tag';
 import { $t } from '#/locales';
 
 import { useFormSchema } from '../data';
@@ -20,7 +28,7 @@ interface Props {
 const props = defineProps<Props>();
 const emit = defineEmits(['success']);
 
-const formData = ref<WxGzhTagApi.WxGzhTagInfo>();
+const formData = ref<WxGzhTagInfo>();
 const getTitle = computed(() => {
   return formData.value?.id
     ? $t('ui.actionTitle.edit', ['标签'])
@@ -48,13 +56,25 @@ const [Modal, modalApi] = useVbenModal({
     }
     modalApi.lock();
     // 提交表单
-    const data = (await formApi.getValues()) as WxGzhTagApi.WxGzhTagInfo;
+    const data = await formApi.getValues();
     // 设置 appId
-    if (props.appId) {
-      data.appId = props.appId;
+    const appIdValue = props.appId || data.appId;
+    if (!appIdValue) {
+      message.error('缺少公众号信息');
+      modalApi.unlock();
+      return;
     }
     try {
-      await (formData.value?.id ? updateWxGzhTag(data) : createWxGzhTag(data));
+      await (formData.value?.id
+        ? updateWxGzhTag({
+            body: {
+              id: formData.value.id,
+              name: data.name,
+            } as UpdateWxGzhTagReq,
+          })
+        : createWxGzhTag({
+            body: { appId: appIdValue, name: data.name } as CreateWxGzhTagReq,
+          }));
       // 关闭并提示
       await modalApi.close();
       emit('success');
@@ -71,7 +91,7 @@ const [Modal, modalApi] = useVbenModal({
     // 加载数据
     const data = modalApi.getData<{
       appId: string;
-      row?: WxGzhTagApi.WxGzhTagInfo;
+      row?: WxGzhTagInfo;
     }>();
     if (!data || !data.appId) {
       return;
@@ -81,13 +101,15 @@ const [Modal, modalApi] = useVbenModal({
     await formApi.setValues({ appId: data.appId });
 
     // 如果有 row 数据，说明是编辑模式
-    if (data.row) {
+    if (data.row?.id) {
       modalApi.lock();
       try {
-        const res = await getWxGzhTagInfo(data.row.id);
+        const res = await getWxGzhTagInfo({ params: { id: data.row.id } });
         formData.value = res.info;
         // 设置到 values
-        await formApi.setValues(formData.value);
+        if (formData.value) {
+          await formApi.setValues(formData.value);
+        }
       } finally {
         modalApi.unlock();
       }

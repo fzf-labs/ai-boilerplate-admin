@@ -3,12 +3,12 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { SmsLogApi } from '#/api/infra/sms/log';
+import type { SmsLogInfo } from '#/api/v1/sms-log';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getSmsLogList } from '#/api/infra/sms/log';
+import { getSmsLogList } from '#/api/v1/sms-log';
 
 import { useGridColumns, useGridFormSchema } from './data';
 import Detail from './modules/detail.vue';
@@ -24,12 +24,12 @@ function onRefresh() {
 }
 
 /** 查看短信日志详情 */
-function onDetail(row: SmsLogApi.SmsLog) {
+function onDetail(row: SmsLogInfo) {
   detailModalApi.setData(row).open();
 }
 
 /** 表格操作按钮的回调函数 */
-function onActionClick({ code, row }: OnActionClickParams<SmsLogApi.SmsLog>) {
+function onActionClick({ code, row }: OnActionClickParams<SmsLogInfo>) {
   switch (code) {
     case 'detail': {
       onDetail(row);
@@ -50,9 +50,11 @@ const [Grid, gridApi] = useVbenVxeGrid({
       ajax: {
         query: async ({ page }, formValues) => {
           return await getSmsLogList({
-            page: page.currentPage,
-            pageSize: page.pageSize,
-            ...formValues,
+            params: {
+              page: page.currentPage,
+              pageSize: page.pageSize,
+              ...formValues,
+            },
           });
         },
       },
@@ -64,7 +66,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
       refresh: { code: 'query' },
       search: true,
     },
-  } as VxeTableGridOptions<SmsLogApi.SmsLog>,
+  } as VxeTableGridOptions<SmsLogInfo>,
 });
 </script>
 

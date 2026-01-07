@@ -80,10 +80,7 @@ async function handleDelete(row: WxGzhAutoReplyInfo) {
 }
 
 /** 表格操作按钮的回调函数 */
-function onActionClick({
-  code,
-  row,
-}: OnActionClickParams<WxGzhAutoReplyInfo>) {
+function onActionClick({ code, row }: OnActionClickParams<WxGzhAutoReplyInfo>) {
   switch (code) {
     case 'delete': {
       handleDelete(row);

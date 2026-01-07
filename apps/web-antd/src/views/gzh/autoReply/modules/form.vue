@@ -9,6 +9,12 @@
   @version 1.0.0
 -->
 <script lang="ts" setup>
+import type {
+  CreateWxGzhAutoReplyReq,
+  UpdateWxGzhAutoReplyReq,
+  WxGzhAutoReplyInfo,
+} from '#/api/v1/wx-gzh-auto-reply';
+
 import { computed, ref } from 'vue';
 
 import { useVbenModal } from '@vben/common-ui';
@@ -16,11 +22,6 @@ import { useVbenModal } from '@vben/common-ui';
 import { message } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
-import type {
-  CreateWxGzhAutoReplyReq,
-  UpdateWxGzhAutoReplyReq,
-  WxGzhAutoReplyInfo,
-} from '#/api/v1/wx-gzh-auto-reply';
 import {
   createWxGzhAutoReply,
   getWxGzhAutoReplyInfo,
@@ -31,18 +32,18 @@ import { $t } from '#/locales';
 
 import { useFormSchema } from '../data';
 
+const props = defineProps<{
+  appId?: string; // 从搜索表单传递的公众号ID
+}>();
+
+const emit = defineEmits(['success']);
+
 // Constants for auto reply types
 const AutoReplyType = {
   KEYWORD: 1, // 关键词回复
   MESSAGE: 2, // 收到消息回复
   SUBSCRIBE: 3, // 被关注回复
 } as const;
-
-const props = defineProps<{
-  appId?: string; // 从搜索表单传递的公众号ID
-}>();
-
-const emit = defineEmits(['success']);
 
 const formData = ref<WxGzhAutoReplyInfo>();
 const isEditMode = ref(false);
@@ -78,10 +79,7 @@ async function checkExistingAutoReply(
   currentId?: string,
 ): Promise<boolean> {
   // 只对被关注回复和收到消息回复进行限制
-  if (
-    type !== AutoReplyType.SUBSCRIBE &&
-    type !== AutoReplyType.MESSAGE
-  ) {
+  if (type !== AutoReplyType.SUBSCRIBE && type !== AutoReplyType.MESSAGE) {
     return false; // 关键词回复不限制
   }
 
@@ -127,9 +125,7 @@ const [Modal, modalApi] = useVbenModal({
 
       if (hasExisting) {
         const typeText =
-          data.type === AutoReplyType.SUBSCRIBE
-            ? '被关注回复'
-            : '收到消息回复';
+          data.type === AutoReplyType.SUBSCRIBE ? '被关注回复' : '收到消息回复';
         message.error(
           `该公众号已存在${typeText}，每个公众号只能设置一个${typeText}`,
         );

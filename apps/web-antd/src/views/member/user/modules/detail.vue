@@ -1,14 +1,14 @@
 <script lang="ts" setup>
+import type { UserInfo, UserMembershipInfo } from '#/api/v1/user';
+import type { WxGzhUserInfo } from '#/api/v1/wx-gzh-user';
+import type { WxXcxUserInfo } from '#/api/v1/wx-xcx-user';
+
 import { computed, ref } from 'vue';
 
 import { useVbenModal } from '@vben/common-ui';
 import { formatDateTime } from '@vben/utils';
 
 import { Card, Image, Result, Spin, TabPane, Tabs, Tag } from 'ant-design-vue';
-
-import type { UserInfo, UserMembershipInfo } from '#/api/v1/user';
-import type { WxGzhUserInfo } from '#/api/v1/wx-gzh-user';
-import type { WxXcxUserInfo } from '#/api/v1/wx-xcx-user';
 
 import { getUserInfo } from '#/api/v1/user';
 import { getWxGzhUserInfo } from '#/api/v1/wx-gzh-user';

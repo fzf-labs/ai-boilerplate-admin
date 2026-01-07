@@ -73,6 +73,9 @@ const [Modal, modalApi] = useVbenModal({
       modalApi.lock();
       try {
         const res = await getMembershipBenefitInfo(data.id);
+        if (!res.info) {
+          return;
+        }
         formData.value = res.info;
         await formApi.setValues(formData.value);
       } finally {

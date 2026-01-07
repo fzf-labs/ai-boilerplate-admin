@@ -3,7 +3,7 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { MailAccountApi } from '#/api/infra/mail/account';
+import type { MailAccountInfo } from '#/api/v1/mail-account';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
@@ -11,10 +11,7 @@ import { Plus } from '@vben/icons';
 import { Button, message } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import {
-  deleteMailAccount,
-  getMailAccountList,
-} from '#/api/infra/mail/account';
+import { deleteMailAccount, getMailAccountList } from '#/api/v1/mail-account';
 import { $t } from '#/locales';
 
 import { useGridColumns, useGridFormSchema } from './data';
@@ -36,19 +33,20 @@ function onCreate() {
 }
 
 /** 编辑邮箱账号 */
-function onEdit(row: MailAccountApi.MailAccount) {
+function onEdit(row: MailAccountInfo) {
   formModalApi.setData(row).open();
 }
 
 /** 删除邮箱账号 */
-async function onDelete(row: MailAccountApi.MailAccount) {
+async function onDelete(row: MailAccountInfo) {
+  if (!row.id) return;
   const hideLoading = message.loading({
     content: $t('ui.actionMessage.deleting', [row.mail]),
     duration: 0,
     key: 'action_process_msg',
   });
   try {
-    await deleteMailAccount(row.id);
+    await deleteMailAccount({ body: { id: row.id } });
     message.success({
       content: $t('ui.actionMessage.deleteSuccess', [row.mail]),
       key: 'action_process_msg',
@@ -60,10 +58,7 @@ async function onDelete(row: MailAccountApi.MailAccount) {
 }
 
 /** 表格操作按钮的回调函数 */
-function onActionClick({
-  code,
-  row,
-}: OnActionClickParams<MailAccountApi.MailAccount>) {
+function onActionClick({ code, row }: OnActionClickParams<MailAccountInfo>) {
   switch (code) {
     case 'delete': {
       onDelete(row);
@@ -88,9 +83,11 @@ const [Grid, gridApi] = useVbenVxeGrid({
       ajax: {
         query: async ({ page }, formValues) => {
           return await getMailAccountList({
-            page: page.currentPage,
-            pageSize: page.pageSize,
-            ...formValues,
+            params: {
+              page: page.currentPage,
+              pageSize: page.pageSize,
+              ...formValues,
+            },
           });
         },
       },
@@ -102,7 +99,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
       refresh: { code: 'query' },
       search: true,
     },
-  } as VxeTableGridOptions<MailAccountApi.MailAccount>,
+  } as VxeTableGridOptions<MailAccountInfo>,
 });
 </script>
 <template>

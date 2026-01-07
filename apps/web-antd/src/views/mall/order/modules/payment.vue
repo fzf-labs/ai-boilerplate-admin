@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import type { OrderApi } from '#/api/mall/order';
-import type { PaymentApi } from '#/api/mall/payment';
+import type { MallOrderInfo } from '#/api/v1/mall-order';
+import type { MallPaymentRecordInfo } from '#/api/v1/mall-payment-record';
 
 import { computed, ref } from 'vue';
 
@@ -8,8 +8,10 @@ import { useVbenModal } from '@vben/common-ui';
 
 import { Table, TableColumn } from 'ant-design-vue';
 
-const formData = ref<OrderApi.OrderInfo>();
-const paymentRecords = ref<PaymentApi.PaymentRecordInfo[]>([]);
+import { getMallPaymentRecordListByOrderId } from '#/api/v1/mall-payment-record';
+
+const formData = ref<MallOrderInfo>();
+const paymentRecords = ref<MallPaymentRecordInfo[]>([]);
 const loading = ref(false);
 
 const getTitle = computed(() => {

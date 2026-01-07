@@ -3,7 +3,7 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { SensitiveWordApi } from '#/api/infra/sensitiveword';
+import type { SensitiveWordInfo } from '#/api/v1/sensitive-word';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
@@ -14,7 +14,7 @@ import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import {
   deleteSensitiveWord,
   getSensitiveWordList,
-} from '#/api/infra/sensitiveword';
+} from '#/api/v1/sensitive-word';
 import { $t } from '#/locales';
 
 import { useGridColumns, useGridFormSchema } from './data';
@@ -36,19 +36,20 @@ function onCreate() {
 }
 
 /** 编辑敏感词 */
-function onEdit(row: SensitiveWordApi.SensitiveWordInfo) {
+function onEdit(row: SensitiveWordInfo) {
   formModalApi.setData(row).open();
 }
 
 /** 删除敏感词 */
-async function onDelete(row: SensitiveWordApi.SensitiveWordInfo) {
+async function onDelete(row: SensitiveWordInfo) {
+  if (!row.id) return;
   const hideLoading = message.loading({
     content: $t('ui.actionMessage.deleting', [row.word]),
     duration: 0,
     key: 'action_process_msg',
   });
   try {
-    await deleteSensitiveWord(row.id);
+    await deleteSensitiveWord({ body: { id: row.id } });
     message.success({
       content: $t('ui.actionMessage.deleteSuccess', [row.word]),
       key: 'action_process_msg',
@@ -60,10 +61,7 @@ async function onDelete(row: SensitiveWordApi.SensitiveWordInfo) {
 }
 
 /** 表格操作按钮的回调函数 */
-function onActionClick({
-  code,
-  row,
-}: OnActionClickParams<SensitiveWordApi.SensitiveWordInfo>) {
+function onActionClick({ code, row }: OnActionClickParams<SensitiveWordInfo>) {
   switch (code) {
     case 'delete': {
       onDelete(row);
@@ -88,9 +86,11 @@ const [Grid, gridApi] = useVbenVxeGrid({
       ajax: {
         query: async ({ page }, formValues) => {
           return await getSensitiveWordList({
-            page: page.currentPage,
-            pageSize: page.pageSize,
-            ...formValues,
+            params: {
+              page: page.currentPage,
+              pageSize: page.pageSize,
+              ...formValues,
+            },
           });
         },
       },
@@ -102,7 +102,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
       refresh: { code: 'query' },
       search: true,
     },
-  } as VxeTableGridOptions<SensitiveWordApi.SensitiveWordInfo>,
+  } as VxeTableGridOptions<SensitiveWordInfo>,
 });
 </script>
 

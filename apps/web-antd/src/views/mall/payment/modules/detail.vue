@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { MallPaymentRecordInfo } from '#/api/v1/mall-payment';
+import type { MallPaymentRecordInfo } from '#/api/v1/mall-payment-record';
 
 import { computed, ref } from 'vue';
 
@@ -96,8 +96,11 @@ const statusMap = {
         </DescriptionsItem>
         <DescriptionsItem label="记录状态">
           {{
-            statusMap[formData.status.toString() as keyof typeof statusMap] ||
-            '未知'
+            formData.status !== undefined
+              ? statusMap[
+                  formData.status.toString() as keyof typeof statusMap
+                ] || '未知'
+              : '-'
           }}
         </DescriptionsItem>
         <DescriptionsItem label="第三方订单号" :span="2">

@@ -1,5 +1,9 @@
 <script lang="ts" setup>
-import type { SmsTemplateApi } from '#/api/infra/sms/template';
+import type {
+  CreateSmsTemplateReq,
+  SmsTemplateInfo,
+  UpdateSmsTemplateReq,
+} from '#/api/v1/sms-template';
 
 import { computed, ref } from 'vue';
 
@@ -12,13 +16,13 @@ import {
   createSmsTemplate,
   getSmsTemplateInfo,
   updateSmsTemplate,
-} from '#/api/infra/sms/template';
+} from '#/api/v1/sms-template';
 import { $t } from '#/locales';
 
 import { useFormSchema } from '../data';
 
 const emit = defineEmits(['success']);
-const formData = ref<SmsTemplateApi.SmsTemplate>();
+const formData = ref<SmsTemplateInfo>();
 const getTitle = computed(() => {
   return formData.value?.id
     ? $t('ui.actionTitle.edit', ['短信模板'])
@@ -42,11 +46,11 @@ const [Modal, modalApi] = useVbenModal({
     }
     modalApi.lock();
     // 提交表单
-    const data = (await formApi.getValues()) as SmsTemplateApi.SmsTemplate;
+    const data = await formApi.getValues();
     try {
       await (formData.value?.id
-        ? updateSmsTemplate(data)
-        : createSmsTemplate(data));
+        ? updateSmsTemplate({ body: data as UpdateSmsTemplateReq })
+        : createSmsTemplate({ body: data as CreateSmsTemplateReq }));
       // 关闭并提示
       await modalApi.close();
       emit('success');
@@ -64,16 +68,18 @@ const [Modal, modalApi] = useVbenModal({
       return;
     }
     // 加载数据
-    const data = modalApi.getData<SmsTemplateApi.SmsTemplate>();
+    const data = modalApi.getData<SmsTemplateInfo>();
     if (!data || !data.id) {
       return;
     }
     modalApi.lock();
     try {
-      const res = await getSmsTemplateInfo(data.id);
+      const res = await getSmsTemplateInfo({ params: { id: data.id } });
       formData.value = res.info;
       // 设置到 values
-      await formApi.setValues(formData.value);
+      if (formData.value) {
+        await formApi.setValues(formData.value);
+      }
     } finally {
       modalApi.lock(false);
     }

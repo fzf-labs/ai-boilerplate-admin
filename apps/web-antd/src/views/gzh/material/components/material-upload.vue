@@ -13,15 +13,44 @@ import {
   Upload,
 } from 'ant-design-vue';
 
-import {
-  MaterialType,
-  MaterialTypeLabels,
-  uploadMaterial,
-} from '#/api/gzh/material';
+import { request } from '#/api/request';
+
+const props = defineProps<{
+  data?: UploadData;
+  open: boolean;
+}>();
+
+const emits = defineEmits<{
+  close: [];
+  success: [];
+}>();
+
+// Material type constants
+const MaterialType = {
+  IMAGE: 'image',
+  VOICE: 'voice',
+  VIDEO: 'video',
+} as const;
+
+type MaterialTypeValue = (typeof MaterialType)[keyof typeof MaterialType];
+
+const MaterialTypeLabels: Record<string, string> = {
+  [MaterialType.IMAGE]: '图片',
+  [MaterialType.VOICE]: '语音',
+  [MaterialType.VIDEO]: '视频',
+};
+
+// Upload material function
+async function uploadMaterial(formData: FormData) {
+  return request('/admin/v1/wx_gzh_material/upload', {
+    method: 'POST',
+    data: formData,
+  });
+}
 
 interface UploadData {
   appId?: string;
-  type?: MaterialType;
+  type?: MaterialTypeValue;
 }
 
 interface UploadFile {
@@ -34,19 +63,9 @@ interface UploadFile {
   error?: string;
 }
 
-const props = defineProps<{
-  data?: UploadData;
-  open: boolean;
-}>();
-
-const emits = defineEmits<{
-  close: [];
-  success: [];
-}>();
-
 const loading = ref(false);
 const uploadFiles = ref<UploadFile[]>([]);
-const currentType = ref<MaterialType>(MaterialType.IMAGE);
+const currentType = ref<MaterialTypeValue>(MaterialType.IMAGE);
 
 // 文件类型限制
 const fileTypeMap = {
@@ -75,7 +94,7 @@ const materialTypeOptions = [
 ];
 
 // 验证文件
-const validateFile = (file: File, type: MaterialType): null | string => {
+const validateFile = (file: File, type: MaterialTypeValue): null | string => {
   const config = fileTypeMap[type];
 
   // 检查文件大小

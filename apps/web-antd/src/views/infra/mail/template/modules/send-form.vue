@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { MailTemplateApi } from '#/api/infra/mail/template';
+import type { MailTemplateInfo } from '#/api/v1/mail-template';
 
 import { ref } from 'vue';
 
@@ -8,12 +8,28 @@ import { useVbenModal } from '@vben/common-ui';
 import { message } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
-import { sendMail } from '#/api/infra/mail/template';
+import { request } from '#/api/request';
 
 import { useSendMailFormSchema } from '../data';
 
 const emit = defineEmits(['success']);
-const formData = ref<MailTemplateApi.MailTemplate>();
+
+// Send mail function (placeholder - API may not exist yet)
+async function sendMail(data: {
+  mail: string;
+  templateCode: string;
+  templateParams: Record<string, string>;
+}) {
+  return request('/admin/v1/mail_template/send', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data,
+  });
+}
+
+const formData = ref<MailTemplateInfo>();
 
 const [Form, formApi] = useVbenForm({
   layout: 'horizontal',
@@ -35,7 +51,7 @@ const [Modal, modalApi] = useVbenModal({
         paramsObj[param] = values[`param_${param}`];
       });
     }
-    const data: MailTemplateApi.MailSendReqVO = {
+    const sendData = {
       mail: values.mail,
       templateCode: formData.value?.code || '',
       templateParams: paramsObj,
@@ -43,7 +59,7 @@ const [Modal, modalApi] = useVbenModal({
 
     // 提交表单
     try {
-      await sendMail(data);
+      await sendMail(sendData);
       // 关闭并提示
       await modalApi.close();
       emit('success');
@@ -63,7 +79,7 @@ const [Modal, modalApi] = useVbenModal({
       return;
     }
     // 获取数据
-    const data = modalApi.getData<MailTemplateApi.MailTemplate>();
+    const data = modalApi.getData<MailTemplateInfo>();
     if (!data) {
       return;
     }

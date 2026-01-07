@@ -87,7 +87,10 @@ defineExpose({ modalApi });
               </h2>
               <p class="mb-2 text-sm text-gray-600">
                 {{
-                  productTypeMap[formData.productType] || formData.productType
+                  formData.productType
+                    ? productTypeMap[formData.productType] ||
+                      formData.productType
+                    : ''
                 }}
               </p>
               <div class="flex items-center gap-3">
@@ -125,7 +128,10 @@ defineExpose({ modalApi });
                 <span class="font-medium text-gray-600">商品类型</span>
                 <Tag color="purple" class="rounded">
                   {{
-                    productTypeMap[formData.productType] || formData.productType
+                    formData.productType
+                      ? productTypeMap[formData.productType] ||
+                        formData.productType
+                      : ''
                   }}
                 </Tag>
               </div>
@@ -156,7 +162,7 @@ defineExpose({ modalApi });
               <div class="flex items-center justify-between">
                 <span class="font-medium text-gray-600">有效期开始</span>
                 <span class="font-semibold text-gray-900">
-                  {{ formatDateTime(formData.validSt) }}
+                  {{ formatDateTime(formData.validSt || '') }}
                 </span>
               </div>
             </div>
@@ -164,7 +170,7 @@ defineExpose({ modalApi });
               <div class="flex items-center justify-between">
                 <span class="font-medium text-gray-600">有效期截止</span>
                 <span class="font-semibold text-gray-900">
-                  {{ formatDateTime(formData.validEd) }}
+                  {{ formatDateTime(formData.validEd || '') }}
                 </span>
               </div>
             </div>

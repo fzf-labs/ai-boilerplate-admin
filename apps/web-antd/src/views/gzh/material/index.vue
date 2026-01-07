@@ -1,5 +1,8 @@
 <script lang="ts" setup>
-import type { MpMaterialApi } from '#/api/gzh/material';
+import type {
+  GetWxGzhMaterialStatsReply,
+  WxGzhMaterialInfo,
+} from '#/api/v1/wx-gzh-material';
 
 import { computed, onMounted, ref, watch } from 'vue';
 
@@ -30,22 +33,35 @@ import {
 } from 'ant-design-vue';
 
 import {
-  deleteMaterial,
-  getMaterialList,
-  getMaterialStats,
-  MaterialType,
-  MaterialTypeLabels,
-  syncWechatMaterial,
-} from '#/api/gzh/material';
+  deleteWxGzhMaterial,
+  getWxGzhMaterialList,
+  getWxGzhMaterialStats,
+  syncWxGzhMaterial,
+} from '#/api/v1/wx-gzh-material';
 import MaterialPreview from '#/views/gzh/material/components/material-preview.vue';
 import MaterialUpload from '#/views/gzh/material/components/material-upload.vue';
 
 import AccountSelect from '../components/account-select/index.vue';
 
+// Material type constants
+const MaterialType = {
+  IMAGE: 'image',
+  VOICE: 'voice',
+  VIDEO: 'video',
+} as const;
+
+type MaterialTypeValue = (typeof MaterialType)[keyof typeof MaterialType];
+
+const MaterialTypeLabels: Record<string, string> = {
+  [MaterialType.IMAGE]: '图片',
+  [MaterialType.VOICE]: '语音',
+  [MaterialType.VIDEO]: '视频',
+};
+
 const appId = ref<string | undefined>(undefined);
 const loading = ref(false);
 const syncLoading = ref(false);
-const currentType = ref<MaterialType>(MaterialType.IMAGE);
+const currentType = ref<MaterialTypeValue>(MaterialType.IMAGE);
 const searchKeyword = ref('');
 const selectedMaterials = ref<string[]>([]);
 
@@ -57,13 +73,13 @@ const pagination = ref({
 });
 
 // 素材列表
-const materialList = ref<MpMaterialApi.Material[]>([]);
-const materialStats = ref<MpMaterialApi.MaterialStats>();
+const materialList = ref<WxGzhMaterialInfo[]>([]);
+const materialStats = ref<GetWxGzhMaterialStatsReply>();
 
 // 模态框状态
 const previewVisible = ref(false);
 const uploadVisible = ref(false);
-const currentMaterial = ref<MpMaterialApi.Material>();
+const currentMaterial = ref<WxGzhMaterialInfo>();
 
 // 计算属性
 const hasSelectedMaterials = computed(() => selectedMaterials.value.length > 0);
@@ -86,14 +102,15 @@ const loadMaterialList = async () => {
 
   loading.value = true;
   try {
-    const params = {
-      page: pagination.value.current,
-      pageSize: pagination.value.pageSize,
-      appId: appId.value,
-      type: currentType.value,
-      name: searchKeyword.value,
-    };
-    const res = await getMaterialList(params);
+    const res = await getWxGzhMaterialList({
+      params: {
+        page: pagination.value.current,
+        pageSize: pagination.value.pageSize,
+        appId: appId.value,
+        type: currentType.value,
+        name: searchKeyword.value,
+      },
+    });
     materialList.value = res.list || [];
     pagination.value.total = res.total || 0;
   } catch (error) {
@@ -108,7 +125,9 @@ const loadMaterialList = async () => {
 const loadMaterialStats = async () => {
   if (!appId.value) return;
   try {
-    const res = await getMaterialStats(appId.value);
+    const res = await getWxGzhMaterialStats({
+      params: { appId: appId.value },
+    });
     materialStats.value = res;
   } catch (error) {
     console.error('加载素材统计失败:', error);
@@ -116,7 +135,7 @@ const loadMaterialStats = async () => {
 };
 
 // 切换素材类型
-const handleTypeChange = (type: MaterialType) => {
+const handleTypeChange = (type: MaterialTypeValue) => {
   currentType.value = type;
   pagination.value.current = 1;
   selectedMaterials.value = [];
@@ -148,7 +167,7 @@ const handleSync = async () => {
 
   syncLoading.value = true;
   try {
-    await syncWechatMaterial(appId.value);
+    await syncWxGzhMaterial({ body: { appId: appId.value } });
     message.success('同步成功');
     loadMaterialList();
     loadMaterialStats();
@@ -170,15 +189,16 @@ const handleUpload = () => {
 };
 
 // 预览素材
-const handlePreview = (material: MpMaterialApi.Material) => {
+const handlePreview = (material: WxGzhMaterialInfo) => {
   currentMaterial.value = material;
   previewVisible.value = true;
 };
 
 // 删除单个素材
-const handleDelete = async (material: MpMaterialApi.Material) => {
+const handleDelete = async (material: WxGzhMaterialInfo) => {
+  if (!material.id) return;
   try {
-    await deleteMaterial([material.id]);
+    await deleteWxGzhMaterial({ body: { ids: [material.id] } });
     message.success('删除成功');
     loadMaterialList();
     loadMaterialStats();
@@ -196,7 +216,7 @@ const handleBatchDelete = async () => {
   }
 
   try {
-    await deleteMaterial(selectedMaterials.value);
+    await deleteWxGzhMaterial({ body: { ids: selectedMaterials.value } });
     message.success(`成功删除 ${selectedMaterials.value.length} 个素材`);
     selectedMaterials.value = [];
     loadMaterialList();
@@ -330,7 +350,7 @@ onMounted(() => {
       <Card class="content-card">
         <Tabs
           :active-key="currentType.toString()"
-          @change="(key) => handleTypeChange(key as MaterialType)"
+          @change="(key) => handleTypeChange(key as MaterialTypeValue)"
         >
           <Tabs.TabPane
             v-for="option in materialTypeOptions"
@@ -348,16 +368,22 @@ onMounted(() => {
                   :key="material.id"
                   class="material-item"
                   :class="{
-                    selected: selectedMaterials.includes(material.id),
+                    selected:
+                      material.id && selectedMaterials.includes(material.id),
                   }"
                 >
                   <!-- 选择框 -->
                   <div class="material-checkbox">
                     <input
                       type="checkbox"
-                      :checked="selectedMaterials.includes(material.id)"
+                      :checked="
+                        !!(
+                          material.id && selectedMaterials.includes(material.id)
+                        )
+                      "
                       @change="
                         (e) =>
+                          material.id &&
                           handleSelectMaterial(
                             material.id,
                             (e.target as HTMLInputElement).checked,
@@ -416,7 +442,11 @@ onMounted(() => {
                     </div>
                     <div class="material-meta">
                       <span class="material-time">
-                        {{ new Date(material.updateTime).toLocaleDateString() }}
+                        {{
+                          material.updateTime
+                            ? new Date(material.updateTime).toLocaleDateString()
+                            : '-'
+                        }}
                       </span>
                     </div>
                   </div>

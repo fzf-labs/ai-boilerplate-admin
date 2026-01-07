@@ -1,5 +1,9 @@
 <script lang="ts" setup>
-import type { InfraFileConfigApi } from '#/api/infra/file/config';
+import type {
+  CreateFileConfigReq,
+  FileConfigInfo,
+  UpdateFileConfigReq,
+} from '#/api/v1/file-config';
 
 import { computed, ref } from 'vue';
 
@@ -12,13 +16,13 @@ import {
   createFileConfig,
   getFileConfigInfo,
   updateFileConfig,
-} from '#/api/infra/file/config';
+} from '#/api/v1/file-config';
 import { $t } from '#/locales';
 
 import { useFormSchema } from '../data';
 
 const emit = defineEmits(['success']);
-const formData = ref<InfraFileConfigApi.FileConfig>();
+const formData = ref<FileConfigInfo>();
 const getTitle = computed(() => {
   return formData.value?.id
     ? $t('ui.actionTitle.edit', ['文件配置'])
@@ -39,11 +43,13 @@ const [Modal, modalApi] = useVbenModal({
     }
     modalApi.lock();
     // 提交表单
-    const data = (await formApi.getValues()) as InfraFileConfigApi.FileConfig;
+    const data = await formApi.getValues();
     try {
       await (formData.value?.id
-        ? updateFileConfig({ ...data, id: formData.value.id })
-        : createFileConfig(data));
+        ? updateFileConfig({
+            body: { ...data, id: formData.value.id } as UpdateFileConfigReq,
+          })
+        : createFileConfig({ body: data as CreateFileConfigReq }));
       // 关闭并提示
       await modalApi.close();
       emit('success');
@@ -61,16 +67,18 @@ const [Modal, modalApi] = useVbenModal({
       return;
     }
     // 加载数据
-    const data = modalApi.getData<InfraFileConfigApi.FileConfig>();
+    const data = modalApi.getData<FileConfigInfo>();
     if (!data || !data.id) {
       return;
     }
     modalApi.lock();
     try {
-      const res = await getFileConfigInfo(data.id);
+      const res = await getFileConfigInfo({ params: { id: data.id } });
       formData.value = res.info;
       // 设置到 values
-      await formApi.setValues(formData.value);
+      if (formData.value) {
+        await formApi.setValues(formData.value);
+      }
     } finally {
       modalApi.lock(false);
     }

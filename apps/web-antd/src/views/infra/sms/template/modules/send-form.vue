@@ -1,5 +1,8 @@
 <script lang="ts" setup>
-import type { SmsTemplateApi } from '#/api/infra/sms/template';
+import type {
+  SendSmsTemplateMsgReq,
+  SmsTemplateInfo,
+} from '#/api/v1/sms-template';
 
 import { ref } from 'vue';
 
@@ -8,12 +11,12 @@ import { useVbenModal } from '@vben/common-ui';
 import { message } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
-import { sendSms } from '#/api/infra/sms/template';
+import { sendSmsTemplateMsg } from '#/api/v1/sms-template';
 
 import { useSendSmsFormSchema } from '../data';
 
 const emit = defineEmits(['success']);
-const formData = ref<SmsTemplateApi.SmsTemplate>();
+const formData = ref<SmsTemplateInfo>();
 
 const [Form, formApi] = useVbenForm({
   layout: 'horizontal',
@@ -40,7 +43,7 @@ const [Modal, modalApi] = useVbenModal({
         paramsObj[key] = values[`${key}`];
       });
     }
-    const data: SmsTemplateApi.SendSmsTemplateMsgReq = {
+    const sendData: SendSmsTemplateMsgReq = {
       id: formData.value?.id || '',
       phone: values.mobile,
       params: paramsObj,
@@ -48,7 +51,7 @@ const [Modal, modalApi] = useVbenModal({
 
     // 提交表单
     try {
-      await sendSms(data);
+      await sendSmsTemplateMsg({ body: sendData });
       // 关闭并提示
       await modalApi.close();
       emit('success');
@@ -68,7 +71,7 @@ const [Modal, modalApi] = useVbenModal({
       return;
     }
     // 获取数据
-    const data = modalApi.getData<SmsTemplateApi.SmsTemplate>();
+    const data = modalApi.getData<SmsTemplateInfo>();
     if (!data) {
       return;
     }

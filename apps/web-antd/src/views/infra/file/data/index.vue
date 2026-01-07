@@ -3,7 +3,7 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { InfraFileApi } from '#/api/infra/file/data';
+import type { FileDatumInfo } from '#/api/v1/file-data';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 
@@ -12,7 +12,7 @@ import { useClipboard } from '@vueuse/core';
 import { Button, Image, message } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { deleteFile, getFileList } from '#/api/infra/file/data';
+import { deleteFileDatum, getFileDatumList } from '#/api/v1/file-data';
 import { $t } from '#/locales';
 
 import { useGridColumns, useGridFormSchema } from './data';
@@ -36,14 +36,14 @@ function onUpload() {
 
 /** 复制链接到剪贴板 */
 const { copy } = useClipboard({ legacy: true });
-async function onCopyUrl(row: InfraFileApi.File) {
-  if (!row.URL) {
+async function onCopyUrl(row: FileDatumInfo) {
+  if (!row.url) {
     message.error('文件 URL 为空');
     return;
   }
 
   try {
-    await copy(row.URL);
+    await copy(row.url);
     message.success('复制成功');
   } catch {
     message.error('复制失败');
@@ -58,14 +58,15 @@ function openUrl(url?: string) {
 }
 
 /** 删除文件 */
-async function onDelete(row: InfraFileApi.File) {
+async function onDelete(row: FileDatumInfo) {
+  if (!row.id) return;
   const hideLoading = message.loading({
     content: $t('ui.actionMessage.deleting', [row.name || row.path]),
     duration: 0,
     key: 'action_process_msg',
   });
   try {
-    await deleteFile({ id: row.id });
+    await deleteFileDatum({ body: { id: row.id } });
     message.success({
       content: $t('ui.actionMessage.deleteSuccess', [row.name || row.path]),
       key: 'action_process_msg',
@@ -77,7 +78,7 @@ async function onDelete(row: InfraFileApi.File) {
 }
 
 /** 表格操作按钮的回调函数 */
-function onActionClick({ code, row }: OnActionClickParams<InfraFileApi.File>) {
+function onActionClick({ code, row }: OnActionClickParams<FileDatumInfo>) {
   switch (code) {
     case 'copyUrl': {
       onCopyUrl(row);
@@ -101,10 +102,12 @@ const [Grid, gridApi] = useVbenVxeGrid({
     proxyConfig: {
       ajax: {
         query: async ({ page }, formValues) => {
-          return await getFileList({
-            page: page.currentPage,
-            pageSize: page.pageSize,
-            ...formValues,
+          return await getFileDatumList({
+            params: {
+              page: page.currentPage,
+              pageSize: page.pageSize,
+              ...formValues,
+            },
           });
         },
       },
@@ -116,7 +119,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
       refresh: { code: 'query' },
       search: true,
     },
-  } as VxeTableGridOptions<InfraFileApi.File>,
+  } as VxeTableGridOptions<FileDatumInfo>,
 });
 </script>
 
@@ -131,15 +134,15 @@ const [Grid, gridApi] = useVbenVxeGrid({
         </Button>
       </template>
       <template #file-content="{ row }">
-        <Image v-if="row.ext && row.ext.includes('image')" :src="row.URL" />
+        <Image v-if="row.ext && row.ext.includes('image')" :src="row.url" />
         <Button
           v-else-if="row.ext && row.ext.includes('pdf')"
           type="link"
-          @click="() => openUrl(row.URL)"
+          @click="() => openUrl(row.url)"
         >
           预览
         </Button>
-        <Button v-else type="link" @click="() => openUrl(row.URL)">
+        <Button v-else type="link" @click="() => openUrl(row.url)">
           下载
         </Button>
       </template>

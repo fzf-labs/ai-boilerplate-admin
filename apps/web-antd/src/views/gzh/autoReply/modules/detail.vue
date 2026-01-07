@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import type { WxGzhAutoReplyInfo } from '#/api/v1/wx-gzh-auto-reply';
+
 import { computed, ref } from 'vue';
 
 import { useVbenModal } from '@vben/common-ui';
@@ -6,7 +8,6 @@ import { formatDateTime } from '@vben/utils';
 
 import { Card } from 'ant-design-vue';
 
-import type { WxGzhAutoReplyInfo } from '#/api/v1/wx-gzh-auto-reply';
 import { getWxGzhAutoReplyInfo } from '#/api/v1/wx-gzh-auto-reply';
 import { CommonStatusEnum } from '#/utils/constants';
 
@@ -447,7 +448,9 @@ defineExpose({ modalApi });
               <div class="flex items-center justify-between">
                 <span class="font-medium text-gray-600">创建时间</span>
                 <span class="font-semibold text-gray-900">
-                  {{ formatDateTime(autoReplyData.createdAt || '') || '未设置' }}
+                  {{
+                    formatDateTime(autoReplyData.createdAt || '') || '未设置'
+                  }}
                 </span>
               </div>
             </div>
@@ -457,7 +460,9 @@ defineExpose({ modalApi });
               <div class="flex items-center justify-between">
                 <span class="font-medium text-gray-600">更新时间</span>
                 <span class="font-semibold text-gray-900">
-                  {{ formatDateTime(autoReplyData.updatedAt || '') || '未设置' }}
+                  {{
+                    formatDateTime(autoReplyData.updatedAt || '') || '未设置'
+                  }}
                 </span>
               </div>
             </div>

@@ -1,5 +1,9 @@
 <script lang="ts" setup>
-import type { MailAccountApi } from '#/api/infra/mail/account';
+import type {
+  CreateMailAccountReq,
+  MailAccountInfo,
+  UpdateMailAccountReq,
+} from '#/api/v1/mail-account';
 
 import { computed, ref } from 'vue';
 
@@ -12,13 +16,13 @@ import {
   createMailAccount,
   getMailAccountInfo,
   updateMailAccount,
-} from '#/api/infra/mail/account';
+} from '#/api/v1/mail-account';
 import { $t } from '#/locales';
 
 import { useFormSchema } from '../data';
 
 const emit = defineEmits(['success']);
-const formData = ref<MailAccountApi.MailAccount>();
+const formData = ref<MailAccountInfo>();
 const getTitle = computed(() => {
   return formData.value?.id
     ? $t('ui.actionTitle.edit', ['邮箱账号'])
@@ -42,11 +46,11 @@ const [Modal, modalApi] = useVbenModal({
     }
     modalApi.lock();
     // 提交表单
-    const data = (await formApi.getValues()) as MailAccountApi.MailAccount;
+    const data = await formApi.getValues();
     try {
       await (formData.value?.id
-        ? updateMailAccount(data)
-        : createMailAccount(data));
+        ? updateMailAccount({ body: data as UpdateMailAccountReq })
+        : createMailAccount({ body: data as CreateMailAccountReq }));
       // 关闭并提示
       await modalApi.close();
       emit('success');
@@ -64,16 +68,18 @@ const [Modal, modalApi] = useVbenModal({
       return;
     }
     // 加载数据
-    const data = modalApi.getData<MailAccountApi.MailAccount>();
+    const data = modalApi.getData<MailAccountInfo>();
     if (!data || !data.id) {
       return;
     }
     modalApi.lock();
     try {
-      const res = await getMailAccountInfo(data.id);
+      const res = await getMailAccountInfo({ params: { id: data.id } });
       formData.value = res.info;
       // 设置到 values
-      await formApi.setValues(formData.value);
+      if (formData.value) {
+        await formApi.setValues(formData.value);
+      }
     } finally {
       modalApi.lock(false);
     }

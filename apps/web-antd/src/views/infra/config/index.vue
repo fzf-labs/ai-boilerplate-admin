@@ -3,7 +3,7 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { InfraConfigApi } from '#/api/infra/config';
+import type { ConfigDatumInfo } from '#/api/v1/config-data';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
@@ -11,7 +11,7 @@ import { Plus } from '@vben/icons';
 import { Button, message } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { deleteConfig, getConfigList } from '#/api/infra/config';
+import { deleteConfigDatum, getConfigDatumList } from '#/api/v1/config-data';
 import { $t } from '#/locales';
 
 import { useGridColumns, useGridFormSchema } from './data';
@@ -33,19 +33,20 @@ function onCreate() {
 }
 
 /** 编辑参数 */
-function onEdit(row: InfraConfigApi.Config) {
+function onEdit(row: ConfigDatumInfo) {
   formModalApi.setData(row).open();
 }
 
 /** 删除参数 */
-async function onDelete(row: InfraConfigApi.Config) {
+async function onDelete(row: ConfigDatumInfo) {
+  if (!row.id) return;
   const hideLoading = message.loading({
     content: $t('ui.actionMessage.deleting', [row.name]),
     duration: 0,
     key: 'action_process_msg',
   });
   try {
-    await deleteConfig(row.id);
+    await deleteConfigDatum({ body: { id: row.id } });
     message.success({
       content: $t('ui.actionMessage.deleteSuccess', [row.name]),
       key: 'action_process_msg',
@@ -57,10 +58,7 @@ async function onDelete(row: InfraConfigApi.Config) {
 }
 
 /** 表格操作按钮的回调函数 */
-function onActionClick({
-  code,
-  row,
-}: OnActionClickParams<InfraConfigApi.Config>) {
+function onActionClick({ code, row }: OnActionClickParams<ConfigDatumInfo>) {
   switch (code) {
     case 'delete': {
       onDelete(row);
@@ -84,10 +82,12 @@ const [Grid, gridApi] = useVbenVxeGrid({
     proxyConfig: {
       ajax: {
         query: async ({ page }, formValues) => {
-          return await getConfigList({
-            page: page.currentPage,
-            pageSize: page.pageSize,
-            ...formValues,
+          return await getConfigDatumList({
+            params: {
+              page: page.currentPage,
+              pageSize: page.pageSize,
+              ...formValues,
+            },
           });
         },
       },
@@ -99,7 +99,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
       refresh: { code: 'query' },
       search: true,
     },
-  } as VxeTableGridOptions<InfraConfigApi.Config>,
+  } as VxeTableGridOptions<ConfigDatumInfo>,
 });
 </script>
 

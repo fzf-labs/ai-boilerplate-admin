@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { WxGzhUserApi } from '#/api/gzh/user';
+import type { WxGzhUserInfo } from '#/api/v1/wx-gzh-user';
 
 import { computed, ref } from 'vue';
 
@@ -8,9 +8,9 @@ import { formatDateTime } from '@vben/utils';
 
 import { Card, Spin, Tag } from 'ant-design-vue';
 
-import { getWxGzhUserInfo } from '#/api/gzh/user';
+import { getWxGzhUserInfo } from '#/api/v1/wx-gzh-user';
 
-const userInfo = ref<WxGzhUserApi.WxGzhUser>();
+const userInfo = ref<WxGzhUserInfo>();
 const loading = ref(false);
 
 const getTitle = computed(() => {
@@ -28,7 +28,7 @@ const [Modal, modalApi] = useVbenModal({
     }
 
     // 加载数据
-    const data = modalApi.getData<WxGzhUserApi.WxGzhUser>();
+    const data = modalApi.getData<WxGzhUserInfo>();
     if (!data?.id) {
       return;
     }
@@ -36,7 +36,7 @@ const [Modal, modalApi] = useVbenModal({
     modalApi.lock();
     try {
       loading.value = true;
-      const res = await getWxGzhUserInfo(data.id);
+      const res = await getWxGzhUserInfo({ params: { id: data.id } });
       userInfo.value = res.info;
     } finally {
       loading.value = false;
@@ -46,12 +46,12 @@ const [Modal, modalApi] = useVbenModal({
 });
 
 // 格式化关注状态
-const formatSubscribeStatus = (status: number) => {
+const formatSubscribeStatus = (status?: number) => {
   return status === 1 ? '已关注' : '未关注';
 };
 
 // 获取关注状态标签颜色
-const getSubscribeStatusColor = (status: number) => {
+const getSubscribeStatusColor = (status?: number) => {
   return status === 1 ? 'success' : 'default';
 };
 </script>
@@ -145,15 +145,11 @@ const getSubscribeStatusColor = (status: number) => {
                 <div class="flex items-center justify-between">
                   <span class="font-medium text-gray-600">关注时间</span>
                   <span class="text-gray-800">
-                    {{ formatDateTime(userInfo.subscribeTime || '') }}
-                  </span>
-                </div>
-              </div>
-              <div class="rounded-lg bg-amber-50 p-3">
-                <div class="flex items-center justify-between">
-                  <span class="font-medium text-gray-600">取消关注时间</span>
-                  <span class="text-gray-800">
-                    {{ formatDateTime(userInfo.unsubscribeTime || '') }}
+                    {{
+                      userInfo.createdAt
+                        ? formatDateTime(userInfo.createdAt)
+                        : '-'
+                    }}
                   </span>
                 </div>
               </div>

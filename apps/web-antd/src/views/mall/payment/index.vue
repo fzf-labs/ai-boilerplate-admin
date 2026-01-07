@@ -3,12 +3,12 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { MallPaymentRecordInfo } from '#/api/v1/mall-payment';
+import type { MallPaymentRecordInfo } from '#/api/v1/mall-payment-record';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getMallPaymentRecordListByOrderId } from '#/api/v1/mall-payment';
+import { getMallPaymentRecordListByOrderId } from '#/api/v1/mall-payment-record';
 
 import { useGridColumns, useGridFormSchema } from './data';
 import DetailModal from './modules/detail.vue';

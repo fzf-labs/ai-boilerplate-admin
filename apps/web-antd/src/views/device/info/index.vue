@@ -108,10 +108,7 @@ async function onStatusChange(
 }
 
 /** 表格操作按钮的回调函数 */
-function onActionClick({
-  code,
-  row,
-}: OnActionClickParams<DeviceInfo>) {
+function onActionClick({ code, row }: OnActionClickParams<DeviceInfo>) {
   switch (code) {
     case 'delete': {
       onDelete(row);

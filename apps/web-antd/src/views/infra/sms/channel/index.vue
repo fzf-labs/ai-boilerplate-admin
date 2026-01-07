@@ -3,14 +3,14 @@ import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { SmsChannelApi } from '#/api/infra/sms/channel';
+import type { SmsChannelInfo } from '#/api/v1/sms-channel';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 
 import { Button, message } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { deleteSmsChannel, getSmsChannelList } from '#/api/infra/sms/channel';
+import { deleteSmsChannel, getSmsChannelList } from '#/api/v1/sms-channel';
 import { $t } from '#/locales';
 
 import { useGridColumns, useGridFormSchema } from './data';
@@ -32,19 +32,20 @@ function onCreate() {
 }
 
 /** 编辑短信渠道 */
-function onEdit(row: SmsChannelApi.SmsChannel) {
+function onEdit(row: SmsChannelInfo) {
   formModalApi.setData(row).open();
 }
 
 /** 删除短信渠道 */
-async function onDelete(row: SmsChannelApi.SmsChannel) {
+async function onDelete(row: SmsChannelInfo) {
+  if (!row.id) return;
   const hideLoading = message.loading({
-    content: $t('ui.actionMessage.deleting', [row.channelName]),
+    content: $t('ui.actionMessage.deleting', [row.name]),
     duration: 0,
     key: 'action_process_msg',
   });
   try {
-    await deleteSmsChannel(row.id);
+    await deleteSmsChannel({ body: { id: row.id } });
     message.success({
       content: $t('ui.actionMessage.deleteSuccess', [row.channelName]),
       key: 'action_process_msg',
@@ -56,10 +57,7 @@ async function onDelete(row: SmsChannelApi.SmsChannel) {
 }
 
 /** 表格操作按钮的回调函数 */
-function onActionClick({
-  code,
-  row,
-}: OnActionClickParams<SmsChannelApi.SmsChannel>) {
+function onActionClick({ code, row }: OnActionClickParams<SmsChannelInfo>) {
   switch (code) {
     case 'delete': {
       onDelete(row);
@@ -84,9 +82,11 @@ const [Grid, gridApi] = useVbenVxeGrid({
       ajax: {
         query: async ({ page }, formValues) => {
           return await getSmsChannelList({
-            page: page.currentPage,
-            pageSize: page.pageSize,
-            ...formValues,
+            params: {
+              page: page.currentPage,
+              pageSize: page.pageSize,
+              ...formValues,
+            },
           });
         },
       },
@@ -98,7 +98,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
       refresh: { code: 'query' },
       search: true,
     },
-  } as VxeTableGridOptions<SmsChannelApi.SmsChannel>,
+  } as VxeTableGridOptions<SmsChannelInfo>,
 });
 </script>
 

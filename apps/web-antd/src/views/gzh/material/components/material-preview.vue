@@ -1,15 +1,13 @@
 <script lang="ts" setup>
-import type { MpMaterialApi } from '#/api/gzh/material';
+import type { WxGzhMaterialInfo } from '#/api/v1/wx-gzh-material';
 
 import { computed } from 'vue';
 
 import { CopyOutlined } from '@ant-design/icons-vue';
 import { Button, Descriptions, Modal, Space, Tag } from 'ant-design-vue';
 
-import { MaterialType, MaterialTypeLabels } from '#/api/gzh/material';
-
 const props = defineProps<{
-  data?: MpMaterialApi.Material;
+  data?: WxGzhMaterialInfo;
   open: boolean;
 }>();
 
@@ -17,9 +15,22 @@ const emits = defineEmits<{
   close: [];
 }>();
 
+// Material type constants
+const MaterialType = {
+  IMAGE: 'image',
+  VOICE: 'voice',
+  VIDEO: 'video',
+} as const;
+
+const MaterialTypeLabels: Record<string, string> = {
+  [MaterialType.IMAGE]: '图片',
+  [MaterialType.VOICE]: '语音',
+  [MaterialType.VIDEO]: '视频',
+};
+
 // 计算属性
 const materialTypeLabel = computed(() => {
-  return props.data ? MaterialTypeLabels[props.data.type] : '';
+  return props.data?.type ? MaterialTypeLabels[props.data.type] || '' : '';
 });
 
 const isImage = computed(() => {
@@ -115,7 +126,7 @@ const handleClose = () => {
             </Tag>
           </Descriptions.Item>
           <Descriptions.Item label="Media ID">
-            <code>{{ data.mediaId }}</code>
+            <code>{{ data.mediaId || '-' }}</code>
           </Descriptions.Item>
           <Descriptions.Item label="上传时间">
             {{ formatTime(data.updateTime) }}
